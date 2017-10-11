@@ -10,20 +10,45 @@ namespace PolygonApp
 {
     class Vertex : Control
     {
-        private static int dimension = 31;
-        private Rectangle rectangle;
+        private const int dimension = 31;
 
         public Vertex(int x, int y)
         {
-            rectangle = new Rectangle(0, 0, dimension, dimension);
-            this.Top = y;
-            this.Left = x;
+            Left = x - dimension / 2;
+            Top = y - dimension / 2;
+            ForeColor = Color.Black;
+            //SetStyle(ControlStyles.UserPaint| ControlStyles.AllPaintingInWmPaint| ControlStyles.Selectable, true);
+
+            MouseClick += Vertex_MouseClick;
         }
 
-        public void draw(object sender, PaintEventArgs e)
+        private void Vertex_MouseClick(object sender, MouseEventArgs e)
         {
-            e.Graphics.DrawRectangle(Pens.Black, rectangle);
+            throw new NotImplementedException();
         }
-        public Rectangle Rectangle { get; private set; }
+
+        new public int Width { get => dimension; }
+        new public int Height { get => dimension; }
+
+        internal void DrawToCanvas(Bitmap canvas)
+        {
+            for (int x = Left; x < Left+Width; x++)
+            {
+                for (int y = Top; y < Top+Height; y++)
+                {
+                    canvas.SetPixel(x, y, ForeColor);
+                }
+            }
+        }
+
+        public bool Contains(Point location)
+        {
+            if (location.X > Left
+                && location.X < Left + dimension
+                && location.Y > Top
+                && location.Y < Top + dimension)
+                return true;
+            return false;
+        }
     }
 }
