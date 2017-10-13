@@ -39,7 +39,7 @@ namespace PolygonApp
             AllPurposeBresenham(canvas);
             Moved = false;
         }
-        
+
         private void AllPurposeBresenham(Bitmap canvas)
         {
             int x1, y1, x2, y2, temp;
@@ -90,10 +90,13 @@ namespace PolygonApp
         {
             if (negated)
                 y *= -1;
-            if (swapped)
-                canvas.SetPixel(y, x, color);
-            else
-                canvas.SetPixel(x, y, color);
+            if (x >= 0 && y >= 0)
+            {
+                if (swapped && y < canvas.Width && x < canvas.Height)
+                    canvas.SetPixel(y, x, color);
+                else if (x < canvas.Width && y < canvas.Height)
+                    canvas.SetPixel(x, y, color);
+            }
         }
     }
 }

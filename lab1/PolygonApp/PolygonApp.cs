@@ -14,8 +14,10 @@ namespace PolygonApp
     {
         private PictureBox pictureBox;
         private Bitmap canvas;
+        private Bitmap workingLayer;
         private Polygon polygon;
-        private Vertex draggedVertex;
+        private int draggedVertexId;
+        private int vertexDimension = 11;
         private bool createMode = true;
         private bool isMouseDown = false;
 
@@ -31,6 +33,7 @@ namespace PolygonApp
             };
             splitContainer1.Panel2.Controls.Add(pictureBox);
             canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
+            workingLayer = new Bitmap(pictureBox.Width, pictureBox.Height);
             polygon = new Polygon();
 
 
@@ -43,7 +46,7 @@ namespace PolygonApp
 
         private void PictureBox_MouseClick(object sender, MouseEventArgs e)
         {
-           if (createMode && !polygon.AddVertex(new Point(e.X, e.Y)))
+           if (createMode && !polygon.AddVertex(new Point(e.X, e.Y), vertexDimension))
                 createMode = false;
 
             pictureBox.Invalidate();
@@ -54,15 +57,15 @@ namespace PolygonApp
             if (!createMode)
             {
                 isMouseDown = true;
-                draggedVertex = polygon.GetVertexFromPoint(new Point(e.X, e.Y));
+                draggedVertexId = polygon.GetVertexIdFromPoint(new Point(e.X, e.Y));
             }
         }
 
         private void PictureBox_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isMouseDown && draggedVertex != null)
+            if (isMouseDown && draggedVertexId != -1)
             {
-                draggedVertex.Point = new Point(e.X, e.Y);
+                polygon.SetPointForVertexId(draggedVertexId, e.Location);
                 pictureBox.Invalidate();
             }
         }
@@ -72,7 +75,7 @@ namespace PolygonApp
             if (!createMode)
             {
                 isMouseDown = false;
-                draggedVertex = null;
+                draggedVertexId = -1;
             }
         }
 
@@ -80,6 +83,7 @@ namespace PolygonApp
         {
             polygon.Draw(canvas);
             e.Graphics.DrawImage(canvas, 0, 0, canvas.Width, canvas.Height);
+            canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
         }
     }
 }

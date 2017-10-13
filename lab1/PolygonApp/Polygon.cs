@@ -23,7 +23,7 @@ namespace PolygonApp
 
         public int VerticesCount { get => verticesCount; }
 
-        public bool AddVertex(Point point)
+        public bool AddVertex(Point point, int dimension)
         {
             if (verticesCount > 0 && vertices[0].Contains(point))
             {
@@ -32,7 +32,7 @@ namespace PolygonApp
                 return false;
             }
 
-            Vertex vertex = new Vertex(point);
+            Vertex vertex = new Vertex(point, dimension);
             vertices[verticesCount++] = vertex;
 
             if (verticesCount == 1) return true;
@@ -55,13 +55,22 @@ namespace PolygonApp
                 lines[verticesCount - 1].Draw(canvas);
         }
 
-        public Vertex GetVertexFromPoint(Point point)
+        public int GetVertexIdFromPoint(Point point)
         {
             for (int i = 0; i < verticesCount; i++)
                 if (vertices[i].Contains(point))
-                    return vertices[i];
+                    return i;
 
-            return null;
+            return -1;
+        }
+
+        public void SetPointForVertexId(int id, Point point)
+        {
+            int outwardLineId = id;
+            int inwardLineId = (id == 0) ? verticesCount - 1 : id - 1;
+            vertices[id].Point = point;
+            lines[outwardLineId].Start = point;
+            lines[inwardLineId].End = point;
         }
     }
 }
