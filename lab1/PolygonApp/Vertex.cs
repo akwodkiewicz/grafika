@@ -8,16 +8,21 @@ using System.Windows.Forms;
 
 namespace PolygonApp
 {
-    class Vertex : Control
+    class Vertex : Control, IDrawable
     {
         private const int dimension = 31;
+        private Point point;
+        private Point lastPoint;
+        private bool moved;
 
-        public Vertex(int x, int y)
+        public Vertex(Point _point)
         {
-            Left = x - dimension / 2;
-            Top = y - dimension / 2;
+            Point = _point;
+            Left = X - dimension / 2;
+            Top = Y - dimension / 2;
             ForeColor = Color.Black;
-            //SetStyle(ControlStyles.UserPaint| ControlStyles.AllPaintingInWmPaint| ControlStyles.Selectable, true);
+            BackColor = Color.White;
+            Moved = true;
 
             MouseClick += Vertex_MouseClick;
         }
@@ -27,19 +32,23 @@ namespace PolygonApp
             throw new NotImplementedException();
         }
 
-        new public int Width { get => dimension; }
-        new public int Height { get => dimension; }
-
-        internal void DrawToCanvas(Bitmap canvas)
+        public Point Point
         {
-            for (int x = Left; x < Left+Width; x++)
+            get => point;
+            set
             {
-                for (int y = Top; y < Top+Height; y++)
-                {
-                    canvas.SetPixel(x, y, ForeColor);
-                }
+                lastPoint = point;
+                point = value;
+                Left = point.X - dimension / 2;
+                Top = point.Y - dimension / 2;
+                moved = true;
             }
         }
+        public int X { get => point.X; }
+        public int Y { get => point.Y; }
+        new public int Width { get => dimension; }
+        new public int Height { get => dimension; }
+        public bool Moved { get => moved; set => moved = value; }
 
         public bool Contains(Point location)
         {
@@ -49,6 +58,48 @@ namespace PolygonApp
                 && location.Y < Top + dimension)
                 return true;
             return false;
+        }
+
+        public void Draw(Bitmap canvas)
+        {
+            if (Moved)
+                Erase(canvas);
+
+            int xStart = (Left > 0) ? Left : 0;
+            int xEnd = (Left + Width > canvas.Width) ? canvas.Width : Left + Width;
+            int yStart = (Top > 0) ? Top : 0;
+            int yEnd = (Top + Height > canvas.Height) ? canvas.Height : Top + Height;
+
+            for (int x = xStart; x < xEnd; x++)
+            {
+                for (int y = yStart; y < yEnd; y++)
+                {
+                    canvas.SetPixel(x, y, ForeColor);
+                }
+            }
+
+            Moved = false;
+        }
+
+        private void Erase(Bitmap canvas)
+        {
+            int xStart = lastPoint.X - Width / 2;
+            int xEnd = xStart + Width;
+            int yStart = lastPoint.Y - Height / 2;
+            int yEnd = yStart + Height;
+
+            if (xStart < 0) xStart = 0;
+            if (xEnd > canvas.Width) xEnd = canvas.Width;
+            if (yStart < 0) yStart = 0;
+            if (yEnd > canvas.Height) yEnd = canvas.Height;
+
+            for (int x = xStart; x < xEnd; x++)
+            {
+                for (int y = yStart; y < yEnd; y++)
+                {
+                    canvas.SetPixel(x, y, BackColor);
+                }
+            }
         }
     }
 }
