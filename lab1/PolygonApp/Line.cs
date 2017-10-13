@@ -36,14 +36,47 @@ namespace PolygonApp
 
         public void Draw(Bitmap canvas)
         {
-            int dx = End.X - Start.X;
-            int dy = End.Y - Start.Y;
-            int y = Start.Y;
+            AllPurposeBresenham(canvas);
+            Moved = false;
+        }
+        
+        private void AllPurposeBresenham(Bitmap canvas)
+        {
+            int x1, y1, x2, y2, temp;
+            bool swapped = false;
+            bool negated = false;
+            var dx = End.X - Start.X;
+            var dy = End.Y - Start.Y;
+
+            // Steep slope
+            if (dy * dy > dx * dx)
+            { x1 = Start.Y; y1 = Start.X; x2 = End.Y; y2 = End.X; swapped = true; }
+            else
+            { x1 = Start.X; y1 = Start.Y; x2 = End.X; y2 = End.Y; }
+
+            // Right to left
+            if (x1 > x2)
+            {
+                temp = x1; x1 = x2; x2 = temp;
+                temp = y1; y1 = y2; y2 = temp;
+            }
+
+            //Negavite slope
+            if (y1 > y2) { y1 *= -1; y2 *= -1; negated = true; }
+
+            Bresenham(canvas, x1, y1, x2, y2, swapped, negated);
+        }
+
+        private void Bresenham(Bitmap canvas, int x1, int y1, int x2, int y2, bool swapped, bool negated)
+        {
+            int dx = x2 - x1;
+            int dy = y2 - y1;
+            int y = y1;
             int eps = 0;
 
-            for (int x = Start.X; x <= End.X; x++)
+            for (int x = x1; x <= x2; x++)
             {
-                canvas.SetPixel(x, y, color);
+                TranslateAndDraw(canvas, x, y, swapped, negated);
                 eps += dy;
                 if ((eps << 1) >= dx)
                 {
@@ -51,8 +84,16 @@ namespace PolygonApp
                     eps -= dx;
                 }
             }
+        }
 
-            Moved = false;
+        private void TranslateAndDraw(Bitmap canvas, int x, int y, bool swapped, bool negated)
+        {
+            if (negated)
+                y *= -1;
+            if (swapped)
+                canvas.SetPixel(y, x, color);
+            else
+                canvas.SetPixel(x, y, color);
         }
     }
 }

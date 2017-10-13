@@ -11,6 +11,7 @@ namespace PolygonApp
     {
         private const int maxVertices = 20;
         private int verticesCount = 0;
+        private bool closed = false;
         private Vertex[] vertices;
         private Line[] lines;
 
@@ -25,15 +26,19 @@ namespace PolygonApp
         public bool AddVertex(Point point)
         {
             if (verticesCount > 0 && vertices[0].Contains(point))
+            {
+                lines[verticesCount - 1] = new Line(vertices[verticesCount - 1].Point, vertices[0].Point);
+                closed = true;
                 return false;
+            }
 
             Vertex vertex = new Vertex(point);
             vertices[verticesCount++] = vertex;
 
             if (verticesCount == 1) return true;
-            
+
             Line line = new Line(vertices[verticesCount - 2].Point, vertices[verticesCount - 1].Point);
-            lines[verticesCount-2] = line;
+            lines[verticesCount - 2] = line;
 
             return true;
         }
@@ -41,13 +46,13 @@ namespace PolygonApp
         public void Draw(Bitmap canvas)
         {
             for (int i = 0; i < verticesCount; i++)
-                //if(vertices[i].Invalid)
-                    vertices[i].Draw(canvas);
+                vertices[i].Draw(canvas);
 
             if (verticesCount > 1)
-                for (int i = 0; i < verticesCount-1; i++)
-                    //if(lines[i].Invalid)
-                        lines[i].Draw(canvas);
+                for (int i = 0; i < verticesCount - 1; i++)
+                    lines[i].Draw(canvas);
+            if (closed)
+                lines[verticesCount - 1].Draw(canvas);
         }
 
         public Vertex GetVertexFromPoint(Point point)
@@ -56,7 +61,7 @@ namespace PolygonApp
                 if (vertices[i].Contains(point))
                     return vertices[i];
 
-            return null;            
+            return null;
         }
     }
 }

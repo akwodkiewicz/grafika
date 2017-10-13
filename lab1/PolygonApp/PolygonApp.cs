@@ -43,10 +43,7 @@ namespace PolygonApp
 
         private void PictureBox_MouseClick(object sender, MouseEventArgs e)
         {
-            if (!createMode)
-                return;
-
-            else if (!polygon.AddVertex(new Point(e.X, e.Y)))
+           if (createMode && !polygon.AddVertex(new Point(e.X, e.Y)))
                 createMode = false;
 
             pictureBox.Invalidate();
