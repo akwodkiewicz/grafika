@@ -12,18 +12,38 @@ namespace PolygonApp
         private const int maxVertices = 20;
         private int verticesCount = 0;
         private bool closed = false;
+        private int vertexSize;
+        private Point center;
         private Vertex[] vertices;
         private Line[] lines;
 
-        public Polygon()
+        public Polygon(int vSize)
         {
             vertices = new Vertex[maxVertices];
             lines = new Line[maxVertices];
+            vertexSize = vSize * 10 + 11;
         }
 
         public int VerticesCount { get => verticesCount; }
+        public int VertexSize
+        {
+            get => vertexSize;
+            set
+            {
+                var difference = vertexSize - (value * 10 + 11);
+                vertexSize = value * 10 + 11;
+                for (int i = 0; i < verticesCount; i++)
+                {
+                    vertices[i].Top += difference / 2;
+                    vertices[i].Left += difference/2;
+                    vertices[i].Dimension = vertexSize;
+                }
+            }
+        }
 
-        public bool AddVertex(Point point, int dimension)
+        public Point Center { get => center; set => center = value; }
+
+        public bool AddVertex(Point point)
         {
             if (verticesCount > 0 && vertices[0].Contains(point))
             {
@@ -32,7 +52,7 @@ namespace PolygonApp
                 return false;
             }
 
-            Vertex vertex = new Vertex(point, dimension);
+            Vertex vertex = new Vertex(point, VertexSize);
             vertices[verticesCount++] = vertex;
 
             if (verticesCount == 1) return true;
@@ -62,6 +82,18 @@ namespace PolygonApp
                     return i;
 
             return -1;
+        }
+
+        public void MovePolygon(Point point)
+        {
+            var dx = point.X - center.X;
+            var dy = point.Y - center.Y;
+            for (int i = 0; i < verticesCount; i++)
+            {
+                var p = new Point(vertices[i].X + dx, vertices[i].Y + dy);
+                SetPointForVertexId(i, p);
+            }
+            center = point;
         }
 
         public void SetPointForVertexId(int id, Point point)

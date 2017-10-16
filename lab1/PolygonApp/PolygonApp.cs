@@ -12,41 +12,23 @@ namespace PolygonApp
 {
     public partial class PolygonApp : Form
     {
-        private PictureBox pictureBox;
         private Bitmap canvas;
-        private Bitmap workingLayer;
         private Polygon polygon;
         private int draggedVertexId;
-        private int vertexDimension = 11;
         private bool createMode = true;
         private bool isMouseDown = false;
 
         public PolygonApp()
         {
             InitializeComponent();
-            pictureBox = new PictureBox
-            {
-                Top = 0,
-                Left = 0,
-                Dock = DockStyle.Fill,
-                BackColor = Color.White,
-            };
-            splitContainer1.Panel2.Controls.Add(pictureBox);
+
             canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
-            workingLayer = new Bitmap(pictureBox.Width, pictureBox.Height);
-            polygon = new Polygon();
-
-
-            pictureBox.MouseClick += PictureBox_MouseClick;
-            pictureBox.MouseDown += PictureBox_MouseDown;
-            pictureBox.MouseMove += PictureBox_MouseMove;
-            pictureBox.MouseUp += PictureBox_MouseUp;
-            pictureBox.Paint += PictureBox_Paint;
+            polygon = new Polygon(trackBar1.Value);
         }
 
         private void PictureBox_MouseClick(object sender, MouseEventArgs e)
         {
-           if (createMode && !polygon.AddVertex(new Point(e.X, e.Y), vertexDimension))
+            if (createMode && !polygon.AddVertex(new Point(e.X, e.Y)))
                 createMode = false;
 
             pictureBox.Invalidate();
@@ -57,17 +39,28 @@ namespace PolygonApp
             if (!createMode)
             {
                 isMouseDown = true;
-                draggedVertexId = polygon.GetVertexIdFromPoint(new Point(e.X, e.Y));
+                if (radioVertices.Checked)
+                    draggedVertexId = polygon.GetVertexIdFromPoint(new Point(e.X, e.Y));
+                else if (radioPolygon.Checked)
+                    polygon.Center = e.Location;
             }
         }
 
         private void PictureBox_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isMouseDown && draggedVertexId != -1)
+            if (isMouseDown)
             {
-                polygon.SetPointForVertexId(draggedVertexId, e.Location);
+                if (radioVertices.Checked && draggedVertexId != -1)
+                {
+                    polygon.SetPointForVertexId(draggedVertexId, e.Location);
+                }
+                else if (radioPolygon.Checked)
+                {
+                    polygon.MovePolygon(e.Location);
+                }
                 pictureBox.Invalidate();
             }
+
         }
 
         private void PictureBox_MouseUp(object sender, MouseEventArgs e)
@@ -84,6 +77,20 @@ namespace PolygonApp
             polygon.Draw(canvas);
             e.Graphics.DrawImage(canvas, 0, 0, canvas.Width, canvas.Height);
             canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
+        }
+
+        private void ButtonReset_Click(object sender, EventArgs e)
+        {
+            polygon = new Polygon(trackBar1.Value);
+            canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
+            createMode = true;
+            pictureBox.Invalidate();
+        }
+
+        private void TrackBar1_ValueChanged(object sender, EventArgs e)
+        {
+            polygon.VertexSize = trackBar1.Value;
+            pictureBox.Invalidate();
         }
     }
 }
