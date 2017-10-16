@@ -35,7 +35,7 @@ namespace PolygonApp
                 for (int i = 0; i < verticesCount; i++)
                 {
                     vertices[i].Top += difference / 2;
-                    vertices[i].Left += difference/2;
+                    vertices[i].Left += difference / 2;
                     vertices[i].Dimension = vertexSize;
                 }
             }
@@ -61,6 +61,41 @@ namespace PolygonApp
             lines[verticesCount - 2] = line;
 
             return true;
+        }
+
+        public void DeleteVertex(int id)
+        {
+            vertices[id] = null;
+            if (verticesCount == 1)
+            {
+
+            }
+            else if (verticesCount == 2)
+            {
+                RearrangeVertices();
+                lines[0] = null;
+            }
+            else if (verticesCount == 3)
+            {
+                RearrangeVertices();
+                var prevId = (id == 0) ? verticesCount - 1 : id - 1;
+                lines[prevId] = null;
+                lines[id] = null;
+                RearrangeLines();
+                closed = false;
+            }
+            else
+            {
+                RearrangeVertices();
+
+                var prevId = (id == 0) ? verticesCount - 1 : id - 1;
+                lines[prevId].End = lines[id].End;
+                lines[id] = null;
+
+                RearrangeLines();
+            }
+            verticesCount--;
+
         }
 
         public void Draw(Bitmap canvas)
@@ -98,11 +133,58 @@ namespace PolygonApp
 
         public void SetPointForVertexId(int id, Point point)
         {
-            int outwardLineId = id;
-            int inwardLineId = (id == 0) ? verticesCount - 1 : id - 1;
+
             vertices[id].Point = point;
-            lines[outwardLineId].Start = point;
-            lines[inwardLineId].End = point;
+            if (verticesCount > 2)
+            {
+                int outwardLineId = id;
+                int inwardLineId = (id == 0) ? verticesCount - 1 : id - 1;
+                lines[outwardLineId].Start = point;
+                lines[inwardLineId].End = point;
+            }
+            else if (verticesCount == 2)
+            {
+                if (id == 0)
+                    lines[0].Start = point;
+                else if (id == 1)
+                    lines[0].End = point;
+            }
+        }
+
+        private void RearrangeVertices()
+        {
+            for (int i = 0; i < verticesCount; i++)
+            {
+                if (vertices[i] == null && i + 1 < verticesCount)
+                {
+                    vertices[i] = vertices[i + 1];
+                    vertices[i + 1] = null;
+                }
+            }
+        }
+        private void RearrangeLines()
+        {
+            for (int i = 0; i < verticesCount; i++)
+            {
+                if (lines[i] == null && i + 1 < verticesCount)
+                {
+                    lines[i] = lines[i + 1];
+                    lines[i + 1] = null;
+                }
+            }
+            if (verticesCount == 3)
+            {
+                int id = 0;
+                if (lines[1] != null)
+                    id = 1;
+                else if (lines[2] != null)
+                    id = 2;
+                if (id != 0)
+                {
+                    lines[0] = lines[id];
+                    lines[id] = null;
+                }
+            }
         }
     }
 }

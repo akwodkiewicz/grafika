@@ -14,7 +14,7 @@ namespace PolygonApp
     {
         private Bitmap canvas;
         private Polygon polygon;
-        private int draggedVertexId;
+        private int clickedVertexId;
         private bool createMode = true;
         private bool isMouseDown = false;
 
@@ -30,7 +30,12 @@ namespace PolygonApp
         {
             if (createMode && !polygon.AddVertex(new Point(e.X, e.Y)))
                 createMode = false;
-
+            else if (!createMode && e.Button == MouseButtons.Right)
+            {
+                clickedVertexId = polygon.GetVertexIdFromPoint(e.Location);
+                if(clickedVertexId!=-1)
+                    contextMenuStrip1.Show(pictureBox, e.Location);
+            }
             pictureBox.Invalidate();
         }
 
@@ -39,20 +44,23 @@ namespace PolygonApp
             if (!createMode)
             {
                 isMouseDown = true;
-                if (radioVertices.Checked)
-                    draggedVertexId = polygon.GetVertexIdFromPoint(new Point(e.X, e.Y));
-                else if (radioPolygon.Checked)
-                    polygon.Center = e.Location;
+                if (e.Button == MouseButtons.Left)
+                {
+                    if (radioVertices.Checked)
+                        clickedVertexId = polygon.GetVertexIdFromPoint(new Point(e.X, e.Y));
+                    else if (radioPolygon.Checked)
+                        polygon.Center = e.Location;
+                }
             }
         }
 
         private void PictureBox_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isMouseDown)
+            if (isMouseDown && e.Button == MouseButtons.Left)
             {
-                if (radioVertices.Checked && draggedVertexId != -1)
+                if (radioVertices.Checked && clickedVertexId != -1)
                 {
-                    polygon.SetPointForVertexId(draggedVertexId, e.Location);
+                    polygon.SetPointForVertexId(clickedVertexId, e.Location);
                 }
                 else if (radioPolygon.Checked)
                 {
@@ -68,7 +76,8 @@ namespace PolygonApp
             if (!createMode)
             {
                 isMouseDown = false;
-                draggedVertexId = -1;
+                if (e.Button == MouseButtons.Left)
+                    clickedVertexId = -1;
             }
         }
 
@@ -91,6 +100,15 @@ namespace PolygonApp
         {
             polygon.VertexSize = trackBar1.Value;
             pictureBox.Invalidate();
+        }
+
+        private void ContextMenuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            if (e.ClickedItem == deleteToolStripMenuItem)
+            {
+                polygon.DeleteVertex(clickedVertexId);
+                pictureBox.Invalidate();
+            }
         }
     }
 }
