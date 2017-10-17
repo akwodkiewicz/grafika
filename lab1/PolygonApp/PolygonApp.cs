@@ -14,7 +14,8 @@ namespace PolygonApp
     {
         private Bitmap canvas;
         private Polygon polygon;
-        private int clickedVertexId;
+        private int draggedVertexId = -1;
+        private int clickedVertexId = -1;
         private bool createMode = true;
         private bool isMouseDown = false;
 
@@ -28,12 +29,15 @@ namespace PolygonApp
 
         private void PictureBox_MouseClick(object sender, MouseEventArgs e)
         {
-            if (createMode && !polygon.AddVertex(new Point(e.X, e.Y)))
-                createMode = false;
+            if (createMode)
+            {
+                draggedVertexId = polygon.AddVertex(new Point(e.X, e.Y));
+                if (draggedVertexId == -1) createMode = false;                
+            }
             else if (!createMode && e.Button == MouseButtons.Right)
             {
                 clickedVertexId = polygon.GetVertexIdFromPoint(e.Location);
-                if(clickedVertexId!=-1)
+                if (clickedVertexId != -1)
                     contextMenuStrip1.Show(pictureBox, e.Location);
             }
             pictureBox.Invalidate();
@@ -56,7 +60,12 @@ namespace PolygonApp
 
         private void PictureBox_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isMouseDown && e.Button == MouseButtons.Left)
+            if(draggedVertexId != -1)
+            {
+                polygon.SetPointForVertexId(draggedVertexId, e.Location);
+            }
+
+            else if (!createMode && isMouseDown && e.Button == MouseButtons.Left)
             {
                 if (radioVertices.Checked && clickedVertexId != -1)
                 {
@@ -66,8 +75,8 @@ namespace PolygonApp
                 {
                     polygon.MovePolygon(e.Location);
                 }
-                pictureBox.Invalidate();
             }
+            pictureBox.Invalidate();
 
         }
 

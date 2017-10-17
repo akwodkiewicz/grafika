@@ -43,24 +43,29 @@ namespace PolygonApp
 
         public Point Center { get => center; set => center = value; }
 
-        public bool AddVertex(Point point)
+        public int AddVertex(Point point)
         {
+            Vertex vertex;
             if (verticesCount > 0 && vertices[0].Contains(point))
             {
+                verticesCount--;
+                vertices[verticesCount] = null;
                 lines[verticesCount - 1] = new Line(vertices[verticesCount - 1].Point, vertices[0].Point);
                 closed = true;
-                return false;
+                return -1;
             }
-
-            Vertex vertex = new Vertex(point, VertexSize);
+            if(verticesCount == 0)
+            {
+                vertex = new Vertex(point, VertexSize);
+                vertices[verticesCount++] = vertex;
+            }
+            vertex = new Vertex(point, VertexSize);
             vertices[verticesCount++] = vertex;
-
-            if (verticesCount == 1) return true;
 
             Line line = new Line(vertices[verticesCount - 2].Point, vertices[verticesCount - 1].Point);
             lines[verticesCount - 2] = line;
 
-            return true;
+            return verticesCount - 1;
         }
 
         public void DeleteVertex(int id)
@@ -137,10 +142,13 @@ namespace PolygonApp
             vertices[id].Point = point;
             if (verticesCount > 2)
             {
-                int outwardLineId = id;
                 int inwardLineId = (id == 0) ? verticesCount - 1 : id - 1;
-                lines[outwardLineId].Start = point;
                 lines[inwardLineId].End = point;
+                if(closed)
+                {
+                    int outwardLineId = id;
+                    lines[outwardLineId].Start = point;
+                }
             }
             else if (verticesCount == 2)
             {
