@@ -48,10 +48,7 @@ namespace PolygonApp
             Vertex vertex;
             if (verticesCount > 0 && vertices[0].Contains(point))
             {
-                verticesCount--;
-                vertices[verticesCount] = null;
-                lines[verticesCount - 1] = new Line(vertices[verticesCount - 1].Point, vertices[0].Point);
-                closed = true;
+                Close();
                 return -1;
             }
             if (verticesCount == 0)
@@ -66,6 +63,14 @@ namespace PolygonApp
             lines[verticesCount - 2] = line;
 
             return verticesCount - 1;
+        }
+
+        public void Close()
+        {
+            verticesCount--;
+            vertices[verticesCount] = null;
+            lines[verticesCount - 1] = new Line(vertices[verticesCount - 1].Point, vertices[0].Point);
+            closed = true;
         }
 
         public void DeleteVertex(int id)

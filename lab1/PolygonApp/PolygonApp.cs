@@ -107,10 +107,12 @@ namespace PolygonApp
 
         private void ButtonReset_Click(object sender, EventArgs e)
         {
+            draggedVertexId = -1;
             polygon = new Polygon(trackBar1.Value);
             canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
             createMode = true;
             pictureBox.Invalidate();
+            label1.Focus();
         }
 
         private void TrackBar1_ValueChanged(object sender, EventArgs e)
@@ -131,6 +133,17 @@ namespace PolygonApp
         {
             polygon.DeleteVertex(clickedVertexId);
             pictureBox.Invalidate();
+        }
+
+        private void PolygonApp_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Return && createMode)
+            {
+                createMode = false;
+                draggedVertexId = -1;
+                polygon.Close();
+                pictureBox.Invalidate();
+            }
         }
     }
 }
