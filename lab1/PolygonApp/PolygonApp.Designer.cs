@@ -40,6 +40,7 @@
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.angleConstraintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -125,7 +126,7 @@
             this.trackBar1.Size = new System.Drawing.Size(104, 45);
             this.trackBar1.SmallChange = 2;
             this.trackBar1.TabIndex = 2;
-            this.trackBar1.Value = 3;
+            this.trackBar1.Value = 21;
             this.trackBar1.ValueChanged += new System.EventHandler(this.TrackBar1_ValueChanged);
             // 
             // label1
@@ -165,16 +166,24 @@
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.deleteToolStripMenuItem});
+            this.deleteToolStripMenuItem,
+            this.angleConstraintToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(108, 26);
-            this.contextMenuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ContextMenuStrip1_ItemClicked);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(164, 48);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.DeleteToolStripMenuItem_Click);
+            // 
+            // angleConstraintToolStripMenuItem
+            // 
+            this.angleConstraintToolStripMenuItem.Name = "angleConstraintToolStripMenuItem";
+            this.angleConstraintToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.angleConstraintToolStripMenuItem.Text = "Angle Constraint";
+            this.angleConstraintToolStripMenuItem.Click += new System.EventHandler(this.AngleConstraintToolStripMenuItem_Click);
             // 
             // PolygonApp
             // 
@@ -211,6 +220,7 @@
         private System.Windows.Forms.PictureBox pictureBox;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem angleConstraintToolStripMenuItem;
     }
 }
 

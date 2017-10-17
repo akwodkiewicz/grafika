@@ -136,12 +136,24 @@ namespace PolygonApp
         public void SetPointForVertexId(int id, Point point)
         {
             vertices[id].Point = point;
+            var prevId = (id == 0) ? verticesCount - 1 : id - 1;
+            var nextId = (id + 1) % verticesCount;
             if (verticesCount > 2)
             {
                 int inwardLineId = (id == 0) ? verticesCount - 1 : id - 1;
                 lines[inwardLineId].End = point;
                 if (closed)
                 {
+                    if(!vertices[id].HasAngleConstraint
+                        && !vertices[prevId].HasAngleConstraint
+                        && !vertices[nextId].HasAngleConstraint)
+                    {
+                        //something
+                    }
+                    else
+                    {
+                        //something complicated
+                    }
                     int outwardLineId = id;
                     lines[outwardLineId].Start = point;
                 }
@@ -153,6 +165,12 @@ namespace PolygonApp
                 else if (id == 1)
                     lines[0].End = point;
             }
+        }
+
+        public void SetAngleConstraint(int id, int angle)
+        {
+            vertices[id].AngleConstraint = angle;
+            SetPointForVertexId(id, vertices[id].Point);
         }
 
         private void RearrangeVertices()

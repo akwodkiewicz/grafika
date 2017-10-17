@@ -14,7 +14,9 @@ namespace PolygonApp
         private Point point;
         private Point lastPoint;
         private bool moved;
-
+        private int angleConstraint;
+        private bool hasAngleConstraint;
+        
         public Vertex(Point point, int dimension)
         {
             Point = point;
@@ -26,6 +28,15 @@ namespace PolygonApp
             Moved = true;
         }
 
+        public int AngleConstraint
+        {
+            get => angleConstraint;
+            set
+            {
+                angleConstraint = value;
+                HasAngleConstraint = true;
+            }
+        }
         public Point Point
         {
             get => point;
@@ -41,6 +52,7 @@ namespace PolygonApp
         public int X { get => point.X; }
         public int Y { get => point.Y; }
         new public int Width { get => Dimension; }
+        public bool HasAngleConstraint { get => hasAngleConstraint; set => hasAngleConstraint = value; }
         new public int Height { get => Dimension; }
         public bool Moved { get => moved; set => moved = value; }
         public int Dimension { get => dimension;
@@ -51,6 +63,7 @@ namespace PolygonApp
                 Top = point.Y - value / 2;
             }
         }
+
 
         public bool Contains(Point location)
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -22,7 +23,6 @@ namespace PolygonApp
         public PolygonApp()
         {
             InitializeComponent();
-
             canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
             polygon = new Polygon(trackBar1.Value);
         }
@@ -111,13 +111,18 @@ namespace PolygonApp
             pictureBox.Invalidate();
         }
 
-        private void ContextMenuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        private void AngleConstraintToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (e.ClickedItem == deleteToolStripMenuItem)
-            {
-                polygon.DeleteVertex(clickedVertexId);
-                pictureBox.Invalidate();
-            }
+            var form = new AngleConstraintForm();
+
+            if(form.ShowDialog() == DialogResult.OK)
+                polygon.SetAngleConstraint(clickedVertexId, form.Angle);
+        }
+
+        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            polygon.DeleteVertex(clickedVertexId);
+            pictureBox.Invalidate();
         }
     }
 }
