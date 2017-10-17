@@ -40,6 +40,21 @@ namespace PolygonApp
             Moved = false;
         }
 
+        public double GetSquaredDistanceFromPoint(Point point)
+        {
+            double l2 = DistanceSquared(End, Start);
+            if (l2 == 0.0) return DistanceSquared(point, Start);
+
+            var pminusv = new Point(point.X - Start.X, point.Y - Start.Y);
+            var wminusv = new Point(End.X - Start.X, End.Y - Start.Y);
+
+            var t = Math.Max(0.0, Math.Min(1.0, DotProduct(pminusv, wminusv) / l2));
+            var x = Start.X + t * wminusv.X;
+            var y = Start.Y + t * wminusv.Y;
+            var projection = new Point((int)x, (int)y);
+            return DistanceSquared(point, projection);
+        }
+
         private void AllPurposeBresenham(Bitmap canvas)
         {
             int x1, y1, x2, y2, temp;
@@ -97,6 +112,16 @@ namespace PolygonApp
                 else if (x < canvas.Width && y < canvas.Height)
                     canvas.SetPixel(x, y, color);
             }
+        }
+
+        private double DistanceSquared(Point a, Point b)
+        {
+            return (a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y);
+        }
+
+        private double DotProduct(Point a, Point b)
+        {
+            return a.X * b.X + a.Y * b.Y;
         }
     }
 }

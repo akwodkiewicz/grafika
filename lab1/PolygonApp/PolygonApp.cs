@@ -17,6 +17,7 @@ namespace PolygonApp
         private Polygon polygon;
         private int draggedVertexId = -1;
         private int clickedVertexId = -1;
+        private int clickedLineId = -1;
         private bool createMode = true;
         private bool isMouseDown = false;
 
@@ -39,6 +40,13 @@ namespace PolygonApp
                 clickedVertexId = polygon.GetVertexIdFromPoint(e.Location);
                 if (clickedVertexId != -1)
                     contextMenuStrip1.Show(pictureBox, e.Location);
+                else
+                {
+                    clickedLineId = polygon.GetLineIdFromPoint(e.Location);
+                    if (clickedLineId != -1)
+                        polygon.AddVertexToLine(clickedLineId);
+                }
+                Debug.WriteLine($"Got: #{clickedLineId}");
             }
             pictureBox.Invalidate();
         }

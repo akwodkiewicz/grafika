@@ -10,6 +10,7 @@ namespace PolygonApp
     class Polygon : IDrawable
     {
         private const int maxVertices = 20;
+        private const int snapDistanceSquared = 500;
         private int verticesCount = 0;
         private bool closed = false;
         private int vertexSize;
@@ -42,6 +43,8 @@ namespace PolygonApp
 
         public int AddVertex(Point point)
         {
+            if (VerticesCount == maxVertices) return -1;
+
             Vertex vertex;
             if (verticesCount > 0 && vertices[0].Contains(point))
             {
@@ -112,6 +115,26 @@ namespace PolygonApp
                 lines[verticesCount - 1].Draw(canvas);
         }
 
+        public int GetLineIdFromPoint(Point point)
+        {
+            var iMax = closed ? verticesCount : verticesCount - 1;
+            double minimumDistance = double.PositiveInfinity;
+            int bestId = -1;
+            for (int i = 0; i < iMax; i++)
+            {
+                var dist = lines[i].GetSquaredDistanceFromPoint(point);
+                if (dist < minimumDistance)
+                {
+                    minimumDistance = dist;
+                    bestId = i;
+                }
+            }
+            if (minimumDistance < snapDistanceSquared)
+                return bestId;
+            else
+                return -1;
+        }
+
         public int GetVertexIdFromPoint(Point point)
         {
             for (int i = 0; i < verticesCount; i++)
@@ -144,7 +167,7 @@ namespace PolygonApp
                 lines[inwardLineId].End = point;
                 if (closed)
                 {
-                    if(!vertices[id].HasAngleConstraint
+                    if (!vertices[id].HasAngleConstraint
                         && !vertices[prevId].HasAngleConstraint
                         && !vertices[nextId].HasAngleConstraint)
                     {
@@ -171,6 +194,39 @@ namespace PolygonApp
         {
             vertices[id].AngleConstraint = angle;
             SetPointForVertexId(id, vertices[id].Point);
+        }
+
+        public void SetLineColor(int id, Color color)
+        {
+            lines[id].Color = color;
+        }
+
+
+        public void AddVertexToLine(int id)
+        {
+            if (VerticesCount == maxVertices) return;
+
+
+            var oldLine = lines[id];
+            var x = (oldLine.End.X + oldLine.Start.X) / 2;
+            var y = (oldLine.End.Y + oldLine.Start.Y) / 2;
+            var middle = new Point(x, y);
+
+            for (int i = verticesCount; i > id + 1; i--)
+            {
+                vertices[i] = vertices[i - 1];
+                lines[i] = lines[i - 1];
+            }
+
+            // vertices[id+1] and lines[id+1] are now null
+
+            var vertex = new Vertex(middle, VertexSize);
+            vertices[id + 1] = vertex;
+            var line = new Line(middle, oldLine.End);
+            oldLine.End = middle;
+            lines[id + 1] = line;
+
+            verticesCount++;
         }
 
         private void RearrangeVertices()
