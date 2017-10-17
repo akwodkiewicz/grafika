@@ -119,11 +119,13 @@
             // 
             this.trackBar1.LargeChange = 1;
             this.trackBar1.Location = new System.Drawing.Point(-1, 355);
-            this.trackBar1.Maximum = 2;
+            this.trackBar1.Maximum = 31;
+            this.trackBar1.Minimum = 3;
             this.trackBar1.Name = "trackBar1";
             this.trackBar1.Size = new System.Drawing.Size(104, 45);
+            this.trackBar1.SmallChange = 2;
             this.trackBar1.TabIndex = 2;
-            this.trackBar1.Value = 1;
+            this.trackBar1.Value = 3;
             this.trackBar1.ValueChanged += new System.EventHandler(this.TrackBar1_ValueChanged);
             // 
             // label1
@@ -165,13 +167,13 @@
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.deleteToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 48);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(108, 26);
             this.contextMenuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ContextMenuStrip1_ItemClicked);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             // 
             // PolygonApp

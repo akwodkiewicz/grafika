@@ -43,7 +43,14 @@ namespace PolygonApp
         new public int Width { get => Dimension; }
         new public int Height { get => Dimension; }
         public bool Moved { get => moved; set => moved = value; }
-        public int Dimension { get => dimension; set => dimension = value; }
+        public int Dimension { get => dimension;
+            set
+            {
+                dimension = value;
+                Left = point.X - value / 2;
+                Top = point.Y - value / 2;
+            }
+        }
 
         public bool Contains(Point location)
         {

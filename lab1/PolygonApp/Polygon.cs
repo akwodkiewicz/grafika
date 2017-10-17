@@ -21,27 +21,24 @@ namespace PolygonApp
         {
             vertices = new Vertex[maxVertices];
             lines = new Line[maxVertices];
-            vertexSize = vSize * 10 + 11;
+            vertexSize = vSize;
         }
 
         public int VerticesCount { get => verticesCount; }
+
         public int VertexSize
         {
             get => vertexSize;
             set
             {
-                var difference = vertexSize - (value * 10 + 11);
-                vertexSize = value * 10 + 11;
+                vertexSize = value;
                 for (int i = 0; i < verticesCount; i++)
-                {
-                    vertices[i].Top += difference / 2;
-                    vertices[i].Left += difference / 2;
                     vertices[i].Dimension = vertexSize;
-                }
             }
         }
 
         public Point Center { get => center; set => center = value; }
+
 
         public int AddVertex(Point point)
         {
@@ -54,7 +51,7 @@ namespace PolygonApp
                 closed = true;
                 return -1;
             }
-            if(verticesCount == 0)
+            if (verticesCount == 0)
             {
                 vertex = new Vertex(point, VertexSize);
                 vertices[verticesCount++] = vertex;
@@ -138,13 +135,12 @@ namespace PolygonApp
 
         public void SetPointForVertexId(int id, Point point)
         {
-
             vertices[id].Point = point;
             if (verticesCount > 2)
             {
                 int inwardLineId = (id == 0) ? verticesCount - 1 : id - 1;
                 lines[inwardLineId].End = point;
-                if(closed)
+                if (closed)
                 {
                     int outwardLineId = id;
                     lines[outwardLineId].Start = point;
@@ -170,6 +166,7 @@ namespace PolygonApp
                 }
             }
         }
+
         private void RearrangeLines()
         {
             for (int i = 0; i < verticesCount; i++)
@@ -192,6 +189,8 @@ namespace PolygonApp
                     lines[0] = lines[id];
                     lines[id] = null;
                 }
+                lines[0].Start = vertices[0].Point;
+                lines[0].End = vertices[1].Point;
             }
         }
     }
