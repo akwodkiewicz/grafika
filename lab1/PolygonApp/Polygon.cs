@@ -10,7 +10,8 @@ namespace PolygonApp
     class Polygon : IDrawable
     {
         private const int maxVertices = 20;
-        private const int snapDistanceSquared = 500;
+        private const int lineProximity = 500;
+        private const int vertexProximity = 15;
         private int verticesCount = 0;
         private bool closed = false;
         private int vertexSize;
@@ -134,7 +135,7 @@ namespace PolygonApp
                     bestId = i;
                 }
             }
-            if (minimumDistance < snapDistanceSquared)
+            if (minimumDistance < lineProximity)
                 return bestId;
             else
                 return -1;
@@ -143,7 +144,7 @@ namespace PolygonApp
         public int GetVertexIdFromPoint(Point point)
         {
             for (int i = 0; i < verticesCount; i++)
-                if (vertices[i].Contains(point))
+                if (vertices[i].Contains(point, vertexProximity))
                     return i;
 
             return -1;

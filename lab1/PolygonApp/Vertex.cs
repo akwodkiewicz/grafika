@@ -75,6 +75,16 @@ namespace PolygonApp
             return false;
         }
 
+        public bool Contains(Point location, int proximity)
+        {
+            if (location.X > Left - proximity
+                && location.X < Left + Dimension + proximity
+                && location.Y > Top - proximity
+                && location.Y < Top + Dimension + proximity)
+                return true;
+            return false;
+        }
+
         public void Draw(Bitmap canvas)
         {   
             /*
