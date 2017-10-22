@@ -30,6 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.label3 = new System.Windows.Forms.Label();
             this.panelRadio = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
             this.radioPolygon = new System.Windows.Forms.RadioButton();
@@ -41,7 +42,10 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.angleConstraintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label3 = new System.Windows.Forms.Label();
+            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.makeHorizontalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.makeVerticalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addVertexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -50,6 +54,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
+            this.contextMenuStrip2.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -77,6 +82,17 @@
             this.splitContainer1.Size = new System.Drawing.Size(1022, 679);
             this.splitContainer1.SplitterDistance = 111;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.label3.Location = new System.Drawing.Point(542, 30);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(457, 54);
+            this.label3.TabIndex = 4;
+            this.label3.Text = "Press [Return] to close the polygon\r\nPress [RMB] on a line to add a vertex\r\nPress" +
+    " [RMB] on a vertex to delete it or add a constraint to it\r\n";
             // 
             // panelRadio
             // 
@@ -196,16 +212,35 @@
             this.angleConstraintToolStripMenuItem.Text = "Angle Constraint";
             this.angleConstraintToolStripMenuItem.Click += new System.EventHandler(this.AngleConstraintToolStripMenuItem_Click);
             // 
-            // label3
+            // contextMenuStrip2
             // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label3.Location = new System.Drawing.Point(542, 30);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(457, 54);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Press [Return] to close the polygon\r\nPress [RMB] on a line to add a vertex\r\nPress" +
-    " [RMB] on a vertex to delete it or add a constraint to it\r\n";
+            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.makeHorizontalToolStripMenuItem,
+            this.makeVerticalToolStripMenuItem,
+            this.addVertexToolStripMenuItem});
+            this.contextMenuStrip2.Name = "contextMenuStrip2";
+            this.contextMenuStrip2.Size = new System.Drawing.Size(162, 70);
+            // 
+            // makeHorizontalToolStripMenuItem
+            // 
+            this.makeHorizontalToolStripMenuItem.Name = "makeHorizontalToolStripMenuItem";
+            this.makeHorizontalToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.makeHorizontalToolStripMenuItem.Text = "Make Horizontal";
+            this.makeHorizontalToolStripMenuItem.Click += new System.EventHandler(this.MakeHorizontalToolStripMenuItem_Click);
+            // 
+            // makeVerticalToolStripMenuItem
+            // 
+            this.makeVerticalToolStripMenuItem.Name = "makeVerticalToolStripMenuItem";
+            this.makeVerticalToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.makeVerticalToolStripMenuItem.Text = "Make Vertical";
+            this.makeVerticalToolStripMenuItem.Click += new System.EventHandler(this.MakeVerticalToolStripMenuItem_Click);
+            // 
+            // addVertexToolStripMenuItem
+            // 
+            this.addVertexToolStripMenuItem.Name = "addVertexToolStripMenuItem";
+            this.addVertexToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.addVertexToolStripMenuItem.Text = "Add Vertex";
+            this.addVertexToolStripMenuItem.Click += new System.EventHandler(this.AddVertexToolStripMenuItem_Click);
             // 
             // PolygonApp
             // 
@@ -227,6 +262,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
+            this.contextMenuStrip2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -246,6 +282,10 @@
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem angleConstraintToolStripMenuItem;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
+        private System.Windows.Forms.ToolStripMenuItem makeHorizontalToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem makeVerticalToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addVertexToolStripMenuItem;
     }
 }
 

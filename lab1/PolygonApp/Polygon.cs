@@ -45,7 +45,7 @@ namespace PolygonApp
         public int AddVertex(Point point)
         {
             Vertex vertex;
-            if (verticesCount == maxVertices 
+            if (verticesCount == maxVertices
                 || verticesCount > 0 && vertices[0].Contains(point, vertexProximity))
             {
                 Close();
@@ -68,7 +68,7 @@ namespace PolygonApp
 
         public void Close()
         {
-            if(verticesCount == maxVertices)
+            if (verticesCount == maxVertices)
             {
                 lines[verticesCount - 1] = new Line(vertices[verticesCount - 1], vertices[0]);
             }
@@ -83,35 +83,18 @@ namespace PolygonApp
 
         public void DeleteVertex(int id)
         {
+            if (verticesCount == 3)
+                throw new InvalidOperationException();
+
             vertices[id] = null;
-            if (verticesCount == 1)
-            {
+            RearrangeVertices();
 
-            }
-            else if (verticesCount == 2)
-            {
-                RearrangeVertices();
-                lines[0] = null;
-            }
-            else if (verticesCount == 3)
-            {
-                RearrangeVertices();
-                var prevId = (id == 0) ? verticesCount - 1 : id - 1;
-                lines[prevId] = null;
-                lines[id] = null;
-                RearrangeLines();
-                closed = false;
-            }
-            else
-            {
-                RearrangeVertices();
+            var prevId = (id == 0) ? verticesCount - 1 : id - 1;
+            lines[prevId].AddConstraint(Constraint.None);
+            lines[prevId].End = lines[id].End;
+            lines[id] = null;
+            RearrangeLines();
 
-                var prevId = (id == 0) ? verticesCount - 1 : id - 1;
-                lines[prevId].End = lines[id].End;
-                lines[id] = null;
-
-                RearrangeLines();
-            }
             verticesCount--;
 
         }
@@ -164,8 +147,23 @@ namespace PolygonApp
         {
             var dx = location.X - lines[id].LastClickPoint.X;
             var dy = location.Y - lines[id].LastClickPoint.Y;
+
+            var prevId = (id == 0) ? verticesCount - 1 : id - 1;
+            var nextId = (id + 1) % verticesCount;
+
+            if (lines[prevId].Constraint == Constraint.Vertical
+                || lines[nextId].Constraint == Constraint.Vertical)
+            {
+                dx = 0;
+            }
+            if (lines[prevId].Constraint == Constraint.Horizontal
+                || lines[nextId].Constraint == Constraint.Horizontal)
+            {
+                dy = 0;
+            }
+
             vertices[id].MovePoint(dx, dy);
-            vertices[(id+1)%verticesCount].MovePoint(dx, dy);
+            vertices[nextId].MovePoint(dx, dy);
             lines[id].LastClickPoint = location;
         }
 
@@ -176,22 +174,89 @@ namespace PolygonApp
             for (int i = 0; i < verticesCount; i++)
             {
                 var p = new PointC(vertices[i].X + dx, vertices[i].Y + dy);
-                SetPointForVertexId(i, p);
+                vertices[i].SetPoint(p);
             }
             center.X = point.X;
             center.Y = point.Y;
+        }
+
+        public bool MakeLineHorizontal(int id)
+        {
+            var prevId = (id == 0) ? verticesCount - 1 : id - 1;
+            var nextId = (id + 1) % verticesCount;
+
+            if (lines[prevId].Constraint == Constraint.Horizontal
+                || lines[nextId].Constraint == Constraint.Horizontal)
+                throw new InvalidOperationException();
+            return lines[id].AddConstraint(Constraint.Horizontal);
+        }
+
+        public bool MakeLineVertical(int id)
+        {
+            var prevId = (id == 0) ? verticesCount - 1 : id - 1;
+            var nextId = (id + 1) % verticesCount;
+
+            if (lines[prevId].Constraint == Constraint.Vertical
+                || lines[nextId].Constraint == Constraint.Vertical)
+                throw new InvalidOperationException();
+            return lines[id].AddConstraint(Constraint.Vertical);
         }
 
         public void SetPointForVertexId(int id, Point point)
         {
             SetPointForVertexId(id, new PointC(point));
         }
+
         public void SetPointForVertexId(int id, PointC point)
         {
-            vertices[id].SetPoint(point);
+            var prevId = (id == 0) ? verticesCount - 1 : id - 1;
+            var nextId = (id + 1) % verticesCount;
 
-            //var prevId = (id == 0) ? verticesCount - 1 : id - 1;
-            //var nextId = (id + 1) % verticesCount;
+            if (!closed
+                || lines[prevId].Constraint == Constraint.None
+                    && lines[id].Constraint == Constraint.None)
+            {
+                vertices[id].SetPoint(point);
+            }
+            else if (lines[prevId].Constraint == Constraint.Horizontal
+                    && lines[id].Constraint == Constraint.None)
+            {
+                vertices[prevId].Y = point.Y;
+                vertices[id].SetPoint(point);
+            }
+            else if (lines[prevId].Constraint == Constraint.None
+                    && lines[id].Constraint == Constraint.Horizontal)
+            {
+                vertices[nextId].Y = point.Y;
+                vertices[id].SetPoint(point);
+            }
+            else if (lines[prevId].Constraint == Constraint.Vertical
+                    && lines[id].Constraint == Constraint.None)
+            {
+                vertices[prevId].X = point.X;
+                vertices[id].SetPoint(point);
+            }
+            else if (lines[prevId].Constraint == Constraint.None
+                    && lines[id].Constraint == Constraint.Vertical)
+            {
+                vertices[nextId].X = point.X;
+                vertices[id].SetPoint(point);
+            }
+            else if (lines[prevId].Constraint == Constraint.Horizontal
+                && lines[id].Constraint == Constraint.Vertical)
+            {
+                vertices[prevId].Y = point.Y;
+                vertices[nextId].X = point.X;
+                vertices[id].SetPoint(point);
+            }
+            else if (lines[prevId].Constraint == Constraint.Vertical
+                    && lines[id].Constraint == Constraint.Horizontal)
+            {
+                vertices[prevId].X = point.X;
+                vertices[nextId].Y = point.Y;
+                vertices[id].SetPoint(point);
+            }
+
             //if (verticesCount > 2)
             //{
             //    int inwardLineId = (id == 0) ? verticesCount - 1 : id - 1;

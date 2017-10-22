@@ -14,6 +14,7 @@ namespace PolygonApp
         private Color _color;
         private bool _moved;
         private Point _lastClickPoint;
+        private Constraint _constraint;
 
         public Line(Vertex v1, Vertex v2)
         {
@@ -35,10 +36,49 @@ namespace PolygonApp
         public bool Moved { get => _moved; set => _moved = value; }
         public Color Color { get => _color; set => _color = value; }
         public Point LastClickPoint { get => _lastClickPoint; set => _lastClickPoint = value; }
+        public Constraint Constraint { get => _constraint; private set => _constraint = value; }
+        public double Length
+        {
+            get
+            {
+                return Math.Sqrt((End.X - Start.X) * (End.X - Start.X) + (End.Y - Start.Y) * (End.Y - Start.Y));
+            }
+        }
+        public Point Center { get => new Point((Start.X + End.X) / 2, (Start.Y + End.Y) / 2); }
         public void Draw(Bitmap canvas)
         {
             AllPurposeBresenham(canvas);
+            if (Constraint == Constraint.Horizontal)
+            {
+                var center = Center;
+                var endX = (center.X + 10) < canvas.Width ? (center.X + 10) : canvas.Width - 1;
+                var endY = (center.Y - 10) < canvas.Height ? (center.Y - 10) : canvas.Height - 1;
+
+                for (int y = center.Y - 15; y < endY && y > 0; y++)
+                    for (int x = center.X - 10; x < endX && x > 0; x++)
+                        canvas.SetPixel(x, y, Color.BlueViolet);
+            }
+            else if(Constraint == Constraint.Vertical)
+            {
+                var center = Center;
+                var endX = (center.X - 10) < canvas.Width ? (center.X - 10) : canvas.Width - 1;
+                var endY = (center.Y + 10) < canvas.Height ? (center.Y + 10) : canvas.Height - 1;
+                for (int y = center.Y - 10; y < endY && y > 0; y++)
+                    for (int x = center.X - 15; x < endX && x > 0; x++)
+                        canvas.SetPixel(x, y, Color.BlueViolet);
+            }
             Moved = false;
+        }
+
+        public bool AddConstraint(Constraint constraint)
+        {
+            if (Constraint == constraint)
+                return false;
+
+            Constraint = constraint;
+            if (constraint == Constraint.Horizontal) Start.Y = End.Y;
+            else if (constraint == Constraint.Vertical) Start.X = End.X;
+            return true;
         }
 
         public double GetSquaredDistanceFromPoint(PointC p)
@@ -59,6 +99,7 @@ namespace PolygonApp
             var projection = new Point((int)x, (int)y);
             return DistanceSquared(point, projection);
         }
+
 
         private void AllPurposeBresenham(Bitmap canvas)
         {

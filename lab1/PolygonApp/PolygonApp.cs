@@ -43,7 +43,7 @@ namespace PolygonApp
                 {
                     clickedLineId = polygon.GetLineIdFromPoint(e.Location);
                     if (clickedLineId != -1)
-                        polygon.AddVertexToLine(clickedLineId);
+                        contextMenuStrip2.Show(pictureBox, e.Location);
                 }
                 Debug.WriteLine($"Got: #{clickedLineId}");
             }
@@ -136,7 +136,11 @@ namespace PolygonApp
 
         private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            polygon.DeleteVertex(clickedVertexId);
+            try { polygon.DeleteVertex(clickedVertexId); }
+            catch (InvalidOperationException)
+            {
+                MessageBox.Show("You cannot delete any more vertices!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
             pictureBox.Invalidate();
         }
 
@@ -148,6 +152,39 @@ namespace PolygonApp
                 draggedVertexId = -1;
                 polygon.Close();
                 pictureBox.Invalidate();
+            }
+        }
+
+        private void AddVertexToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            polygon.AddVertexToLine(clickedLineId);
+        }
+
+        private void MakeHorizontalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!polygon.MakeLineHorizontal(clickedLineId))
+                    MessageBox.Show("This line is already horizontal", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            }
+            catch (InvalidOperationException)
+            {
+                MessageBox.Show("You can't add 2 consecutive horizontal lines", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void MakeVerticalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!polygon.MakeLineVertical(clickedLineId))
+                    MessageBox.Show("This line is already vertical", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (InvalidOperationException)
+            {
+                MessageBox.Show("You can't add 2 consecutive vertical lines", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
             }
         }
     }

@@ -38,8 +38,24 @@ namespace PolygonApp
             }
         }
         public PointC Point { get => _point; }
-        public int X { get => _point.X; private set => _point.X = value; }
-        public int Y { get => _point.Y; private set => _point.Y = value; }
+        public int X
+        {
+            get => _point.X;
+            set
+            {
+                var temp = new Point(value, _point.Y);
+                SetPoint(temp);
+            }
+        }
+        public int Y
+        {
+            get => _point.Y;
+            set
+            {
+                var temp = new Point(_point.X, value);
+                SetPoint(temp);
+            }
+        }
         new public int Width { get => Dimension; }
         public bool HasAngleConstraint { get => _hasAngleConstraint; set => _hasAngleConstraint = value; }
         new public int Height { get => Dimension; }
