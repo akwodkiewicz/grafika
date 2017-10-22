@@ -143,7 +143,10 @@ namespace PolygonApp
                 }
             }
             if (minimumDistance < lineProximity)
+            {
+                lines[bestId].LastClickPoint = point;
                 return bestId;
+            }
             else
                 return -1;
         }
@@ -155,6 +158,15 @@ namespace PolygonApp
                     return i;
 
             return -1;
+        }
+
+        public void MoveLine(int id, Point location)
+        {
+            var dx = location.X - lines[id].LastClickPoint.X;
+            var dy = location.Y - lines[id].LastClickPoint.Y;
+            vertices[id].MovePoint(dx, dy);
+            vertices[(id+1)%verticesCount].MovePoint(dx, dy);
+            lines[id].LastClickPoint = location;
         }
 
         public void MovePolygon(Point point)

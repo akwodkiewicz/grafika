@@ -125,6 +125,15 @@ namespace PolygonApp
             _moved = true;
         }
 
+        public void MovePoint(int dx, int dy)
+        {
+            _lastPoint = _point;
+            _point.X += dx;
+            _point.Y += dy;
+            Left = _point.X - Dimension / 2;
+            Top = _point.Y - Dimension / 2;
+            _moved = true;
+        }
 
         private void Erase(Bitmap canvas)
         {

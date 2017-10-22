@@ -13,6 +13,7 @@ namespace PolygonApp
         private PointC _end;
         private Color _color;
         private bool _moved;
+        private Point _lastClickPoint;
 
         public Line(PointC p1, PointC p2)
         {
@@ -33,7 +34,7 @@ namespace PolygonApp
         }
         public bool Moved { get => _moved; set => _moved = value; }
         public Color Color { get => _color; set => _color = value; }
-
+        public Point LastClickPoint { get => _lastClickPoint; set => _lastClickPoint = value; }
         public void Draw(Bitmap canvas)
         {
             AllPurposeBresenham(canvas);

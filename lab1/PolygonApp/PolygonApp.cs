@@ -19,7 +19,6 @@ namespace PolygonApp
         private int clickedVertexId = -1;
         private int clickedLineId = -1;
         private bool createMode = true;
-        private bool isMouseDown = false;
 
         public PolygonApp()
         {
@@ -33,7 +32,7 @@ namespace PolygonApp
             if (createMode)
             {
                 draggedVertexId = polygon.AddVertex(e.Location);
-                if (draggedVertexId == -1) createMode = false;                
+                if (draggedVertexId == -1) createMode = false;
             }
             else if (!createMode && e.Button == MouseButtons.Right)
             {
@@ -55,11 +54,14 @@ namespace PolygonApp
         {
             if (!createMode)
             {
-                isMouseDown = true;
                 if (e.Button == MouseButtons.Left)
                 {
                     if (radioVertices.Checked)
+                    {
                         clickedVertexId = polygon.GetVertexIdFromPoint(e.Location);
+                        if (clickedVertexId == -1)
+                            clickedLineId = polygon.GetLineIdFromPoint(e.Location);
+                    }
                     else if (radioPolygon.Checked)
                         polygon.Center = new PointC(e.Location);
                 }
@@ -68,16 +70,20 @@ namespace PolygonApp
 
         private void PictureBox_MouseMove(object sender, MouseEventArgs e)
         {
-            if(draggedVertexId != -1)
+            // if in create mode:
+            if (draggedVertexId != -1)
             {
                 polygon.SetPointForVertexId(draggedVertexId, e.Location);
             }
-
-            else if (!createMode && isMouseDown && e.Button == MouseButtons.Left)
+            else if (!createMode && e.Button == MouseButtons.Left)
             {
                 if (radioVertices.Checked && clickedVertexId != -1)
                 {
                     polygon.SetPointForVertexId(clickedVertexId, e.Location);
+                }
+                else if (radioVertices.Checked && clickedLineId != -1)
+                {
+                    polygon.MoveLine(clickedLineId, e.Location);
                 }
                 else if (radioPolygon.Checked)
                 {
@@ -92,7 +98,6 @@ namespace PolygonApp
         {
             if (!createMode)
             {
-                isMouseDown = false;
                 if (e.Button == MouseButtons.Left)
                     clickedVertexId = -1;
             }
@@ -125,7 +130,7 @@ namespace PolygonApp
         {
             var form = new AngleConstraintForm();
 
-            if(form.ShowDialog() == DialogResult.OK)
+            if (form.ShowDialog() == DialogResult.OK)
                 polygon.SetAngleConstraint(clickedVertexId, form.Angle);
         }
 
