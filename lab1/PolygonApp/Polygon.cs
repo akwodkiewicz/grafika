@@ -15,7 +15,7 @@ namespace PolygonApp
         private int verticesCount = 0;
         private bool closed = false;
         private int vertexSize;
-        private Point center;
+        private PointC center;
         private Vertex[] vertices;
         private Line[] lines;
 
@@ -39,38 +39,45 @@ namespace PolygonApp
             }
         }
 
-        public Point Center { get => center; set => center = value; }
+        public PointC Center { get => center; set => center = value; }
 
 
         public int AddVertex(Point point)
         {
-            if (VerticesCount == maxVertices) return -1;
-
             Vertex vertex;
-            if (verticesCount > 0 && vertices[0].Contains(point))
+            if (verticesCount == maxVertices 
+                || verticesCount > 0 && vertices[0].Contains(point, vertexProximity))
             {
                 Close();
                 return -1;
             }
             if (verticesCount == 0)
             {
-                vertex = new Vertex(point, VertexSize);
+                vertex = new Vertex(new PointC(point), VertexSize);
                 vertices[verticesCount++] = vertex;
             }
-            vertex = new Vertex(point, VertexSize);
-            vertices[verticesCount++] = vertex;
+            vertex = new Vertex(new PointC(point), VertexSize);
+            vertices[verticesCount] = vertex;
 
-            Line line = new Line(vertices[verticesCount - 2].Point, vertices[verticesCount - 1].Point);
-            lines[verticesCount - 2] = line;
+            Line line = new Line(vertices[verticesCount - 1].Point, vertex.Point);
+            lines[verticesCount - 1] = line;
 
+            verticesCount++;
             return verticesCount - 1;
         }
 
         public void Close()
         {
-            verticesCount--;
-            vertices[verticesCount] = null;
-            lines[verticesCount - 1] = new Line(vertices[verticesCount - 1].Point, vertices[0].Point);
+            if(verticesCount == maxVertices)
+            {
+                lines[verticesCount - 1] = new Line(vertices[verticesCount - 1].Point, vertices[0].Point);
+            }
+            else
+            {
+                verticesCount--;
+                vertices[verticesCount] = null;
+                lines[verticesCount - 1] = new Line(vertices[verticesCount - 1].Point, vertices[0].Point);
+            }
             closed = true;
         }
 
@@ -128,7 +135,7 @@ namespace PolygonApp
             int bestId = -1;
             for (int i = 0; i < iMax; i++)
             {
-                var dist = lines[i].GetSquaredDistanceFromPoint(point);
+                var dist = lines[i].GetSquaredDistanceFromPoint(new PointC(point));
                 if (dist < minimumDistance)
                 {
                     minimumDistance = dist;
@@ -156,44 +163,50 @@ namespace PolygonApp
             var dy = point.Y - center.Y;
             for (int i = 0; i < verticesCount; i++)
             {
-                var p = new Point(vertices[i].X + dx, vertices[i].Y + dy);
+                var p = new PointC(vertices[i].X + dx, vertices[i].Y + dy);
                 SetPointForVertexId(i, p);
             }
-            center = point;
+            center.X = point.X;
+            center.Y = point.Y;
         }
 
         public void SetPointForVertexId(int id, Point point)
         {
-            vertices[id].Point = point;
-            var prevId = (id == 0) ? verticesCount - 1 : id - 1;
-            var nextId = (id + 1) % verticesCount;
-            if (verticesCount > 2)
-            {
-                int inwardLineId = (id == 0) ? verticesCount - 1 : id - 1;
-                lines[inwardLineId].End = point;
-                if (closed)
-                {
-                    if (!vertices[id].HasAngleConstraint
-                        && !vertices[prevId].HasAngleConstraint
-                        && !vertices[nextId].HasAngleConstraint)
-                    {
-                        //something
-                    }
-                    else
-                    {
-                        //something complicated
-                    }
-                    int outwardLineId = id;
-                    lines[outwardLineId].Start = point;
-                }
-            }
-            else if (verticesCount == 2)
-            {
-                if (id == 0)
-                    lines[0].Start = point;
-                else if (id == 1)
-                    lines[0].End = point;
-            }
+            SetPointForVertexId(id, new PointC(point));
+        }
+        public void SetPointForVertexId(int id, PointC point)
+        {
+            vertices[id].SetPoint(point);
+
+            //var prevId = (id == 0) ? verticesCount - 1 : id - 1;
+            //var nextId = (id + 1) % verticesCount;
+            //if (verticesCount > 2)
+            //{
+            //    int inwardLineId = (id == 0) ? verticesCount - 1 : id - 1;
+            //    lines[inwardLineId].End = point;
+            //    if (closed)
+            //    {
+            //        if (!vertices[id].HasAngleConstraint
+            //            && !vertices[prevId].HasAngleConstraint
+            //            && !vertices[nextId].HasAngleConstraint)
+            //        {
+            //            //something
+            //        }
+            //        else
+            //        {
+            //            //something complicated
+            //        }
+            //        int outwardLineId = id;
+            //        lines[outwardLineId].Start = point;
+            //    }
+            //}
+            //if (verticesCount == 2)
+            //{
+            //    if (id == 0) 
+            //        lines[0].Start = point;
+            //    else if (id == 1) 
+            //        lines[0].End = point;
+            //}
         }
 
         public void SetAngleConstraint(int id, int angle)
@@ -216,7 +229,7 @@ namespace PolygonApp
             var oldLine = lines[id];
             var x = (oldLine.End.X + oldLine.Start.X) / 2;
             var y = (oldLine.End.Y + oldLine.Start.Y) / 2;
-            var middle = new Point(x, y);
+            var middle = new PointC(x, y);
 
             for (int i = verticesCount; i > id + 1; i--)
             {

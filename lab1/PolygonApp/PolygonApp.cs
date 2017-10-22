@@ -32,7 +32,7 @@ namespace PolygonApp
         {
             if (createMode)
             {
-                draggedVertexId = polygon.AddVertex(new Point(e.X, e.Y));
+                draggedVertexId = polygon.AddVertex(e.Location);
                 if (draggedVertexId == -1) createMode = false;                
             }
             else if (!createMode && e.Button == MouseButtons.Right)
@@ -59,9 +59,9 @@ namespace PolygonApp
                 if (e.Button == MouseButtons.Left)
                 {
                     if (radioVertices.Checked)
-                        clickedVertexId = polygon.GetVertexIdFromPoint(new Point(e.X, e.Y));
+                        clickedVertexId = polygon.GetVertexIdFromPoint(e.Location);
                     else if (radioPolygon.Checked)
-                        polygon.Center = e.Location;
+                        polygon.Center = new PointC(e.Location);
                 }
             }
         }

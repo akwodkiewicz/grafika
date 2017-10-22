@@ -10,57 +10,48 @@ namespace PolygonApp
 {
     class Vertex : Control, IDrawable
     {
-        private int dimension;
-        private Point point;
-        private Point lastPoint;
-        private bool moved;
-        private int angleConstraint;
-        private bool hasAngleConstraint;
-        
-        public Vertex(Point point, int dimension)
+        private int _dimension;
+        private PointC _point;
+        private PointC _lastPoint;
+        private bool _moved;
+        private int _angleConstraint;
+        private bool _hasAngleConstraint;
+
+        public Vertex(PointC point, int dimension)
         {
-            Point = point;
-            Dimension = dimension;
-            Left = X - Dimension / 2;
-            Top = Y - Dimension / 2;
+            _point = point;
+            _dimension = dimension;
+            Left = X - _dimension / 2;
+            Top = Y - _dimension / 2;
             ForeColor = Color.Black;
             BackColor = Color.White;
-            Moved = true;
+            _moved = true;
         }
 
         public int AngleConstraint
         {
-            get => angleConstraint;
+            get => _angleConstraint;
             set
             {
-                angleConstraint = value;
+                _angleConstraint = value;
                 HasAngleConstraint = true;
             }
         }
-        public Point Point
-        {
-            get => point;
-            set
-            {
-                lastPoint = point;
-                point = value;
-                Left = point.X - Dimension / 2;
-                Top = point.Y - Dimension / 2;
-                moved = true;
-            }
-        }
-        public int X { get => point.X; }
-        public int Y { get => point.Y; }
+        public PointC Point { get => _point; }
+        public int X { get => _point.X; private set => _point.X = value; }
+        public int Y { get => _point.Y; private set => _point.Y = value; }
         new public int Width { get => Dimension; }
-        public bool HasAngleConstraint { get => hasAngleConstraint; set => hasAngleConstraint = value; }
+        public bool HasAngleConstraint { get => _hasAngleConstraint; set => _hasAngleConstraint = value; }
         new public int Height { get => Dimension; }
-        public bool Moved { get => moved; set => moved = value; }
-        public int Dimension { get => dimension;
+        public bool Moved { get => _moved; set => _moved = value; }
+        public int Dimension
+        {
+            get => _dimension;
             set
             {
-                dimension = value;
-                Left = point.X - value / 2;
-                Top = point.Y - value / 2;
+                _dimension = value;
+                Left = _point.X - value / 2;
+                Top = _point.Y - value / 2;
             }
         }
 
@@ -74,6 +65,10 @@ namespace PolygonApp
                 return true;
             return false;
         }
+        public bool Contains(PointC location)
+        {
+            return Contains(new Point(location.X, location.Y));
+        }
 
         public bool Contains(Point location, int proximity)
         {
@@ -84,9 +79,13 @@ namespace PolygonApp
                 return true;
             return false;
         }
+        public bool Contains(PointC location, int proximity)
+        {
+            return Contains(new Point(location.X, location.Y), proximity);
+        }
 
         public void Draw(Bitmap canvas)
-        {   
+        {
             /*
             if (Moved)
                 Erase(canvas);
@@ -107,11 +106,31 @@ namespace PolygonApp
             Moved = false;
         }
 
+        public void SetPoint(Point point)
+        {
+            _lastPoint = _point;
+            _point.X = point.X;
+            _point.Y = point.Y;
+            Left = _point.X - Dimension / 2;
+            Top = _point.Y - Dimension / 2;
+            _moved = true;
+        }
+        public void SetPoint(PointC point)
+        {
+            _lastPoint = _point;
+            _point.X = point.X;
+            _point.Y = point.Y;
+            Left = _point.X - Dimension / 2;
+            Top = _point.Y - Dimension / 2;
+            _moved = true;
+        }
+
+
         private void Erase(Bitmap canvas)
         {
-            int xStart = lastPoint.X - Width / 2;
+            int xStart = _lastPoint.X - Width / 2;
             int xEnd = xStart + Width;
-            int yStart = lastPoint.Y - Height / 2;
+            int yStart = _lastPoint.Y - Height / 2;
             int yEnd = yStart + Height;
 
             if (xStart < 0) xStart = 0;

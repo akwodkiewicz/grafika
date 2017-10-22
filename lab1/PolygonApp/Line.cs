@@ -9,30 +9,30 @@ namespace PolygonApp
 {
     class Line : IDrawable
     {
-        private Point start;
-        private Point end;
-        private Color color;
-        private bool moved;
+        private PointC _start;
+        private PointC _end;
+        private Color _color;
+        private bool _moved;
 
-        public Line(Point _p1, Point _p2)
+        public Line(PointC p1, PointC p2)
         {
-            Start = _p1;
-            End = _p2;
+            Start = p1;
+            End = p2;
             Color = Color.Black;
         }
 
-        public Point Start
+        public PointC Start
         {
-            get => start;
-            set { start = value; moved = true; }
+            get => _start;
+            set { _start = value; _moved = true; }
         }
-        public Point End
+        public PointC End
         {
-            get => end;
-            set { end = value; moved = true; }
+            get => _end;
+            set { _end = value; _moved = true; }
         }
-        public bool Moved { get => moved; set => moved = value; }
-        public Color Color { get => color; set => color = value; }
+        public bool Moved { get => _moved; set => _moved = value; }
+        public Color Color { get => _color; set => _color = value; }
 
         public void Draw(Bitmap canvas)
         {
@@ -40,17 +40,21 @@ namespace PolygonApp
             Moved = false;
         }
 
-        public double GetSquaredDistanceFromPoint(Point point)
+        public double GetSquaredDistanceFromPoint(PointC p)
         {
-            double l2 = DistanceSquared(End, Start);
-            if (l2 == 0.0) return DistanceSquared(point, Start);
+            var start = new Point(_start.X, _start.Y);
+            var end = new Point(_end.X, _end.Y);
+            var point = new Point(p.X, p.Y);
 
-            var pminusv = new Point(point.X - Start.X, point.Y - Start.Y);
-            var wminusv = new Point(End.X - Start.X, End.Y - Start.Y);
+            double l2 = DistanceSquared(end, start);
+            if (l2 == 0.0) return DistanceSquared(point, start);
+
+            var pminusv = new Point(point.X - start.X, point.Y - start.Y);
+            var wminusv = new Point(end.X - start.X, end.Y - start.Y);
 
             var t = Math.Max(0.0, Math.Min(1.0, DotProduct(pminusv, wminusv) / l2));
-            var x = Start.X + t * wminusv.X;
-            var y = Start.Y + t * wminusv.Y;
+            var x = start.X + t * wminusv.X;
+            var y = start.Y + t * wminusv.Y;
             var projection = new Point((int)x, (int)y);
             return DistanceSquared(point, projection);
         }
@@ -108,9 +112,9 @@ namespace PolygonApp
             if (x >= 0 && y >= 0)
             {
                 if (swapped && y < canvas.Width && x < canvas.Height)
-                    canvas.SetPixel(y, x, color);
+                    canvas.SetPixel(y, x, _color);
                 else if (x < canvas.Width && y < canvas.Height)
-                    canvas.SetPixel(x, y, color);
+                    canvas.SetPixel(x, y, _color);
             }
         }
 
