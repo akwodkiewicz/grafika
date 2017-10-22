@@ -59,7 +59,7 @@ namespace PolygonApp
             vertex = new Vertex(new PointC(point), VertexSize);
             vertices[verticesCount] = vertex;
 
-            Line line = new Line(vertices[verticesCount - 1].Point, vertex.Point);
+            Line line = new Line(vertices[verticesCount - 1], vertex);
             lines[verticesCount - 1] = line;
 
             verticesCount++;
@@ -70,13 +70,13 @@ namespace PolygonApp
         {
             if(verticesCount == maxVertices)
             {
-                lines[verticesCount - 1] = new Line(vertices[verticesCount - 1].Point, vertices[0].Point);
+                lines[verticesCount - 1] = new Line(vertices[verticesCount - 1], vertices[0]);
             }
             else
             {
                 verticesCount--;
                 vertices[verticesCount] = null;
-                lines[verticesCount - 1] = new Line(vertices[verticesCount - 1].Point, vertices[0].Point);
+                lines[verticesCount - 1] = new Line(vertices[verticesCount - 1], vertices[0]);
             }
             closed = true;
         }
@@ -253,8 +253,8 @@ namespace PolygonApp
 
             var vertex = new Vertex(middle, VertexSize);
             vertices[id + 1] = vertex;
-            var line = new Line(middle, oldLine.End);
-            oldLine.End = middle;
+            var line = new Line(vertex, oldLine.End);
+            oldLine.End = vertex;
             lines[id + 1] = line;
 
             verticesCount++;
@@ -294,8 +294,8 @@ namespace PolygonApp
                     lines[0] = lines[id];
                     lines[id] = null;
                 }
-                lines[0].Start = vertices[0].Point;
-                lines[0].End = vertices[1].Point;
+                lines[0].Start = vertices[0];
+                lines[0].End = vertices[1];
             }
         }
     }

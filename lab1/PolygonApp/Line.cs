@@ -9,25 +9,25 @@ namespace PolygonApp
 {
     class Line : IDrawable
     {
-        private PointC _start;
-        private PointC _end;
+        private Vertex _start;
+        private Vertex _end;
         private Color _color;
         private bool _moved;
         private Point _lastClickPoint;
 
-        public Line(PointC p1, PointC p2)
+        public Line(Vertex v1, Vertex v2)
         {
-            Start = p1;
-            End = p2;
+            _start = v1;
+            _end = v2;
             Color = Color.Black;
         }
 
-        public PointC Start
+        public Vertex Start
         {
             get => _start;
             set { _start = value; _moved = true; }
         }
-        public PointC End
+        public Vertex End
         {
             get => _end;
             set { _end = value; _moved = true; }
