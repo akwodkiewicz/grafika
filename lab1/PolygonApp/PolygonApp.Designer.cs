@@ -47,6 +47,7 @@
             this.lockHorizontallyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lockVerticallyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearLockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearConstraintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -195,9 +196,10 @@
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.deleteToolStripMenuItem,
-            this.angleConstraintToolStripMenuItem});
+            this.angleConstraintToolStripMenuItem,
+            this.clearConstraintToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(164, 48);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(164, 92);
             // 
             // deleteToolStripMenuItem
             // 
@@ -249,7 +251,14 @@
             this.clearLockToolStripMenuItem.Name = "clearLockToolStripMenuItem";
             this.clearLockToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.clearLockToolStripMenuItem.Text = "Clear Lock";
-            this.clearLockToolStripMenuItem.Click += new System.EventHandler(this.clearLockToolStripMenuItem_Click);
+            this.clearLockToolStripMenuItem.Click += new System.EventHandler(this.ClearLockToolStripMenuItem_Click);
+            // 
+            // clearConstraintToolStripMenuItem
+            // 
+            this.clearConstraintToolStripMenuItem.Name = "clearConstraintToolStripMenuItem";
+            this.clearConstraintToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.clearConstraintToolStripMenuItem.Text = "Clear Constraint";
+            this.clearConstraintToolStripMenuItem.Click += new System.EventHandler(this.ClearConstraintToolStripMenuItem_Click);
             // 
             // PolygonApp
             // 
@@ -296,6 +305,7 @@
         private System.Windows.Forms.ToolStripMenuItem lockHorizontallyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem lockVerticallyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearLockToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearConstraintToolStripMenuItem;
     }
 }
 

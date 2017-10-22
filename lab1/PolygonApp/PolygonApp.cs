@@ -188,9 +188,14 @@ namespace PolygonApp
             }
         }
 
-        private void clearLockToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ClearLockToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            polygon.ClearConstraints(clickedLineId);
+            polygon.ClearLineConstraints(clickedLineId);
+        }
+
+        private void ClearConstraintToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            polygon.ClearVertexConstraints(clickedVertexId);
         }
     }
 }

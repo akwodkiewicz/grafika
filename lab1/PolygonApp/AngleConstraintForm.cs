@@ -23,7 +23,7 @@ namespace PolygonApp
         private void TextBox1_Validating(object sender, CancelEventArgs e)
         {
             var text = textBox1.Text;
-            if (int.TryParse(text, out int value))
+            if (int.TryParse(text, out int value) && value < 180 && value > 0)
                 Angle = value;
             else
                 e.Cancel = true;

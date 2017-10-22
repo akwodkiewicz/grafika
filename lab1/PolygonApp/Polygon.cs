@@ -66,7 +66,7 @@ namespace PolygonApp
             return verticesCount - 1;
         }
 
-        public void ClearConstraints(int id)
+        public void ClearLineConstraints(int id)
         {
             lines[id].SetConstraint(Constraint.None);
         }
@@ -106,14 +106,13 @@ namespace PolygonApp
 
         public void Draw(Bitmap canvas)
         {
-            for (int i = 0; i < verticesCount; i++)
-                vertices[i].Draw(canvas);
-
             if (verticesCount > 1)
                 for (int i = 0; i < verticesCount - 1; i++)
                     lines[i].Draw(canvas);
             if (closed)
                 lines[verticesCount - 1].Draw(canvas);
+            for (int i = 0; i < verticesCount; i++)
+                vertices[i].Draw(canvas);
         }
 
         public int GetLineIdFromPoint(Point point)
@@ -291,10 +290,14 @@ namespace PolygonApp
             //}
         }
 
+        internal void ClearVertexConstraints(int id)
+        {
+            vertices[id].AngleConstraint = null;
+        }
+
         public void SetAngleConstraint(int id, int angle)
         {
             vertices[id].AngleConstraint = angle;
-            SetPointForVertexId(id, vertices[id].Point);
         }
 
         public void SetLineColor(int id, Color color)

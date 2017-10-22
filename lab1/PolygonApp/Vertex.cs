@@ -14,8 +14,9 @@ namespace PolygonApp
         private PointC _point;
         private PointC _lastPoint;
         private bool _moved;
-        private int _angleConstraint;
-        private bool _hasAngleConstraint;
+        private int? _angleConstraint;
+        private Constraint _constraint;
+        private int _inverseMarkSize = 5;
 
         public Vertex(PointC point, int dimension)
         {
@@ -26,15 +27,19 @@ namespace PolygonApp
             ForeColor = Color.Black;
             BackColor = Color.White;
             _moved = true;
+            _constraint = Constraint.None;
         }
 
-        public int AngleConstraint
+        public int? AngleConstraint
         {
             get => _angleConstraint;
             set
             {
                 _angleConstraint = value;
-                HasAngleConstraint = true;
+                if (_angleConstraint == null)
+                    Constraint = Constraint.None;
+                else
+                    Constraint = Constraint.Angle;
             }
         }
         public PointC Point { get => _point; }
@@ -57,7 +62,6 @@ namespace PolygonApp
             }
         }
         new public int Width { get => Dimension; }
-        public bool HasAngleConstraint { get => _hasAngleConstraint; set => _hasAngleConstraint = value; }
         new public int Height { get => Dimension; }
         public bool Moved { get => _moved; set => _moved = value; }
         public int Dimension
@@ -70,7 +74,7 @@ namespace PolygonApp
                 Top = _point.Y - value / 2;
             }
         }
-
+        public Constraint Constraint { get => _constraint; private set => _constraint = value; }
 
         public bool Contains(Point location)
         {
@@ -111,11 +115,27 @@ namespace PolygonApp
             int yStart = (Top > 0) ? Top : 0;
             int yEnd = (Top + Height > canvas.Height) ? canvas.Height : Top + Height;
 
-            for (int x = xStart; x < xEnd; x++)
+            for (int y = yStart; y < yEnd; y++)
             {
-                for (int y = yStart; y < yEnd; y++)
+                for (int x = xStart; x < xEnd; x++)
                 {
                     canvas.SetPixel(x, y, ForeColor);
+                }
+            }
+
+            if (Constraint == Constraint.Angle)
+            {
+                 xStart = (Left+ _inverseMarkSize > 0) ? Left+ _inverseMarkSize : 0;
+                 xEnd = (Left + Width  - _inverseMarkSize > canvas.Width) ? canvas.Width : Left + Width - _inverseMarkSize;
+                 yStart = (Top + _inverseMarkSize > 0) ? Top + _inverseMarkSize : 0;
+                 yEnd = (Top + Height - _inverseMarkSize > canvas.Height) ? canvas.Height : Top + Height - _inverseMarkSize;
+
+                for (int y = yStart; y < yEnd; y++)
+                {
+                    for (int x = xStart; x < xEnd; x++)
+                    {
+                        canvas.SetPixel(x, y, BackColor);
+                    }
                 }
             }
 

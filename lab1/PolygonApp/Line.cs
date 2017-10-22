@@ -21,6 +21,7 @@ namespace PolygonApp
             _start = v1;
             _end = v2;
             Color = Color.Black;
+            Constraint = Constraint.None;
         }
 
         public Vertex Start
