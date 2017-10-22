@@ -77,8 +77,6 @@ namespace PolygonApp
                 return false;
 
             Constraint = constraint;
-            if (constraint == Constraint.Horizontal) Start.Y = End.Y;
-            else if (constraint == Constraint.Vertical) Start.X = End.X;
             return true;
         }
 

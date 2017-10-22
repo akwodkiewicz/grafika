@@ -17,8 +17,15 @@ namespace PolygonApp
             InitializeComponent();
         }
 
-        private int angle;
-        public int Angle { get => angle; set => angle = value; }
+        public AngleConstraintForm(int angle)
+        {
+            InitializeComponent();
+            Angle = angle;
+            textBox1.Text = Angle.ToString();
+        }
+
+        private int _angle;
+        public int Angle { get => _angle; set => _angle = value; }
 
         private void TextBox1_Validating(object sender, CancelEventArgs e)
         {

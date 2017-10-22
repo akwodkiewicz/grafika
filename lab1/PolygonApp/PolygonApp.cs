@@ -18,7 +18,20 @@ namespace PolygonApp
         private int draggedVertexId = -1;
         private int clickedVertexId = -1;
         private int clickedLineId = -1;
-        private bool createMode = true;
+        private bool _createMode = true;
+
+        public bool CreateMode
+        {
+            get => _createMode;
+            set
+            {
+                _createMode = value;
+                if (_createMode)
+                    Text = "Polygon Editor [Create Mode]";
+                else
+                    Text = "Polygon Editor [Edit Mode]";
+            }
+        }
 
         public PolygonApp()
         {
@@ -29,12 +42,12 @@ namespace PolygonApp
 
         private void PictureBox_MouseClick(object sender, MouseEventArgs e)
         {
-            if (createMode)
+            if (CreateMode)
             {
                 draggedVertexId = polygon.AddVertex(e.Location);
-                if (draggedVertexId == -1) createMode = false;
+                if (draggedVertexId == -1) { CreateMode = false; Text = "Polygon Editor [Edit Mode]"; }
             }
-            else if (!createMode && e.Button == MouseButtons.Right)
+            else if (!CreateMode && e.Button == MouseButtons.Right)
             {
                 clickedVertexId = polygon.GetVertexIdFromPoint(e.Location);
                 if (clickedVertexId != -1)
@@ -52,7 +65,7 @@ namespace PolygonApp
 
         private void PictureBox_MouseDown(object sender, MouseEventArgs e)
         {
-            if (!createMode)
+            if (!CreateMode)
             {
                 if (e.Button == MouseButtons.Left)
                 {
@@ -75,7 +88,7 @@ namespace PolygonApp
             {
                 polygon.SetPointForVertexId(draggedVertexId, e.Location);
             }
-            else if (!createMode && e.Button == MouseButtons.Left)
+            else if (!CreateMode && e.Button == MouseButtons.Left)
             {
                 if (radioVertices.Checked && clickedVertexId != -1)
                 {
@@ -96,7 +109,7 @@ namespace PolygonApp
 
         private void PictureBox_MouseUp(object sender, MouseEventArgs e)
         {
-            if (!createMode)
+            if (!CreateMode)
             {
                 if (e.Button == MouseButtons.Left)
                     clickedVertexId = -1;
@@ -115,7 +128,7 @@ namespace PolygonApp
             draggedVertexId = -1;
             polygon = new Polygon(trackBar1.Value);
             canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
-            createMode = true;
+            CreateMode = true;
             pictureBox.Invalidate();
             label1.Focus();
         }
@@ -124,14 +137,6 @@ namespace PolygonApp
         {
             polygon.VertexSize = trackBar1.Value;
             pictureBox.Invalidate();
-        }
-
-        private void AngleConstraintToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var form = new AngleConstraintForm();
-
-            if (form.ShowDialog() == DialogResult.OK)
-                polygon.SetAngleConstraint(clickedVertexId, form.Angle);
         }
 
         private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -146,9 +151,9 @@ namespace PolygonApp
 
         private void PolygonApp_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Return && createMode)
+            if (e.KeyCode == Keys.Return && CreateMode)
             {
-                createMode = false;
+                CreateMode = false;
                 draggedVertexId = -1;
                 polygon.Close();
                 pictureBox.Invalidate();
@@ -168,9 +173,9 @@ namespace PolygonApp
                     MessageBox.Show("This line is already horizontal", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException ex)
             {
-                MessageBox.Show("You can't add 2 consecutive horizontal lines", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -181,11 +186,20 @@ namespace PolygonApp
                 if (!polygon.MakeLineVertical(clickedLineId))
                     MessageBox.Show("This line is already vertical", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException ex)
             {
-                MessageBox.Show("You can't add 2 consecutive vertical lines", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(ex.Message, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
             }
+        }
+
+        private void AngleConstraintToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var angle = polygon.CalculateAngleForVertexId(clickedVertexId);
+            var form = new AngleConstraintForm(angle);
+
+            if (form.ShowDialog() == DialogResult.OK)
+                polygon.SetAngleConstraint(clickedVertexId, form.Angle);
         }
 
         private void ClearLockToolStripMenuItem_Click(object sender, EventArgs e)

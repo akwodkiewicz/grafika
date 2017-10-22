@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -147,27 +148,40 @@ namespace PolygonApp
             return -1;
         }
 
+        public int CalculateAngleForVertexId(int id)
+        {
+            return (int)CalculateAngleABC(vertices[PrevId(id)], vertices[id], vertices[NextId(id)]);
+        }
+
+        private int PrevId(int id) { return (id == 0) ? verticesCount - 1 : id - 1; }
+        private int NextId(int id) { return (id + 1) % verticesCount; }
+
         public void MoveLine(int id, Point location)
         {
             var dx = location.X - lines[id].LastClickPoint.X;
             var dy = location.Y - lines[id].LastClickPoint.Y;
 
-            var prevId = (id == 0) ? verticesCount - 1 : id - 1;
-            var nextId = (id + 1) % verticesCount;
+            var nextPoint = new Point(vertices[NextId(id)].Point.X, vertices[NextId(id)].Point.Y);
+            SetPointForVertexId(id, new Point(vertices[id].Point.X + dx, vertices[id].Point.Y + dy));
+            if(nextPoint == new Point(vertices[NextId(id)].Point.X, vertices[NextId(id)].Point.Y))
+                SetPointForVertexId(NextId(id), new Point(vertices[NextId(id)].Point.X + dx, vertices[NextId(id)].Point.Y + dy));
 
-            if (lines[prevId].Constraint == Constraint.Vertical
-                || lines[nextId].Constraint == Constraint.Vertical)
-            {
-                dx = 0;
-            }
-            if (lines[prevId].Constraint == Constraint.Horizontal
-                || lines[nextId].Constraint == Constraint.Horizontal)
-            {
-                dy = 0;
-            }
+            //var prevId = (id == 0) ? verticesCount - 1 : id - 1;
+            //var nextId = (id + 1) % verticesCount;
 
-            vertices[id].MovePoint(dx, dy);
-            vertices[nextId].MovePoint(dx, dy);
+            //if (lines[prevId].Constraint == Constraint.Vertical
+            //    || lines[nextId].Constraint == Constraint.Vertical)
+            //{
+            //    dx = 0;
+            //}
+            //if (lines[prevId].Constraint == Constraint.Horizontal
+            //    || lines[nextId].Constraint == Constraint.Horizontal)
+            //{
+            //    dy = 0;
+            //}
+
+            //vertices[id].MovePoint(dx, dy);
+            //vertices[nextId].MovePoint(dx, dy);
             lines[id].LastClickPoint = location;
         }
 
@@ -190,9 +204,59 @@ namespace PolygonApp
             var nextId = (id + 1) % verticesCount;
 
             if (lines[prevId].Constraint == Constraint.Horizontal
-                || lines[nextId].Constraint == Constraint.Horizontal)
-                throw new InvalidOperationException();
-            return lines[id].SetConstraint(Constraint.Horizontal);
+                || lines[nextId].Constraint == Constraint.Horizontal
+                )
+                throw new InvalidOperationException("You can't add 2 consecutive horizontal lines!");
+            if (vertices[id].Constraint == Constraint.Angle
+                || vertices[nextId].Constraint == Constraint.Angle)
+                throw new InvalidOperationException("You can't add this constraint here!");
+            return SetConstraint(Constraint.Horizontal, id);
+        }
+
+        private bool SetConstraint(Constraint constraint, int id)
+        {
+            var result = lines[id].SetConstraint(constraint);
+            //if (!result) return result;
+            //Vertex firstone, secondone, thirdone;
+            //Tuple<double, double> vector;
+            //double dx, dy;
+            //if (vertices[NextId(NextId(id))].Constraint == Constraint.Angle 
+            //    || vertices[PrevId(id)].Constraint == Constraint.Angle)
+            //    throw new InvalidOperationException("You can't add this constraint here!");
+
+            ////if (vertices[NextId(NextId(id))].Constraint == Constraint.Angle)
+            ////{
+            ////    firstone = vertices[NextId(id)];
+            ////    secondone = vertices[NextId(NextId(id))];
+            ////    thirdone = vertices[id];
+            ////}
+            ////else if (vertices[PrevId(id)] == Constraint.Angle)
+            ////{
+            ////    firstone = vertices[id];
+            ////    secondone = vertices[PrevId(id)];
+            ////    thirdone = vertices[NextId(id)];
+            ////}
+            ////vector = new Tuple<double, double>(secondone.X - firstone.X, secondone.Y - firstone.X);
+            ////if (constraint == Constraint.Vertical)
+            ////{
+            ////    dx = thirdone.X - firstone.X;
+            ////    var d = dx / vector.Item1;
+            ////    dy = vector.Item2 * d;
+            ////}
+            ////else
+            ////{
+            ////    dy = vertices[id].Y - vertices[NextId(id)].Y;
+            ////    var d = dy / vector.Item2;
+            ////    dx = vector.Item1 * d;
+            ////}
+            ////vertices[NextId(id)].MovePoint((int)dx, (int)dy);
+
+            //if (constraint == Constraint.Horizontal)
+            //    SetPointForVertexId(id vertices[NextId(id)].Y;
+            //else
+            //    vertices[id].X = vertices[NextId(id)].X;
+            return result;
+           
         }
 
         public bool MakeLineVertical(int id)
@@ -202,8 +266,11 @@ namespace PolygonApp
 
             if (lines[prevId].Constraint == Constraint.Vertical
                 || lines[nextId].Constraint == Constraint.Vertical)
-                throw new InvalidOperationException();
-            return lines[id].SetConstraint(Constraint.Vertical);
+                throw new InvalidOperationException("You can't add 2 consecutive vertical lines!");
+            if (vertices[id].Constraint == Constraint.Angle
+                || vertices[nextId].Constraint == Constraint.Angle)
+                throw new InvalidOperationException("You can't add this constraint here!");
+            return SetConstraint(Constraint.Vertical, id);
         }
 
         public void SetPointForVertexId(int id, Point point)
@@ -216,78 +283,154 @@ namespace PolygonApp
             var prevId = (id == 0) ? verticesCount - 1 : id - 1;
             var nextId = (id + 1) % verticesCount;
 
-            if (!closed
-                || lines[prevId].Constraint == Constraint.None
-                    && lines[id].Constraint == Constraint.None)
+            if (!closed)
             {
                 vertices[id].SetPoint(point);
-            }
-            else if (lines[prevId].Constraint == Constraint.Horizontal
-                    && lines[id].Constraint == Constraint.None)
-            {
-                vertices[prevId].Y = point.Y;
-                vertices[id].SetPoint(point);
-            }
-            else if (lines[prevId].Constraint == Constraint.None
-                    && lines[id].Constraint == Constraint.Horizontal)
-            {
-                vertices[nextId].Y = point.Y;
-                vertices[id].SetPoint(point);
-            }
-            else if (lines[prevId].Constraint == Constraint.Vertical
-                    && lines[id].Constraint == Constraint.None)
-            {
-                vertices[prevId].X = point.X;
-                vertices[id].SetPoint(point);
-            }
-            else if (lines[prevId].Constraint == Constraint.None
-                    && lines[id].Constraint == Constraint.Vertical)
-            {
-                vertices[nextId].X = point.X;
-                vertices[id].SetPoint(point);
-            }
-            else if (lines[prevId].Constraint == Constraint.Horizontal
-                && lines[id].Constraint == Constraint.Vertical)
-            {
-                vertices[prevId].Y = point.Y;
-                vertices[nextId].X = point.X;
-                vertices[id].SetPoint(point);
-            }
-            else if (lines[prevId].Constraint == Constraint.Vertical
-                    && lines[id].Constraint == Constraint.Horizontal)
-            {
-                vertices[prevId].X = point.X;
-                vertices[nextId].Y = point.Y;
-                vertices[id].SetPoint(point);
+                return;
             }
 
-            //if (verticesCount > 2)
+            //--------- else -----------
+
+
+            // angles
+            var needFixing = GetVerticesToFix(id);
+            var dx = point.X - vertices[id].X;
+            var dy = point.Y - vertices[id].Y;
+            for (int x = 0; x < verticesCount; x++)
+            {
+                if (needFixing[x])
+                    vertices[x].MovePoint(dx, dy);
+            }
+
+            //var A = vertices[nextId];
+            //var B = vertices[id];
+            //var C = vertices[prevId];
+
+
+            //// 
+            //if (B.Constraint == Constraint.Angle)
             //{
-            //    int inwardLineId = (id == 0) ? verticesCount - 1 : id - 1;
-            //    lines[inwardLineId].End = point;
-            //    if (closed)
+            //    var vBA = new Tuple<double, double>(A.X - B.X, A.Y - B.Y);
+            //    var vBC = new Tuple<double, double>(C.X - B.X, C.Y - B.Y);
+            //    var vDelta = new Tuple<double, double>(dx, dy);
+
+            //    var BAover = vBA.Item1 / vBA.Item2;
+            //    var BCover = vBC.Item1 / vBC.Item2;
+            //    var Deltaover = vDelta.Item1 / vDelta.Item2;
+
+            //    //move along BA vector
+            //    if (Math.Abs(BAover - Deltaover) < 0.005 || double.IsInfinity(BAover) && double.IsInfinity(Deltaover))
             //    {
-            //        if (!vertices[id].HasAngleConstraint
-            //            && !vertices[prevId].HasAngleConstraint
-            //            && !vertices[nextId].HasAngleConstraint)
-            //        {
-            //            //something
-            //        }
-            //        else
-            //        {
-            //            //something complicated
-            //        }
-            //        int outwardLineId = id;
-            //        lines[outwardLineId].Start = point;
+            //        C.MovePoint(dx, dy);
+            //    }
+            //    else if (Math.Abs(BCover - Deltaover) < 0.005 || double.IsInfinity(BCover) && double.IsInfinity(Deltaover))
+            //    {
+            //        A.MovePoint(dx, dy);
+            //    }
+            //    else
+            //    {
+            //        A.MovePoint(dx, dy);
+            //        C.MovePoint(dx, dy);
             //    }
             //}
-            //if (verticesCount == 2)
-            //{
-            //    if (id == 0) 
-            //        lines[0].Start = point;
-            //    else if (id == 1) 
-            //        lines[0].End = point;
-            //}
+
+            vertices[id].SetPoint(point);
+            //clockwise lines
+            var vertex = vertices[id];
+            var line = lines[id];
+            int i = nextId;
+            while (i != id)
+            {
+                if (line.Constraint == Constraint.Horizontal)
+                    vertices[i].Y = vertex.Y;
+                else if (line.Constraint == Constraint.Vertical)
+                    vertices[i].X = vertex.X;
+
+                vertex = vertices[i];
+                line = lines[i];
+                i = (i + 1) % verticesCount;
+
+            }
+
+            //counter-clockwise lines
+            vertex = vertices[id];
+            line = lines[prevId];
+            i = prevId;
+            while (i != id)
+            {
+                if (line.Constraint == Constraint.Horizontal)
+                    vertices[i].Y = vertex.Y;
+                else if (line.Constraint == Constraint.Vertical)
+                    vertices[i].X = vertex.X;
+
+                vertex = vertices[i];
+                i = (i == 0) ? verticesCount - 1 : i - 1;
+                line = lines[i];
+            }
+        }
+
+        private bool[] GetVerticesToFix(int start)
+        {
+            var needFixing = new bool[verticesCount];
+            needFixing[start] = true;
+
+            // clockwise
+            bool oneMore = vertices[start].Constraint == Constraint.Angle;
+            var i = NextId(start);
+            while (i != start)
+            {
+                if (vertices[i].Constraint == Constraint.Angle)
+                {
+                    needFixing[i] = true;
+                    oneMore = true;
+                }
+                else if (oneMore)
+                {
+                    needFixing[i] = true;
+                    oneMore = false;
+                }
+                else break;
+                i = NextId(i);
+            }
+
+            //counter-clockwise
+            oneMore = vertices[start].Constraint == Constraint.Angle;
+            i = PrevId(start);
+            while (i != start)
+            {
+                if (vertices[i].Constraint == Constraint.Angle)
+                {
+                    needFixing[i] = true;
+                    oneMore = true;
+                }
+                else if (oneMore)
+                {
+                    needFixing[i] = true;
+                    oneMore = false;
+                }
+                else break;
+                i = PrevId(i);
+            }
+            return needFixing;
+        }
+
+        private double CalculateAngleABC(Vertex a, Vertex b, Vertex c)
+        {
+            double P1X = b.X, P1Y = b.Y, P2X = a.X, P2Y = a.Y, P3X = c.X, P3Y = c.Y;
+
+            double numerator = P2Y * (P1X - P3X) + P1Y * (P3X - P2X) + P3Y * (P2X - P1X);
+            double denominator = (P2X - P1X) * (P1X - P3X) + (P2Y - P1Y) * (P1Y - P3Y);
+            double ratio = numerator / denominator;
+
+            double angleRad = Math.Atan(ratio);
+            double angleDeg = (angleRad * 180) / Math.PI;
+
+            if (angleDeg < 0)
+            {
+                angleDeg = 180 + angleDeg;
+            }
+
+            return angleDeg;
         }
 
         internal void ClearVertexConstraints(int id)
@@ -300,16 +443,9 @@ namespace PolygonApp
             vertices[id].AngleConstraint = angle;
         }
 
-        public void SetLineColor(int id, Color color)
-        {
-            lines[id].Color = color;
-        }
-
-
         public void AddVertexToLine(int id)
         {
             if (VerticesCount == maxVertices) return;
-
 
             var oldLine = lines[id];
             var x = (oldLine.End.X + oldLine.Start.X) / 2;
