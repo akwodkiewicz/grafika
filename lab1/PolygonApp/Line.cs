@@ -70,7 +70,7 @@ namespace PolygonApp
             Moved = false;
         }
 
-        public bool AddConstraint(Constraint constraint)
+        public bool SetConstraint(Constraint constraint)
         {
             if (Constraint == constraint)
                 return false;

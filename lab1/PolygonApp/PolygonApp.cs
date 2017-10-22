@@ -160,7 +160,7 @@ namespace PolygonApp
             polygon.AddVertexToLine(clickedLineId);
         }
 
-        private void MakeHorizontalToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LockHorizontallyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
@@ -174,7 +174,7 @@ namespace PolygonApp
             }
         }
 
-        private void MakeVerticalToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LockVerticallyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
@@ -186,6 +186,11 @@ namespace PolygonApp
                 MessageBox.Show("You can't add 2 consecutive vertical lines", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
             }
+        }
+
+        private void clearLockToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            polygon.ClearConstraints(clickedLineId);
         }
     }
 }

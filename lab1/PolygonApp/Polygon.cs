@@ -66,6 +66,11 @@ namespace PolygonApp
             return verticesCount - 1;
         }
 
+        public void ClearConstraints(int id)
+        {
+            lines[id].SetConstraint(Constraint.None);
+        }
+
         public void Close()
         {
             if (verticesCount == maxVertices)
@@ -90,7 +95,7 @@ namespace PolygonApp
             RearrangeVertices();
 
             var prevId = (id == 0) ? verticesCount - 1 : id - 1;
-            lines[prevId].AddConstraint(Constraint.None);
+            lines[prevId].SetConstraint(Constraint.None);
             lines[prevId].End = lines[id].End;
             lines[id] = null;
             RearrangeLines();
@@ -188,7 +193,7 @@ namespace PolygonApp
             if (lines[prevId].Constraint == Constraint.Horizontal
                 || lines[nextId].Constraint == Constraint.Horizontal)
                 throw new InvalidOperationException();
-            return lines[id].AddConstraint(Constraint.Horizontal);
+            return lines[id].SetConstraint(Constraint.Horizontal);
         }
 
         public bool MakeLineVertical(int id)
@@ -199,7 +204,7 @@ namespace PolygonApp
             if (lines[prevId].Constraint == Constraint.Vertical
                 || lines[nextId].Constraint == Constraint.Vertical)
                 throw new InvalidOperationException();
-            return lines[id].AddConstraint(Constraint.Vertical);
+            return lines[id].SetConstraint(Constraint.Vertical);
         }
 
         public void SetPointForVertexId(int id, Point point)

@@ -43,9 +43,10 @@
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.angleConstraintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.makeHorizontalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.makeVerticalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addVertexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lockHorizontallyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lockVerticallyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearLockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -89,10 +90,10 @@
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.label3.Location = new System.Drawing.Point(542, 30);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(457, 54);
+            this.label3.Size = new System.Drawing.Size(423, 54);
             this.label3.TabIndex = 4;
-            this.label3.Text = "Press [Return] to close the polygon\r\nPress [RMB] on a line to add a vertex\r\nPress" +
-    " [RMB] on a vertex to delete it or add a constraint to it\r\n";
+            this.label3.Text = "Press [Return] to close the polygon\r\nPress [RMB] on a line to see available actio" +
+    "ns\r\nPress [RMB] on a vertex to delete it or add a constraint\r\n";
             // 
             // panelRadio
             // 
@@ -215,32 +216,40 @@
             // contextMenuStrip2
             // 
             this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.makeHorizontalToolStripMenuItem,
-            this.makeVerticalToolStripMenuItem,
-            this.addVertexToolStripMenuItem});
+            this.addVertexToolStripMenuItem,
+            this.lockHorizontallyToolStripMenuItem,
+            this.lockVerticallyToolStripMenuItem,
+            this.clearLockToolStripMenuItem});
             this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(162, 70);
-            // 
-            // makeHorizontalToolStripMenuItem
-            // 
-            this.makeHorizontalToolStripMenuItem.Name = "makeHorizontalToolStripMenuItem";
-            this.makeHorizontalToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
-            this.makeHorizontalToolStripMenuItem.Text = "Make Horizontal";
-            this.makeHorizontalToolStripMenuItem.Click += new System.EventHandler(this.MakeHorizontalToolStripMenuItem_Click);
-            // 
-            // makeVerticalToolStripMenuItem
-            // 
-            this.makeVerticalToolStripMenuItem.Name = "makeVerticalToolStripMenuItem";
-            this.makeVerticalToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
-            this.makeVerticalToolStripMenuItem.Text = "Make Vertical";
-            this.makeVerticalToolStripMenuItem.Click += new System.EventHandler(this.MakeVerticalToolStripMenuItem_Click);
+            this.contextMenuStrip2.Size = new System.Drawing.Size(167, 92);
             // 
             // addVertexToolStripMenuItem
             // 
             this.addVertexToolStripMenuItem.Name = "addVertexToolStripMenuItem";
-            this.addVertexToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.addVertexToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.addVertexToolStripMenuItem.Text = "Add Vertex";
             this.addVertexToolStripMenuItem.Click += new System.EventHandler(this.AddVertexToolStripMenuItem_Click);
+            // 
+            // lockHorizontallyToolStripMenuItem
+            // 
+            this.lockHorizontallyToolStripMenuItem.Name = "lockHorizontallyToolStripMenuItem";
+            this.lockHorizontallyToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.lockHorizontallyToolStripMenuItem.Text = "Lock Horizontally";
+            this.lockHorizontallyToolStripMenuItem.Click += new System.EventHandler(this.LockHorizontallyToolStripMenuItem_Click);
+            // 
+            // lockVerticallyToolStripMenuItem
+            // 
+            this.lockVerticallyToolStripMenuItem.Name = "lockVerticallyToolStripMenuItem";
+            this.lockVerticallyToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.lockVerticallyToolStripMenuItem.Text = "Lock Vertically";
+            this.lockVerticallyToolStripMenuItem.Click += new System.EventHandler(this.LockVerticallyToolStripMenuItem_Click);
+            // 
+            // clearLockToolStripMenuItem
+            // 
+            this.clearLockToolStripMenuItem.Name = "clearLockToolStripMenuItem";
+            this.clearLockToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.clearLockToolStripMenuItem.Text = "Clear Lock";
+            this.clearLockToolStripMenuItem.Click += new System.EventHandler(this.clearLockToolStripMenuItem_Click);
             // 
             // PolygonApp
             // 
@@ -283,9 +292,10 @@
         private System.Windows.Forms.ToolStripMenuItem angleConstraintToolStripMenuItem;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
-        private System.Windows.Forms.ToolStripMenuItem makeHorizontalToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem makeVerticalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addVertexToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem lockHorizontallyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem lockVerticallyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearLockToolStripMenuItem;
     }
 }
 
