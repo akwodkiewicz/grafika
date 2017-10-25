@@ -54,7 +54,6 @@
       <DependentUpon>AngleConstraintForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Constraints.cs" />
-    <Compile Include="PointC.cs" />
     <Compile Include="PolygonApp.cs">
       <SubType>Form</SubType>
     </Compile>

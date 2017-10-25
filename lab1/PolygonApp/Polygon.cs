@@ -16,7 +16,7 @@ namespace PolygonApp
         private int verticesCount = 0;
         private bool closed = false;
         private int vertexSize;
-        private PointC center;
+        private Point center;
         private Vertex[] vertices;
         private Line[] lines;
 
@@ -40,7 +40,7 @@ namespace PolygonApp
             }
         }
 
-        public PointC Center { get => center; set => center = value; }
+        public Point Center { get => center; set => center = value; }
 
 
         public int AddVertex(Point point)
@@ -54,10 +54,10 @@ namespace PolygonApp
             }
             if (verticesCount == 0)
             {
-                vertex = new Vertex(new PointC(point), VertexSize);
+                vertex = new Vertex(point, VertexSize);
                 vertices[verticesCount++] = vertex;
             }
-            vertex = new Vertex(new PointC(point), VertexSize);
+            vertex = new Vertex(point, VertexSize);
             vertices[verticesCount] = vertex;
 
             Line line = new Line(vertices[verticesCount - 1], vertex);
@@ -123,7 +123,7 @@ namespace PolygonApp
             int bestId = -1;
             for (int i = 0; i < iMax; i++)
             {
-                var dist = lines[i].GetSquaredDistanceFromPoint(new PointC(point));
+                var dist = lines[i].GetSquaredDistanceFromPoint(point);
                 if (dist < minimumDistance)
                 {
                     minimumDistance = dist;
@@ -163,7 +163,7 @@ namespace PolygonApp
 
             var nextPoint = new Point(vertices[NextId(id)].Point.X, vertices[NextId(id)].Point.Y);
             SetPointForVertexId(id, new Point(vertices[id].Point.X + dx, vertices[id].Point.Y + dy));
-            if(nextPoint == new Point(vertices[NextId(id)].Point.X, vertices[NextId(id)].Point.Y))
+            if (nextPoint == new Point(vertices[NextId(id)].Point.X, vertices[NextId(id)].Point.Y))
                 SetPointForVertexId(NextId(id), new Point(vertices[NextId(id)].Point.X + dx, vertices[NextId(id)].Point.Y + dy));
 
             //var prevId = (id == 0) ? verticesCount - 1 : id - 1;
@@ -191,7 +191,7 @@ namespace PolygonApp
             var dy = point.Y - center.Y;
             for (int i = 0; i < verticesCount; i++)
             {
-                var p = new PointC(vertices[i].X + dx, vertices[i].Y + dy);
+                var p = new Point(vertices[i].X + dx, vertices[i].Y + dy);
                 vertices[i].SetPoint(p);
             }
             center.X = point.X;
@@ -215,48 +215,14 @@ namespace PolygonApp
 
         private bool SetConstraint(Constraint constraint, int id)
         {
-            var result = lines[id].SetConstraint(constraint);
-            //if (!result) return result;
-            //Vertex firstone, secondone, thirdone;
-            //Tuple<double, double> vector;
-            //double dx, dy;
-            //if (vertices[NextId(NextId(id))].Constraint == Constraint.Angle 
-            //    || vertices[PrevId(id)].Constraint == Constraint.Angle)
-            //    throw new InvalidOperationException("You can't add this constraint here!");
-
-            ////if (vertices[NextId(NextId(id))].Constraint == Constraint.Angle)
-            ////{
-            ////    firstone = vertices[NextId(id)];
-            ////    secondone = vertices[NextId(NextId(id))];
-            ////    thirdone = vertices[id];
-            ////}
-            ////else if (vertices[PrevId(id)] == Constraint.Angle)
-            ////{
-            ////    firstone = vertices[id];
-            ////    secondone = vertices[PrevId(id)];
-            ////    thirdone = vertices[NextId(id)];
-            ////}
-            ////vector = new Tuple<double, double>(secondone.X - firstone.X, secondone.Y - firstone.X);
-            ////if (constraint == Constraint.Vertical)
-            ////{
-            ////    dx = thirdone.X - firstone.X;
-            ////    var d = dx / vector.Item1;
-            ////    dy = vector.Item2 * d;
-            ////}
-            ////else
-            ////{
-            ////    dy = vertices[id].Y - vertices[NextId(id)].Y;
-            ////    var d = dy / vector.Item2;
-            ////    dx = vector.Item1 * d;
-            ////}
-            ////vertices[NextId(id)].MovePoint((int)dx, (int)dy);
-
-            //if (constraint == Constraint.Horizontal)
-            //    SetPointForVertexId(id vertices[NextId(id)].Y;
-            //else
-            //    vertices[id].X = vertices[NextId(id)].X;
-            return result;
-           
+            if (lines[id].SetConstraint(constraint))
+            {
+                if (SetPointForVertexId(id, vertices[id].Point))
+                    return true;
+                if (SetPointForVertexId(NextId(id), vertices[NextId(id)].Point))
+                    return true;
+            }
+            return false;
         }
 
         public bool MakeLineVertical(int id)
@@ -273,12 +239,7 @@ namespace PolygonApp
             return SetConstraint(Constraint.Vertical, id);
         }
 
-        public void SetPointForVertexId(int id, Point point)
-        {
-            SetPointForVertexId(id, new PointC(point));
-        }
-
-        public void SetPointForVertexId(int id, PointC point)
+        public bool SetPointForVertexId(int id, Point point)
         {
             var prevId = (id == 0) ? verticesCount - 1 : id - 1;
             var nextId = (id + 1) % verticesCount;
@@ -286,12 +247,10 @@ namespace PolygonApp
             if (!closed)
             {
                 vertices[id].SetPoint(point);
-                return;
+                return true;
             }
 
             //--------- else -----------
-
-
             // angles
             var needFixing = GetVerticesToFix(id);
             var dx = point.X - vertices[id].X;
@@ -302,36 +261,39 @@ namespace PolygonApp
                     vertices[x].MovePoint(dx, dy);
             }
 
-            //var A = vertices[nextId];
-            //var B = vertices[id];
-            //var C = vertices[prevId];
+            //var needFixingNext = GetVerticesToFix(NextId(id));
+            //var needFixingPrev = GetVerticesToFix(PrevId(id));
+            //var needFixingCombined = new bool[VerticesCount];
+            //for (int i = 0; i < verticesCount; i++)
+            //    needFixingCombined[i] = needFixing[i] | needFixingNext[i] | needFixingPrev[i];
+  
 
-
-            //// 
-            //if (B.Constraint == Constraint.Angle)
+            //if (lines[id].Constraint == Constraint.Vertical)
             //{
-            //    var vBA = new Tuple<double, double>(A.X - B.X, A.Y - B.Y);
-            //    var vBC = new Tuple<double, double>(C.X - B.X, C.Y - B.Y);
-            //    var vDelta = new Tuple<double, double>(dx, dy);
-
-            //    var BAover = vBA.Item1 / vBA.Item2;
-            //    var BCover = vBC.Item1 / vBC.Item2;
-            //    var Deltaover = vDelta.Item1 / vDelta.Item2;
-
-            //    //move along BA vector
-            //    if (Math.Abs(BAover - Deltaover) < 0.005 || double.IsInfinity(BAover) && double.IsInfinity(Deltaover))
+            //    if (!needFixingCombined[NextId(id)])
+            //        vertices[NextId(id)].X += dx;
+            //}
+            //else if(lines[id].Constraint == Constraint.Horizontal)
+            //{
+            //    if (!needFixingCombined[NextId(id)])
+            //        vertices[NextId(id)].Y += dy;
+            //}
+            //if (lines[PrevId(id)].Constraint == Constraint.Vertical)
+            //{
+            //    if (!needFixingCombined[PrevId(id)])
             //    {
-            //        C.MovePoint(dx, dy);
+            //        int i = id;
+            //        do
+            //        {
+            //            i = PrevId(i);
+            //            vertices[i].X += dx;
+            //        } while (needFixingCombined[i] && i != id);
             //    }
-            //    else if (Math.Abs(BCover - Deltaover) < 0.005 || double.IsInfinity(BCover) && double.IsInfinity(Deltaover))
-            //    {
-            //        A.MovePoint(dx, dy);
-            //    }
-            //    else
-            //    {
-            //        A.MovePoint(dx, dy);
-            //        C.MovePoint(dx, dy);
-            //    }
+            //}
+            //else if (lines[PrevId(id)].Constraint == Constraint.Horizontal)
+            //{
+            //    if (!needFixingCombined[PrevId(id)])
+            //        vertices[PrevId(id)].Y += dy;
             //}
 
             vertices[id].SetPoint(point);
@@ -352,7 +314,7 @@ namespace PolygonApp
 
             }
 
-            //counter-clockwise lines
+            ////counter-clockwise lines
             vertex = vertices[id];
             line = lines[prevId];
             i = prevId;
@@ -367,12 +329,14 @@ namespace PolygonApp
                 i = (i == 0) ? verticesCount - 1 : i - 1;
                 line = lines[i];
             }
+
+            return true;
         }
 
         private bool[] GetVerticesToFix(int start)
         {
             var needFixing = new bool[verticesCount];
-            needFixing[start] = true;
+            //needFixing[start] = true;
 
             // clockwise
             bool oneMore = vertices[start].Constraint == Constraint.Angle;
@@ -414,6 +378,20 @@ namespace PolygonApp
             return needFixing;
         }
 
+        /// <summary>
+        /// Makes the lines keep the constraints
+        /// </summary>
+        /// <param name="needFixing">result of GetVerticesToFix method</param>
+        private void LineAlgorithm(bool[] needFixing)
+        {
+            for (int i = 0; i < verticesCount; i++)
+            {
+                if (needFixing[i])
+                    continue;
+
+            }
+        }
+
         private double CalculateAngleABC(Vertex a, Vertex b, Vertex c)
         {
             double P1X = b.X, P1Y = b.Y, P2X = a.X, P2Y = a.Y, P3X = c.X, P3Y = c.Y;
@@ -450,7 +428,7 @@ namespace PolygonApp
             var oldLine = lines[id];
             var x = (oldLine.End.X + oldLine.Start.X) / 2;
             var y = (oldLine.End.Y + oldLine.Start.Y) / 2;
-            var middle = new PointC(x, y);
+            var middle = new Point(x, y);
 
             for (int i = verticesCount; i > id + 1; i--)
             {

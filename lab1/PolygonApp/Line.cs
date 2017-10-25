@@ -80,7 +80,7 @@ namespace PolygonApp
             return true;
         }
 
-        public double GetSquaredDistanceFromPoint(PointC p)
+        public double GetSquaredDistanceFromPoint(Point p)
         {
             var start = new Point(_start.X, _start.Y);
             var end = new Point(_end.X, _end.Y);

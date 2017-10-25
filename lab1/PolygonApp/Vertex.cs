@@ -11,14 +11,14 @@ namespace PolygonApp
     class Vertex : Control, IDrawable
     {
         private int _dimension;
-        private PointC _point;
-        private PointC _lastPoint;
+        private Point _point;
+        private Point _lastPoint;
         private bool _moved;
         private int? _angleConstraint;
         private Constraint _constraint;
         private int _inverseMarkSize = 5;
 
-        public Vertex(PointC point, int dimension)
+        public Vertex(Point point, int dimension)
         {
             _point = point;
             _dimension = dimension;
@@ -42,7 +42,7 @@ namespace PolygonApp
                     Constraint = Constraint.Angle;
             }
         }
-        public PointC Point { get => _point; }
+        public Point Point { get => _point; }
         public int X
         {
             get => _point.X;
@@ -85,10 +85,6 @@ namespace PolygonApp
                 return true;
             return false;
         }
-        public bool Contains(PointC location)
-        {
-            return Contains(new Point(location.X, location.Y));
-        }
 
         public bool Contains(Point location, int proximity)
         {
@@ -98,10 +94,6 @@ namespace PolygonApp
                 && location.Y < Top + Dimension + proximity)
                 return true;
             return false;
-        }
-        public bool Contains(PointC location, int proximity)
-        {
-            return Contains(new Point(location.X, location.Y), proximity);
         }
 
         public void Draw(Bitmap canvas)
@@ -143,15 +135,6 @@ namespace PolygonApp
         }
 
         public void SetPoint(Point point)
-        {
-            _lastPoint = _point;
-            _point.X = point.X;
-            _point.Y = point.Y;
-            Left = _point.X - Dimension / 2;
-            Top = _point.Y - Dimension / 2;
-            _moved = true;
-        }
-        public void SetPoint(PointC point)
         {
             _lastPoint = _point;
             _point.X = point.X;

@@ -76,7 +76,7 @@ namespace PolygonApp
                             clickedLineId = polygon.GetLineIdFromPoint(e.Location);
                     }
                     else if (radioPolygon.Checked)
-                        polygon.Center = new PointC(e.Location);
+                        polygon.Center = e.Location;
                 }
             }
         }
