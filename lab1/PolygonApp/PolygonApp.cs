@@ -15,7 +15,7 @@ namespace PolygonApp
         private int _clickedVertexId = -1;
         private int _clickedLineId = -1;
         private bool _createMode = true;
-        private bool _controlButtonPressed = false;
+        private bool _selectAllMode = false;
 
         public PolygonApp()
         {
@@ -35,6 +35,15 @@ namespace PolygonApp
                     Text = "Polygon Editor [Create Mode]";
                 else
                     Text = "Polygon Editor [Edit Mode]";
+            }
+        }
+        public bool SelectAllMode
+        {
+            get => _selectAllMode;
+            set
+            {
+                _selectAllMode = value;
+                label4.Visible = _selectAllMode;
             }
         }
         #endregion
@@ -69,13 +78,13 @@ namespace PolygonApp
             {
                 if (e.Button == MouseButtons.Left)
                 {
-                    if (radioVertices.Checked)
+                    if (!SelectAllMode)
                     {
                         _clickedVertexId = _polygon.GetVertexIdFromPoint(e.Location);
                         if (_clickedVertexId == -1)
                             _clickedLineId = _polygon.GetLineIdFromPoint(e.Location);
                     }
-                    else if (radioPolygon.Checked)
+                    else
                         _polygon.Center = e.Location;
                 }
             }
@@ -90,7 +99,7 @@ namespace PolygonApp
             }
             else if (!CreateMode && e.Button == MouseButtons.Left)
             {
-                if (_controlButtonPressed)
+                if (SelectAllMode)
                 {
                     _polygon.MovePolygon(e.Location);
                 }
@@ -131,16 +140,6 @@ namespace PolygonApp
         #endregion
 
         #region Keys & Buttons
-        private void ButtonReset_Click(object sender, EventArgs e)
-        {
-            _draggedVertexId = -1;
-            _polygon = new Polygon(trackBar1.Value);
-            _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
-            CreateMode = true;
-            pictureBox.Invalidate();
-            label1.Focus();
-        }
-
         private void TrackBar1_ValueChanged(object sender, EventArgs e)
         {
             _polygon.VertexSize = trackBar1.Value;
@@ -149,24 +148,23 @@ namespace PolygonApp
 
         private void PolygonApp_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Return && CreateMode && _polygon.VerticesCount>3)
+            if (e.KeyCode == Keys.Return && CreateMode && _polygon.VerticesCount > 3)
             {
                 CreateMode = false;
                 _draggedVertexId = -1;
                 _polygon.Close();
                 pictureBox.Invalidate();
             }
-            else if (e.KeyCode == Keys.ControlKey && !CreateMode)
-            {
-                _controlButtonPressed = true;
-            }
         }
 
-        private void PolygonApp_KeyUp(object sender, KeyEventArgs e)
+        private void PolygonApp_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyCode == Keys.Control)
+            if (!CreateMode)
             {
-                _controlButtonPressed = false;
+                if (e.KeyChar == 'a')
+                    SelectAllMode = !SelectAllMode;
+                if (e.KeyChar == 'r')
+                    Reset();
             }
         }
         #endregion
@@ -228,8 +226,21 @@ namespace PolygonApp
         {
             _polygon.ClearVertexConstraints(_clickedVertexId);
         }
+
+
         #endregion
 
-
+        #region Other Methods
+        private void Reset()
+        {
+            _draggedVertexId = -1;
+            _polygon = new Polygon(trackBar1.Value);
+            _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
+            CreateMode = true;
+            SelectAllMode = false;
+            pictureBox.Invalidate();
+            label1.Focus();
+        }
+        #endregion
     }
 }

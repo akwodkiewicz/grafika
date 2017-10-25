@@ -40,6 +40,7 @@ namespace PolygonApp.Geometry
         #endregion
 
         #region Public Methods
+        #region Final
         public int AddVertex(Point point)
         {
             Vertex vertex;
@@ -180,7 +181,8 @@ namespace PolygonApp.Geometry
 
             return -1;
         }
-
+        #endregion
+        #region TODO
         public void MoveLine(int id, Point location)
         {
             var dx = location.X - _lines[id].LastClickPoint.X;
@@ -191,22 +193,6 @@ namespace PolygonApp.Geometry
             if (nextPoint == new Point(_vertices[NextId(id)].Center.X, _vertices[NextId(id)].Center.Y))
                 SetPointForVertexId(NextId(id), new Point(_vertices[NextId(id)].Center.X + dx, _vertices[NextId(id)].Center.Y + dy));
 
-            //var prevId = (id == 0) ? verticesCount - 1 : id - 1;
-            //var nextId = (id + 1) % verticesCount;
-
-            //if (lines[prevId].Constraint == Constraint.Vertical
-            //    || lines[nextId].Constraint == Constraint.Vertical)
-            //{
-            //    dx = 0;
-            //}
-            //if (lines[prevId].Constraint == Constraint.Horizontal
-            //    || lines[nextId].Constraint == Constraint.Horizontal)
-            //{
-            //    dy = 0;
-            //}
-
-            //vertices[id].MovePoint(dx, dy);
-            //vertices[nextId].MovePoint(dx, dy);
             _lines[id].LastClickPoint = location;
         }
 
@@ -350,6 +336,7 @@ namespace PolygonApp.Geometry
 
             return true;
         }
+        #endregion
         #endregion
 
         #region Private Methods

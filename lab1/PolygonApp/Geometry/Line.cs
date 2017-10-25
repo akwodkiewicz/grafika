@@ -124,11 +124,8 @@ namespace PolygonApp.Geometry
                 int x = 0, y = 0;
                 for (int i = 0; i < dx; i++)
                 {
-                    if (x0 + x < 0 || x0 + x >= canvas.Width
-                        || y0 + y < 0 || y0 + y >= canvas.Height)
-                        return;
-
-                    canvas.SetPixel(x0 + x, y0 + y, Color);
+                    if (!(x0 + x < 0 || x0 + x >= canvas.Width || y0 + y < 0 || y0 + y >= canvas.Height))
+                        canvas.SetPixel(x0 + x, y0 + y, Color);
                     if (d > 0)
                     {
                         d += deltaB;
@@ -152,11 +149,8 @@ namespace PolygonApp.Geometry
                 int x = 0, y = 0;
                 for (int i = 0; i < dy; i++)
                 {
-                    if (x0 + x < 0 || x0 + x >= canvas.Width
-                        || y0 + y < 0 || y0 + y >= canvas.Height)
-                        return;
-
-                    canvas.SetPixel(x0 + x, y0 + y, Color);
+                    if (!(x0 + x < 0 || x0 + x >= canvas.Width || y0 + y < 0 || y0 + y >= canvas.Height))
+                        canvas.SetPixel(x0 + x, y0 + y, Color);
                     if (d > 0)
                     {
                         d += deltaB;
