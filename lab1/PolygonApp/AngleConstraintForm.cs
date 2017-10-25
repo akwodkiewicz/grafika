@@ -12,10 +12,7 @@ namespace PolygonApp
 {
     public partial class AngleConstraintForm : Form
     {
-        public AngleConstraintForm()
-        {
-            InitializeComponent();
-        }
+        private int _angle;
 
         public AngleConstraintForm(int angle)
         {
@@ -24,7 +21,6 @@ namespace PolygonApp
             textBox1.Text = Angle.ToString();
         }
 
-        private int _angle;
         public int Angle { get => _angle; set => _angle = value; }
 
         private void TextBox1_Validating(object sender, CancelEventArgs e)

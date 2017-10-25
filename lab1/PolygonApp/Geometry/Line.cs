@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PolygonApp
+using PolygonApp.Commons;
+
+namespace PolygonApp.Geometry
 {
     class Line : IDrawable
     {
@@ -20,10 +18,11 @@ namespace PolygonApp
         {
             _start = v1;
             _end = v2;
-            Color = Color.Black;
-            Constraint = Constraint.None;
+            _color = Color.Black;
+            _constraint = Constraint.None;
         }
 
+        #region Properties
         public Vertex Start
         {
             get => _start;
@@ -38,17 +37,15 @@ namespace PolygonApp
         public Color Color { get => _color; set => _color = value; }
         public Point LastClickPoint { get => _lastClickPoint; set => _lastClickPoint = value; }
         public Constraint Constraint { get => _constraint; private set => _constraint = value; }
-        public double Length
-        {
-            get
-            {
-                return Math.Sqrt((End.X - Start.X) * (End.X - Start.X) + (End.Y - Start.Y) * (End.Y - Start.Y));
-            }
-        }
+        public double Length { get => Math.Sqrt((End.X - Start.X) * (End.X - Start.X) + (End.Y - Start.Y) * (End.Y - Start.Y)); }
         public Point Center { get => new Point((Start.X + End.X) / 2, (Start.Y + End.Y) / 2); }
+        #endregion
+
+        #region Public Methods
         public void Draw(Bitmap canvas)
         {
-            AllPurposeBresenham(canvas);
+            FullBresenham(canvas);
+            // Drawing a `horizontal` mark
             if (Constraint == Constraint.Horizontal)
             {
                 var center = Center;
@@ -59,7 +56,8 @@ namespace PolygonApp
                     for (int x = center.X - 10; x < endX && x > 0; x++)
                         canvas.SetPixel(x, y, Color.BlueViolet);
             }
-            else if(Constraint == Constraint.Vertical)
+            // Drawing a `vertical` mark
+            else if (Constraint == Constraint.Vertical)
             {
                 var center = Center;
                 var endX = (center.X - 10) < canvas.Width ? (center.X - 10) : canvas.Width - 1;
@@ -98,9 +96,10 @@ namespace PolygonApp
             var projection = new Point((int)x, (int)y);
             return DistanceSquared(point, projection);
         }
+        #endregion
 
-
-        private void AllPurposeBresenham(Bitmap canvas)
+        #region Private Methods
+        private void FullBresenham(Bitmap canvas)
         {
             int x1, y1, x2, y2, temp;
             bool swapped = false;
@@ -124,10 +123,10 @@ namespace PolygonApp
             //Negavite slope
             if (y1 > y2) { y1 *= -1; y2 *= -1; negated = true; }
 
-            Bresenham(canvas, x1, y1, x2, y2, swapped, negated);
+            OneEightBresenham(canvas, x1, y1, x2, y2, swapped, negated);
         }
 
-        private void Bresenham(Bitmap canvas, int x1, int y1, int x2, int y2, bool swapped, bool negated)
+        private void OneEightBresenham(Bitmap canvas, int x1, int y1, int x2, int y2, bool swapped, bool negated)
         {
             int dx = x2 - x1;
             int dy = y2 - y1;
@@ -168,5 +167,6 @@ namespace PolygonApp
         {
             return a.X * b.X + a.Y * b.Y;
         }
+        #endregion
     }
 }

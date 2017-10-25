@@ -1,35 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Drawing;
 
-namespace PolygonApp
+using PolygonApp.Commons;
+
+namespace PolygonApp.Geometry
 {
-    class Vertex : Control, IDrawable
+    class Vertex : IDrawable
     {
-        private int _dimension;
-        private Point _point;
-        private Point _lastPoint;
-        private bool _moved;
+        private int _left;
+        private int _top;
+        private int _size;
+        private int _inverseMarkSize = 5;
         private int? _angleConstraint;
         private Constraint _constraint;
-        private int _inverseMarkSize = 5;
+        private Point _center;
+        private Point _lastCenter;
+        private Color _foreColor;
+        private Color _backColor;
+        private bool _moved;
 
-        public Vertex(Point point, int dimension)
+        public Vertex(Point point, int size)
         {
-            _point = point;
-            _dimension = dimension;
-            Left = X - _dimension / 2;
-            Top = Y - _dimension / 2;
+            _center = point;
+            _size = size;
+            Left = X - _size / 2;
+            Top = Y - _size / 2;
             ForeColor = Color.Black;
             BackColor = Color.White;
             _moved = true;
             _constraint = Constraint.None;
         }
 
+        #region Properties
         public int? AngleConstraint
         {
             get => _angleConstraint;
@@ -42,46 +43,52 @@ namespace PolygonApp
                     Constraint = Constraint.Angle;
             }
         }
-        public Point Point { get => _point; }
+        public Point Center { get => _center; }
         public int X
         {
-            get => _point.X;
+            get => _center.X;
             set
             {
-                var temp = new Point(value, _point.Y);
+                var temp = new Point(value, _center.Y);
                 SetPoint(temp);
             }
         }
         public int Y
         {
-            get => _point.Y;
+            get => _center.Y;
             set
             {
-                var temp = new Point(_point.X, value);
+                var temp = new Point(_center.X, value);
                 SetPoint(temp);
             }
         }
-        new public int Width { get => Dimension; }
-        new public int Height { get => Dimension; }
+        public int Width { get => Size; }
+        public int Height { get => Size; }
         public bool Moved { get => _moved; set => _moved = value; }
-        public int Dimension
+        public int Size
         {
-            get => _dimension;
+            get => _size;
             set
             {
-                _dimension = value;
-                Left = _point.X - value / 2;
-                Top = _point.Y - value / 2;
+                _size = value;
+                Left = _center.X - value / 2;
+                Top = _center.Y - value / 2;
             }
         }
         public Constraint Constraint { get => _constraint; private set => _constraint = value; }
+        public int Left { get => _left; set => _left = value; }
+        public int Top { get => _top; set => _top = value; }
+        public Color ForeColor { get => _foreColor; set => _foreColor = value; }
+        public Color BackColor { get => _backColor; set => _backColor = value; }
+        #endregion
 
+        #region Public Methods
         public bool Contains(Point location)
         {
             if (location.X > Left
-                && location.X < Left + Dimension
+                && location.X < Left + Size
                 && location.Y > Top
-                && location.Y < Top + Dimension)
+                && location.Y < Top + Size)
                 return true;
             return false;
         }
@@ -89,9 +96,9 @@ namespace PolygonApp
         public bool Contains(Point location, int proximity)
         {
             if (location.X > Left - proximity
-                && location.X < Left + Dimension + proximity
+                && location.X < Left + Size + proximity
                 && location.Y > Top - proximity
-                && location.Y < Top + Dimension + proximity)
+                && location.Y < Top + Size + proximity)
                 return true;
             return false;
         }
@@ -115,12 +122,13 @@ namespace PolygonApp
                 }
             }
 
+            // Drawing white center of the vertex
             if (Constraint == Constraint.Angle)
             {
-                 xStart = (Left+ _inverseMarkSize > 0) ? Left+ _inverseMarkSize : 0;
-                 xEnd = (Left + Width  - _inverseMarkSize > canvas.Width) ? canvas.Width : Left + Width - _inverseMarkSize;
-                 yStart = (Top + _inverseMarkSize > 0) ? Top + _inverseMarkSize : 0;
-                 yEnd = (Top + Height - _inverseMarkSize > canvas.Height) ? canvas.Height : Top + Height - _inverseMarkSize;
+                xStart = (Left + _inverseMarkSize > 0) ? Left + _inverseMarkSize : 0;
+                xEnd = (Left + Width - _inverseMarkSize > canvas.Width) ? canvas.Width : Left + Width - _inverseMarkSize;
+                yStart = (Top + _inverseMarkSize > 0) ? Top + _inverseMarkSize : 0;
+                yEnd = (Top + Height - _inverseMarkSize > canvas.Height) ? canvas.Height : Top + Height - _inverseMarkSize;
 
                 for (int y = yStart; y < yEnd; y++)
                 {
@@ -134,31 +142,33 @@ namespace PolygonApp
             Moved = false;
         }
 
-        public void SetPoint(Point point)
-        {
-            _lastPoint = _point;
-            _point.X = point.X;
-            _point.Y = point.Y;
-            Left = _point.X - Dimension / 2;
-            Top = _point.Y - Dimension / 2;
-            _moved = true;
-        }
-
         public void MovePoint(int dx, int dy)
         {
-            _lastPoint = _point;
-            _point.X += dx;
-            _point.Y += dy;
-            Left = _point.X - Dimension / 2;
-            Top = _point.Y - Dimension / 2;
+            _lastCenter = _center;
+            _center.X += dx;
+            _center.Y += dy;
+            _left = _center.X - _size / 2;
+            _top = _center.Y - _size / 2;
             _moved = true;
         }
 
+        public void SetPoint(Point point)
+        {
+            _lastCenter = _center;
+            _center.X = point.X;
+            _center.Y = point.Y;
+            _left = _center.X - _size / 2;
+            _top = _center.Y - _size / 2;
+            _moved = true;
+        }
+        #endregion
+
+        #region Private Methods
         private void Erase(Bitmap canvas)
         {
-            int xStart = _lastPoint.X - Width / 2;
+            int xStart = _lastCenter.X - Width / 2;
             int xEnd = xStart + Width;
-            int yStart = _lastPoint.Y - Height / 2;
+            int yStart = _lastCenter.Y - Height / 2;
             int yEnd = yStart + Height;
 
             if (xStart < 0) xStart = 0;
@@ -174,5 +184,6 @@ namespace PolygonApp
                 }
             }
         }
+        #endregion
     }
 }
