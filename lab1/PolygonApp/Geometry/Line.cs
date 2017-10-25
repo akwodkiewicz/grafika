@@ -44,7 +44,7 @@ namespace PolygonApp.Geometry
         #region Public Methods
         public void Draw(Bitmap canvas)
         {
-            FullBresenham(canvas);
+            Bresenham(canvas);
             // Drawing a `horizontal` mark
             if (Constraint == Constraint.Horizontal)
             {
@@ -99,74 +99,81 @@ namespace PolygonApp.Geometry
         #endregion
 
         #region Private Methods
-        private void FullBresenham(Bitmap canvas)
+        private void Bresenham(Bitmap canvas)
         {
-            int x1, y1, x2, y2, temp;
-            bool swapped = false;
-            bool negated = false;
-            var dx = End.X - Start.X;
-            var dy = End.Y - Start.Y;
+            var x0 = Start.X;
+            var x1 = End.X;
+            var y0 = Start.Y;
+            var y1 = End.Y;
+            var dx = x1 - x0;
+            var dy = y1 - y0;
 
-            // Steep slope
-            if (dy * dy > dx * dx)
-            { x1 = Start.Y; y1 = Start.X; x2 = End.Y; y2 = End.X; swapped = true; }
-            else
-            { x1 = Start.X; y1 = Start.Y; x2 = End.X; y2 = End.Y; }
+            // right->left or left->right
+            var incX = (dx < 0) ? -1 : 1;
+            var incY = (dy < 0) ? -1 : 1;
+            if (dx < 0) dx *= -1;
+            if (dy < 0) dy *= -1;
 
-            // Right to left
-            if (x1 > x2)
+            // Close to X axis
+            if (dx >= dy)
             {
-                temp = x1; x1 = x2; x2 = temp;
-                temp = y1; y1 = y2; y2 = temp;
-            }
+                var d = 2 * dy - dx;
+                var deltaA = 2 * dy;
+                var deltaB = 2 * dy - 2 * dx;
 
-            //Negavite slope
-            if (y1 > y2) { y1 *= -1; y2 *= -1; negated = true; }
-
-            OneEightBresenham(canvas, x1, y1, x2, y2, swapped, negated);
-        }
-
-        private void OneEightBresenham(Bitmap canvas, int x1, int y1, int x2, int y2, bool swapped, bool negated)
-        {
-            int dx = x2 - x1;
-            int dy = y2 - y1;
-            int y = y1;
-            int eps = 0;
-
-            for (int x = x1; x <= x2; x++)
-            {
-                TranslateAndDraw(canvas, x, y, swapped, negated);
-                eps += dy;
-                if ((eps << 1) >= dx)
+                int x = 0, y = 0;
+                for (int i = 0; i < dx; i++)
                 {
-                    y++;
-                    eps -= dx;
+                    if (x0 + x < 0 || x0 + x >= canvas.Width
+                        || y0 + y < 0 || y0 + y >= canvas.Height)
+                        return;
+
+                    canvas.SetPixel(x0 + x, y0 + y, Color);
+                    if (d > 0)
+                    {
+                        d += deltaB;
+                        x += incX;
+                        y += incY;
+                    }
+                    else
+                    {
+                        d += deltaA;
+                        x += incX;
+                    }
+                }
+            }
+            // Close to Y axis (steep slope)
+            else
+            {
+                var d = 2 * dx - dy;
+                var deltaA = 2 * dx;
+                var deltaB = 2 * dx - 2 * dy;
+
+                int x = 0, y = 0;
+                for (int i = 0; i < dy; i++)
+                {
+                    if (x0 + x < 0 || x0 + x >= canvas.Width
+                        || y0 + y < 0 || y0 + y >= canvas.Height)
+                        return;
+
+                    canvas.SetPixel(x0 + x, y0 + y, Color);
+                    if (d > 0)
+                    {
+                        d += deltaB;
+                        x += incX;
+                        y += incY;
+                    }
+                    else
+                    {
+                        d += deltaA;
+                        y += incY;
+                    }
                 }
             }
         }
 
-        private void TranslateAndDraw(Bitmap canvas, int x, int y, bool swapped, bool negated)
-        {
-            if (negated)
-                y *= -1;
-            if (x >= 0 && y >= 0)
-            {
-                if (swapped && y < canvas.Width && x < canvas.Height)
-                    canvas.SetPixel(y, x, _color);
-                else if (x < canvas.Width && y < canvas.Height)
-                    canvas.SetPixel(x, y, _color);
-            }
-        }
-
-        private double DistanceSquared(Point a, Point b)
-        {
-            return (a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y);
-        }
-
-        private double DotProduct(Point a, Point b)
-        {
-            return a.X * b.X + a.Y * b.Y;
-        }
+        private double DistanceSquared(Point a, Point b) => (a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y);
+        private double DotProduct(Point a, Point b) => a.X * b.X + a.Y * b.Y;
         #endregion
     }
 }
