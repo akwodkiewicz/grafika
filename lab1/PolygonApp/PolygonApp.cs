@@ -15,6 +15,7 @@ namespace PolygonApp
         private int _clickedVertexId = -1;
         private int _clickedLineId = -1;
         private bool _createMode = true;
+        private bool _controlButtonPressed = false;
 
         public PolygonApp()
         {
@@ -89,18 +90,19 @@ namespace PolygonApp
             }
             else if (!CreateMode && e.Button == MouseButtons.Left)
             {
-                if (radioVertices.Checked && _clickedVertexId != -1)
-                {
-                    _polygon.SetPointForVertexId(_clickedVertexId, e.Location);
-                }
-                else if (radioVertices.Checked && _clickedLineId != -1)
-                {
-                    _polygon.MoveLine(_clickedLineId, e.Location);
-                }
-                else if (radioPolygon.Checked)
+                if (_controlButtonPressed)
                 {
                     _polygon.MovePolygon(e.Location);
                 }
+                else if (_clickedVertexId != -1)
+                {
+                    _polygon.SetPointForVertexId(_clickedVertexId, e.Location);
+                }
+                else if (_clickedLineId != -1)
+                {
+                    _polygon.MoveLine(_clickedLineId, e.Location);
+                }
+
             }
             pictureBox.Invalidate();
 
@@ -147,12 +149,24 @@ namespace PolygonApp
 
         private void PolygonApp_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Return && CreateMode)
+            if (e.KeyCode == Keys.Return && CreateMode && _polygon.VerticesCount>3)
             {
                 CreateMode = false;
                 _draggedVertexId = -1;
                 _polygon.Close();
                 pictureBox.Invalidate();
+            }
+            else if (e.KeyCode == Keys.ControlKey && !CreateMode)
+            {
+                _controlButtonPressed = true;
+            }
+        }
+
+        private void PolygonApp_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Control)
+            {
+                _controlButtonPressed = false;
             }
         }
         #endregion
@@ -215,5 +229,7 @@ namespace PolygonApp
             _polygon.ClearVertexConstraints(_clickedVertexId);
         }
         #endregion
+
+
     }
 }

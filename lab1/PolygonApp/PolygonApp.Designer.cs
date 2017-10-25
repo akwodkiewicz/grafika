@@ -280,6 +280,7 @@
             this.Name = "PolygonApp";
             this.Text = "Polygon Editor [Create Mode]";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.PolygonApp_KeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PolygonApp_KeyUp);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
