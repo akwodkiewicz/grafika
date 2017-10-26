@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PolygonApp));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
@@ -39,6 +40,7 @@
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lockAngleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.angleConstraintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearConstraintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -46,7 +48,7 @@
             this.lockHorizontallyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lockVerticallyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearLockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label2 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -77,11 +79,22 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.BackColor = System.Drawing.SystemColors.Window;
+            this.splitContainer1.Panel2.Controls.Add(this.label5);
             this.splitContainer1.Panel2.Controls.Add(this.label4);
             this.splitContainer1.Panel2.Controls.Add(this.pictureBox);
             this.splitContainer1.Size = new System.Drawing.Size(1022, 679);
             this.splitContainer1.SplitterDistance = 111;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold);
+            this.label2.Location = new System.Drawing.Point(247, 9);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(188, 54);
+            this.label2.TabIndex = 6;
+            this.label2.Text = "Create Mode:\r\n[LMB]      Add Vertex\r\n[Return]  Close Polygon";
             // 
             // panel1
             // 
@@ -158,10 +171,11 @@
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.deleteToolStripMenuItem,
+            this.lockAngleToolStripMenuItem,
             this.angleConstraintToolStripMenuItem,
             this.clearConstraintToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(194, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(194, 92);
             // 
             // deleteToolStripMenuItem
             // 
@@ -170,8 +184,16 @@
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.DeleteToolStripMenuItem_Click);
             // 
+            // lockAngleToolStripMenuItem
+            // 
+            this.lockAngleToolStripMenuItem.Name = "lockAngleToolStripMenuItem";
+            this.lockAngleToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.lockAngleToolStripMenuItem.Text = "Lock Angle";
+            this.lockAngleToolStripMenuItem.Click += new System.EventHandler(this.LockAngleToolStripMenuItem_Click);
+            // 
             // angleConstraintToolStripMenuItem
             // 
+            this.angleConstraintToolStripMenuItem.Enabled = false;
             this.angleConstraintToolStripMenuItem.Name = "angleConstraintToolStripMenuItem";
             this.angleConstraintToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.angleConstraintToolStripMenuItem.Text = "Angle Constraint";
@@ -222,15 +244,18 @@
             this.clearLockToolStripMenuItem.Text = "Clear Lock";
             this.clearLockToolStripMenuItem.Click += new System.EventHandler(this.ClearLockToolStripMenuItem_Click);
             // 
-            // label2
+            // label5
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold);
-            this.label2.Location = new System.Drawing.Point(247, 9);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(188, 54);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "Create Mode:\r\n[LMB]      Add Vertex\r\n[Return]  Close Polygon";
+            this.label5.AutoSize = true;
+            this.label5.BackColor = System.Drawing.SystemColors.Window;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.label5.ForeColor = System.Drawing.Color.Firebrick;
+            this.label5.Location = new System.Drawing.Point(3, 9);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(448, 42);
+            this.label5.TabIndex = 3;
+            this.label5.Text = "[EXPERIMENTAL MODE]";
+            this.label5.Visible = false;
             // 
             // PolygonApp
             // 
@@ -278,6 +303,8 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ToolStripMenuItem lockAngleToolStripMenuItem;
+        private System.Windows.Forms.Label label5;
     }
 }
 

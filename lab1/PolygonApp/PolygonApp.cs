@@ -16,6 +16,7 @@ namespace PolygonApp
         private int _clickedLineId = -1;
         private bool _createMode = true;
         private bool _selectAllMode = false;
+        private bool _experimentalMode = false;
 
         public PolygonApp()
         {
@@ -43,7 +44,16 @@ namespace PolygonApp
             set
             {
                 _selectAllMode = value;
-                label4.Visible = _selectAllMode;
+                label4.Visible = value;
+            }
+        }
+        public bool ExperimentalMode
+        {
+            get => _experimentalMode;
+            set
+            {
+                _experimentalMode = value;
+                label5.Visible = value;
             }
         }
         #endregion
@@ -109,9 +119,11 @@ namespace PolygonApp
                 }
                 else if (_clickedLineId != -1)
                 {
-                    _polygon.MoveLine(_clickedLineId, e.Location);
+                    if (ExperimentalMode)
+                        _polygon.MoveLineAlongVectors(_clickedLineId, e.Location);
+                    else
+                        _polygon.MoveLine(_clickedLineId, e.Location);
                 }
-
             }
             pictureBox.Invalidate();
 
@@ -160,12 +172,18 @@ namespace PolygonApp
         private void PolygonApp_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!CreateMode)
-            {
-                if (e.KeyChar == 'a')
-                    SelectAllMode = !SelectAllMode;
-                if (e.KeyChar == 'r')
-                    Reset();
-            }
+                switch (e.KeyChar)
+                {
+                    case 'a':
+                        SelectAllMode = !SelectAllMode;
+                        break;
+                    case 'r':
+                        Reset();
+                        break;
+                    case 'x':
+                        ExperimentalMode = !ExperimentalMode;
+                        break;
+                }
         }
         #endregion
 
@@ -227,7 +245,11 @@ namespace PolygonApp
             _polygon.ClearVertexConstraints(_clickedVertexId);
         }
 
-
+        private void LockAngleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var angle = _polygon.CalculateAngleForVertexId(_clickedVertexId);
+            _polygon.SetAngleConstraint(_clickedVertexId, angle);
+        }
         #endregion
 
         #region Other Methods

@@ -40,7 +40,6 @@ namespace PolygonApp.Geometry
         #endregion
 
         #region Public Methods
-        #region Final
         public int AddVertex(Point point)
         {
             Vertex vertex;
@@ -181,33 +180,6 @@ namespace PolygonApp.Geometry
 
             return -1;
         }
-        #endregion
-        #region TODO
-        public void MoveLine(int id, Point location)
-        {
-            var dx = location.X - _lines[id].LastClickPoint.X;
-            var dy = location.Y - _lines[id].LastClickPoint.Y;
-
-            var nextPoint = new Point(_vertices[NextId(id)].Center.X, _vertices[NextId(id)].Center.Y);
-            SetPointForVertexId(id, new Point(_vertices[id].Center.X + dx, _vertices[id].Center.Y + dy));
-            if (nextPoint == new Point(_vertices[NextId(id)].Center.X, _vertices[NextId(id)].Center.Y))
-                SetPointForVertexId(NextId(id), new Point(_vertices[NextId(id)].Center.X + dx, _vertices[NextId(id)].Center.Y + dy));
-
-            _lines[id].LastClickPoint = location;
-        }
-
-        public void MovePolygon(Point point)
-        {
-            var dx = point.X - _center.X;
-            var dy = point.Y - _center.Y;
-            for (int i = 0; i < _verticesCount; i++)
-            {
-                var p = new Point(_vertices[i].X + dx, _vertices[i].Y + dy);
-                _vertices[i].SetPoint(p);
-            }
-            _center.X = point.X;
-            _center.Y = point.Y;
-        }
 
         public bool MakeLineHorizontal(int id)
         {
@@ -259,6 +231,101 @@ namespace PolygonApp.Geometry
             return true;
         }
 
+        public void MoveLine(int id, Point location)
+        {
+            var dx = location.X - _lines[id].LastClickPoint.X;
+            var dy = location.Y - _lines[id].LastClickPoint.Y;
+
+            var nextPoint = new Point(_vertices[NextId(id)].Center.X, _vertices[NextId(id)].Center.Y);
+            SetPointForVertexId(id, new Point(_vertices[id].Center.X + dx, _vertices[id].Center.Y + dy));
+            if (nextPoint == new Point(_vertices[NextId(id)].Center.X, _vertices[NextId(id)].Center.Y))
+                SetPointForVertexId(NextId(id), new Point(_vertices[NextId(id)].Center.X + dx, _vertices[NextId(id)].Center.Y + dy));
+
+            _lines[id].LastClickPoint = location;
+        }
+
+        public void MovePolygon(Point point)
+        {
+            var dx = point.X - _center.X;
+            var dy = point.Y - _center.Y;
+            for (int i = 0; i < _verticesCount; i++)
+                _vertices[i].MovePoint(dx, dy);
+            _center.X = point.X;
+            _center.Y = point.Y;
+        }
+
+        public void SetPointForVertexId(int id, Point point)
+        {
+            var prevId = (id == 0) ? _verticesCount - 1 : id - 1;
+            var nextId = (id + 1) % _verticesCount;
+
+            if (!_closed)
+            {
+                _vertices[id].SetPoint(point);
+                return;
+            }
+
+            var needFixing = GetVerticesToFix(id);
+            var dx = point.X - _vertices[id].X;
+            var dy = point.Y - _vertices[id].Y;
+            for (int x = 0; x < _verticesCount; x++)
+            {
+                if (needFixing[x])
+                    _vertices[x].MovePoint(dx, dy);
+            }
+            _vertices[id].SetPoint(point);
+        }
+        #endregion
+
+        #region Public Methods TOFIX
+        public void MoveLineAlongVectors(int id, Point location)
+        {
+            var dx = location.X - _lines[id].LastClickPoint.X;
+            var dy = location.Y - _lines[id].LastClickPoint.Y;
+
+            var A = _vertices[id];
+            var B = _vertices[PrevId(id)];
+            var C = _vertices[NextId(id)];
+            var D = _vertices[NextId(NextId(id))];
+
+            if(A.X == C.X)
+            {
+                MakeLineVertical(id);
+                return;
+            }
+            else if (A.Y == C.Y)
+            {
+                MakeLineHorizontal(id);
+                return;
+            }
+
+            var slopeAB = (B.Y - A.Y) / (double)(B.X - A.X);
+            var slopeCD = (D.Y - C.Y) / (double)(D.X - C.X);
+            var slope = (C.Y - A.Y) / (double)(C.X - A.X);
+            if (double.IsInfinity(slopeAB) || double.IsInfinity(slopeCD))
+                return;
+
+            if(Math.Abs(slope) < 0.5)
+            {
+                A.X += (int)(dy / slopeAB);
+                A.Y += dy;
+
+                C.X += (int)(dy / slopeCD);
+                C.Y += dy;
+            }
+            else
+            {
+                A.X += dx;
+                A.Y += (int)(dx * slopeAB);
+
+                var oldCX = C.X;
+                C.X = (int)((C.X * slopeCD - A.X * slope + A.Y - C.Y) / (slopeCD - slope));
+                C.Y += (int)((C.X - oldCX)* slopeCD);
+            }
+
+            _lines[id].LastClickPoint = location;
+        }
+
         public void SetAngleConstraint(int id, int angle)
         {
             //var v = _vertices[id];
@@ -279,30 +346,6 @@ namespace PolygonApp.Geometry
             //vNext.Y = (int)(dx * Math.Cos(rad) + dy * Math.Sin(rad) + oy);
             _vertices[id].AngleConstraint = angle;
         }
-
-        public void SetPointForVertexId(int id, Point point)
-        {
-            var prevId = (id == 0) ? _verticesCount - 1 : id - 1;
-            var nextId = (id + 1) % _verticesCount;
-
-            if (!_closed)
-            {
-                _vertices[id].SetPoint(point);
-                return;
-            }
-
-            //--------- else -----------
-            var needFixing = GetVerticesToFix(id);
-            var dx = point.X - _vertices[id].X;
-            var dy = point.Y - _vertices[id].Y;
-            for (int x = 0; x < _verticesCount; x++)
-            {
-                if (needFixing[x])
-                    _vertices[x].MovePoint(dx, dy);
-            }
-            _vertices[id].SetPoint(point);
-        }
-        #endregion
         #endregion
 
         #region Private Methods
