@@ -36,7 +36,7 @@ namespace PolygonApp.Geometry
         public bool Moved { get => _moved; set => _moved = value; }
         public Color Color { get => _color; set => _color = value; }
         public Point LastClickPoint { get => _lastClickPoint; set => _lastClickPoint = value; }
-        public Constraint Constraint { get => _constraint; private set => _constraint = value; }
+        public Constraint Constraint { get => _constraint; set => _constraint = value; }
         public double Length { get => Math.Sqrt((End.X - Start.X) * (End.X - Start.X) + (End.Y - Start.Y) * (End.Y - Start.Y)); }
         public Point Center { get => new Point((Start.X + End.X) / 2, (Start.Y + End.Y) / 2); }
         #endregion
@@ -67,15 +67,6 @@ namespace PolygonApp.Geometry
                         canvas.SetPixel(x, y, Color.BlueViolet);
             }
             Moved = false;
-        }
-
-        public bool SetConstraint(Constraint constraint)
-        {
-            if (Constraint == constraint)
-                return false;
-
-            Constraint = constraint;
-            return true;
         }
 
         public double GetSquaredDistanceFromPoint(Point p)
