@@ -11,18 +11,24 @@ namespace PolygonApp
     {
         private Bitmap _canvas;
         private Polygon _polygon;
+        private Polygon _polygon2;
         private int _draggedVertexId = -1;
         private int _clickedVertexId = -1;
         private int _clickedLineId = -1;
         private bool _createMode = true;
+        private bool _create2ndMode = false;
+        private bool _editMode = false;
         private bool _selectAllMode = false;
         private bool _experimentalMode = false;
+        private Polygon pickedPolygon;
 
         public PolygonApp()
         {
             InitializeComponent();
             _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
             _polygon = new Polygon(trackBar1.Value);
+            _polygon2 = new Polygon(trackBar1.Value);
+            pickedPolygon = _polygon;
         }
 
         #region Properties
@@ -32,10 +38,23 @@ namespace PolygonApp
             set
             {
                 _createMode = value;
-                if (_createMode)
-                    Text = "Polygon Editor [Create Mode]";
-                else
-                    Text = "Polygon Editor [Edit Mode]";
+                if (!value)
+                {
+                    Create2ndMode = true;
+                    pickedPolygon = _polygon2;
+                }
+                SetTitle();
+            }
+        }
+        public bool Create2ndMode
+        {
+            get => _create2ndMode;
+            set
+            {
+                _create2ndMode = value;
+                if (!value)
+                    EditMode = true;
+                SetTitle();
             }
         }
         public bool SelectAllMode
@@ -56,6 +75,16 @@ namespace PolygonApp
                 label5.Visible = value;
             }
         }
+        public bool EditMode
+        {
+            get => _editMode;
+            set
+            {
+                _editMode = value;
+                if (!value)
+                    CreateMode = true;
+            }
+        }
         #endregion
 
         #region PictureBox Interaction
@@ -64,16 +93,22 @@ namespace PolygonApp
             if (CreateMode)
             {
                 _draggedVertexId = _polygon.AddVertex(e.Location);
-                if (_draggedVertexId == -1) { CreateMode = false; Text = "Polygon Editor [Edit Mode]"; }
+                if (_draggedVertexId == -1) { CreateMode = false; }
             }
-            else if (!CreateMode && e.Button == MouseButtons.Right)
+            else if(Create2ndMode)
             {
-                _clickedVertexId = _polygon.GetVertexIdFromPoint(e.Location);
+                _draggedVertexId = _polygon2.AddVertex(e.Location);
+                if (_draggedVertexId == -1) { Create2ndMode = false; }
+            }
+            else if (e.Button == MouseButtons.Right)
+            {
+                pickedPolygon = SelectPolygon(e.Location);
+                _clickedVertexId = pickedPolygon.GetVertexIdFromPoint(e.Location);
                 if (_clickedVertexId != -1)
                     contextMenuStrip1.Show(pictureBox, e.Location);
                 else
                 {
-                    _clickedLineId = _polygon.GetLineIdFromPoint(e.Location);
+                    _clickedLineId = pickedPolygon.GetLineIdFromPoint(e.Location);
                     if (_clickedLineId != -1)
                         contextMenuStrip2.Show(pictureBox, e.Location);
                 }
@@ -84,18 +119,20 @@ namespace PolygonApp
 
         private void PictureBox_MouseDown(object sender, MouseEventArgs e)
         {
-            if (!CreateMode)
+            if (EditMode)
             {
                 if (e.Button == MouseButtons.Left)
                 {
+                    pickedPolygon = SelectPolygon(e.Location);
+
                     if (!SelectAllMode)
                     {
-                        _clickedVertexId = _polygon.GetVertexIdFromPoint(e.Location);
+                        _clickedVertexId = pickedPolygon.GetVertexIdFromPoint(e.Location);
                         if (_clickedVertexId == -1)
-                            _clickedLineId = _polygon.GetLineIdFromPoint(e.Location);
+                            _clickedLineId = pickedPolygon.GetLineIdFromPoint(e.Location);
                     }
                     else
-                        _polygon.Center = e.Location;
+                        pickedPolygon.Center = e.Location;
                 }
             }
         }
@@ -105,24 +142,24 @@ namespace PolygonApp
             // if in create mode:
             if (_draggedVertexId != -1)
             {
-                _polygon.SetPointForVertexId(_draggedVertexId, e.Location);
+                pickedPolygon.SetPointForVertexId(_draggedVertexId, e.Location);
             }
-            else if (!CreateMode && e.Button == MouseButtons.Left)
+            else if (EditMode && e.Button == MouseButtons.Left)
             {
                 if (SelectAllMode)
                 {
-                    _polygon.MovePolygon(e.Location);
+                    pickedPolygon.MovePolygon(e.Location);
                 }
                 else if (_clickedVertexId != -1)
                 {
-                    _polygon.SetPointForVertexId(_clickedVertexId, e.Location);
+                    pickedPolygon.SetPointForVertexId(_clickedVertexId, e.Location);
                 }
                 else if (_clickedLineId != -1)
                 {
                     if (ExperimentalMode)
-                        _polygon.MoveLineAlongVectors(_clickedLineId, e.Location);
+                        pickedPolygon.MoveLineAlongVectors(_clickedLineId, e.Location);
                     else
-                        _polygon.MoveLine(_clickedLineId, e.Location);
+                        pickedPolygon.MoveLine(_clickedLineId, e.Location);
                 }
             }
             pictureBox.Invalidate();
@@ -131,23 +168,24 @@ namespace PolygonApp
 
         private void PictureBox_MouseUp(object sender, MouseEventArgs e)
         {
-            if (!CreateMode)
+            if (EditMode)
             {
                 if (e.Button == MouseButtons.Left)
-                    _clickedVertexId = -1;
+                { _clickedVertexId = -1; pickedPolygon = null; }
             }
         }
 
         private void PictureBox_Paint(object sender, PaintEventArgs e)
         {
             _polygon.Draw(_canvas);
+            _polygon2.Draw(_canvas);
             e.Graphics.DrawImage(_canvas, 0, 0, _canvas.Width, _canvas.Height);
             _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
         }
 
         private void AddVertexToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            _polygon.AddVertexToLine(_clickedLineId);
+            pickedPolygon.AddVertexToLine(_clickedLineId);
         }
         #endregion
 
@@ -155,6 +193,7 @@ namespace PolygonApp
         private void TrackBar1_ValueChanged(object sender, EventArgs e)
         {
             _polygon.VertexSize = trackBar1.Value;
+            _polygon2.VertexSize = trackBar1.Value;
             pictureBox.Invalidate();
         }
 
@@ -167,11 +206,18 @@ namespace PolygonApp
                 _polygon.Close();
                 pictureBox.Invalidate();
             }
+            else if (e.KeyCode == Keys.Return && Create2ndMode && _polygon2.VerticesCount > 3)
+            {
+                Create2ndMode = false;
+                _draggedVertexId = -1;
+                _polygon2.Close();
+                pictureBox.Invalidate();
+            }
         }
 
         private void PolygonApp_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!CreateMode)
+            if (EditMode)
                 switch (e.KeyChar)
                 {
                     case 'a':
@@ -190,9 +236,9 @@ namespace PolygonApp
         #region ToolStrips
         private void ContextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if(_polygon.IsVertexConstrained(_clickedVertexId))
+            if(pickedPolygon.IsVertexConstrained(_clickedVertexId))
             {
-                var angle = _polygon.CalculateAngleForVertexId(_clickedVertexId);
+                var angle = pickedPolygon.CalculateAngleForVertexId(_clickedVertexId);
                 angleConstraintToolStripMenuItem.Text = $"Angle Locked ({angle})";
             }
             else
@@ -201,7 +247,7 @@ namespace PolygonApp
 
         private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try { _polygon.DeleteVertex(_clickedVertexId); }
+            try { pickedPolygon.DeleteVertex(_clickedVertexId); }
             catch (InvalidOperationException)
             {
                 MessageBox.Show("You cannot delete any more vertices!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -213,7 +259,7 @@ namespace PolygonApp
         {
             try
             {
-                if (!_polygon.MakeLineHorizontal(_clickedLineId))
+                if (!pickedPolygon.MakeLineHorizontal(_clickedLineId))
                     MessageBox.Show("This line is already horizontal", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             }
@@ -227,7 +273,7 @@ namespace PolygonApp
         {
             try
             {
-                if (!_polygon.MakeLineVertical(_clickedLineId))
+                if (!pickedPolygon.MakeLineVertical(_clickedLineId))
                     MessageBox.Show("This line is already vertical", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (InvalidOperationException ex)
@@ -239,14 +285,14 @@ namespace PolygonApp
 
         private void AngleConstraintToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var angle = _polygon.CalculateAngleForVertexId(_clickedVertexId);
+            var angle = pickedPolygon.CalculateAngleForVertexId(_clickedVertexId);
             var form = new AngleConstraintForm(angle);
 
             if (form.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
-                    _polygon.SetAngleConstraint(_clickedVertexId, form.Angle);
+                    pickedPolygon.SetAngleConstraint(_clickedVertexId, form.Angle);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -257,12 +303,12 @@ namespace PolygonApp
 
         private void ClearLockToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            _polygon.ClearLineConstraints(_clickedLineId);
+            pickedPolygon.ClearLineConstraints(_clickedLineId);
         }
 
         private void ClearConstraintToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            _polygon.ClearVertexConstraints(_clickedVertexId);
+            pickedPolygon.ClearVertexConstraints(_clickedVertexId);
         }
         #endregion
 
@@ -271,11 +317,29 @@ namespace PolygonApp
         {
             _draggedVertexId = -1;
             _polygon = new Polygon(trackBar1.Value);
+            _polygon2 = new Polygon(trackBar1.Value);
             _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
-            CreateMode = true;
+            _createMode = true;
+            _create2ndMode = false;
+            _editMode = false;
             SelectAllMode = false;
             pictureBox.Invalidate();
             label1.Focus();
+        }
+        private void SetTitle()
+        {
+            if(CreateMode || Create2ndMode)
+                Text = "Polygon Editor [Create Mode]";
+            else
+                Text = "Polygon Editor [Edit Mode]";
+        }
+        private Polygon SelectPolygon(Point location)
+        {
+            var i = _polygon.GetVertexIdFromPoint(location);
+            var j = _polygon.GetLineIdFromPoint(location);
+            if (i != -1 || j!=-1)
+                return _polygon;
+            else return _polygon2;
         }
         #endregion
     }
