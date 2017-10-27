@@ -92,7 +92,7 @@ namespace PolygonApp.Geometry
 
         public int CalculateAngleForVertexId(int id)
         {
-            return (int)CalculateAngleABC(_vertices[PrevId(id)], _vertices[id], _vertices[NextId(id)]);
+            return (int)CalculateAngleABC(_vertices[NextId(id)], _vertices[id], _vertices[PrevId(id)]);
         }
 
         public void ClearLineConstraints(int id)
@@ -181,11 +181,22 @@ namespace PolygonApp.Geometry
             return -1;
         }
 
+        public bool IsVertexConstrained(int id)
+        {
+            return _vertices[id].Constraint == Constraint.Angle;
+        }
+
         public bool MakeLineHorizontal(int id)
         {
             if (_lines[PrevId(id)].Constraint == Constraint.Horizontal
                 || _lines[NextId(id)].Constraint == Constraint.Horizontal)
                 throw new InvalidOperationException("You can't add 2 consecutive horizontal lines!");
+
+            // Line is surrounded by locked angles
+            if (_vertices[id].Constraint != Constraint.None
+             || _vertices[NextId(id)].Constraint != Constraint.None)
+                throw new InvalidOperationException("You can't add this constraint here!");
+
             if (_lines[id].Constraint == Constraint.Horizontal)
                 return false;
 
@@ -211,8 +222,14 @@ namespace PolygonApp.Geometry
             if (_lines[PrevId(id)].Constraint == Constraint.Vertical
                 || _lines[NextId(id)].Constraint == Constraint.Vertical)
                 throw new InvalidOperationException("You can't add 2 consecutive vertical lines!");
+
+            // Line is surrounded by locked angles
+            if (_vertices[id].Constraint != Constraint.None
+             || _vertices[NextId(id)].Constraint != Constraint.None)
+                throw new InvalidOperationException("You can't add this constraint here!");
+
             if (_lines[id].Constraint == Constraint.Vertical)
-                return false;
+                    return false;
 
             if (_vertices[id].Constraint == Constraint.None
                  && _vertices[PrevId(id)].Constraint == Constraint.None)
@@ -254,17 +271,37 @@ namespace PolygonApp.Geometry
             _center.Y = point.Y;
         }
 
+        public void SetAngleConstraint(int id, int angle)
+        {
+            var vOrigin = _vertices[id];
+            var vLeft = _vertices[NextId(id)];
+            var vRight = _vertices[PrevId(id)];
+
+            var original = CalculateAngleABC(vLeft, vOrigin, vRight);
+            var phi = (int)(angle - original);
+
+            if (_lines[id].Constraint == Constraint.None
+             && _lines[NextId(id)].Constraint == Constraint.None
+             && _vertices[NextId(id)].Constraint == Constraint.None
+             && _vertices[NextId(NextId(id))].Constraint == Constraint.None)
+                RotateByAngle(id, NextId(id), phi);
+            else if (_lines[PrevId(id)].Constraint == Constraint.None
+                  && _lines[PrevId(PrevId(id))].Constraint == Constraint.None
+                  && _vertices[PrevId(id)].Constraint == Constraint.None
+                  && _vertices[PrevId(PrevId(id))].Constraint == Constraint.None)
+                RotateByAngle(id, PrevId(id), -phi);
+            else throw new InvalidOperationException("You can't make this constraint here!");
+
+            _vertices[id].AngleConstraint = angle;
+        }
+
         public void SetPointForVertexId(int id, Point point)
         {
-            var prevId = (id == 0) ? _verticesCount - 1 : id - 1;
-            var nextId = (id + 1) % _verticesCount;
-
             if (!_closed)
             {
                 _vertices[id].SetPoint(point);
                 return;
             }
-
             var needFixing = GetVerticesToFix(id);
             var dx = point.X - _vertices[id].X;
             var dy = point.Y - _vertices[id].Y;
@@ -277,7 +314,7 @@ namespace PolygonApp.Geometry
         }
         #endregion
 
-        #region Public Methods TOFIX
+        #region EXPERIMENTAL
         public void MoveLineAlongVectors(int id, Point location)
         {
             var dx = location.X - _lines[id].LastClickPoint.X;
@@ -288,7 +325,7 @@ namespace PolygonApp.Geometry
             var C = _vertices[NextId(id)];
             var D = _vertices[NextId(NextId(id))];
 
-            if(A.X == C.X)
+            if (A.X == C.X)
             {
                 MakeLineVertical(id);
                 return;
@@ -305,7 +342,7 @@ namespace PolygonApp.Geometry
             if (double.IsInfinity(slopeAB) || double.IsInfinity(slopeCD))
                 return;
 
-            if(Math.Abs(slope) < 0.5)
+            if (Math.Abs(slope) < 0.5)
             {
                 A.X += (int)(dy / slopeAB);
                 A.Y += dy;
@@ -320,31 +357,10 @@ namespace PolygonApp.Geometry
 
                 var oldCX = C.X;
                 C.X = (int)((C.X * slopeCD - A.X * slope + A.Y - C.Y) / (slopeCD - slope));
-                C.Y += (int)((C.X - oldCX)* slopeCD);
+                C.Y += (int)((C.X - oldCX) * slopeCD);
             }
 
             _lines[id].LastClickPoint = location;
-        }
-
-        public void SetAngleConstraint(int id, int angle)
-        {
-            //var v = _vertices[id];
-            //var vPrev = _vertices[PrevId(id)];
-            //var vNext = _vertices[NextId(id)];
-            ////var original = CalculateAngleABC(vPrev, v, vNext);
-            ////double phi = angle - (int)original;
-            //double phi = angle;
-            //var px = vNext.X;
-            //var py = vNext.Y;
-            //var ox = v.X;
-            //var oy = v.Y;
-            //var dx = px - ox;
-            //var dy = py - oy;
-
-            //var rad = (Math.PI / 180.0) * phi;
-            //vNext.X = (int)(dx * Math.Cos(rad) - dy * Math.Sin(rad) + ox);
-            //vNext.Y = (int)(dx * Math.Cos(rad) + dy * Math.Sin(rad) + oy);
-            _vertices[id].AngleConstraint = angle;
         }
         #endregion
 
@@ -383,7 +399,7 @@ namespace PolygonApp.Geometry
 
         private double CalculateAngleABC(Vertex a, Vertex b, Vertex c)
         {
-            double P1X = b.X, P1Y = b.Y, P2X = a.X, P2Y = a.Y, P3X = c.X, P3Y = c.Y;
+            double P1X = b.X, P1Y = b.Y, P2X = c.X, P2Y = c.Y, P3X = a.X, P3Y = a.Y;
 
             double numerator = P2Y * (P1X - P3X) + P1Y * (P3X - P2X) + P3Y * (P2X - P1X);
             double denominator = (P2X - P1X) * (P1X - P3X) + (P2Y - P1Y) * (P1Y - P3Y);
@@ -397,6 +413,26 @@ namespace PolygonApp.Geometry
                 angleDeg = 180 + angleDeg;
             }
             return angleDeg;
+        }
+
+        private void RotateByAngle(int originId, int rotatedId, int angle)
+        {
+            var vOrigin = _vertices[originId];
+            var v = _vertices[rotatedId];
+            var x = v.X;
+            var y = v.Y;
+            var ox = vOrigin.X;
+            var oy = vOrigin.Y;
+            var movedX = x - ox;
+            var movedY = y - oy;
+
+            var rad = (Math.PI / 180.0) * angle;
+            var cos = Math.Cos(rad);
+            var sin = Math.Sin(rad);
+            var translatedX = movedX * cos + movedY * sin;
+            var translatedY = -movedX * sin + movedY * cos;
+            v.X = (int)translatedX + ox;
+            v.Y = (int)translatedY + oy;
         }
 
         private void RearrangeVertices()

@@ -36,11 +36,11 @@
             this.label1 = new System.Windows.Forms.Label();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.label3 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.lockAngleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.angleConstraintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearConstraintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -48,7 +48,6 @@
             this.lockHorizontallyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lockVerticallyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearLockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -138,6 +137,19 @@
             this.label3.TabIndex = 4;
             this.label3.Text = resources.GetString("label3.Text");
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.BackColor = System.Drawing.SystemColors.Window;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.label5.ForeColor = System.Drawing.Color.Firebrick;
+            this.label5.Location = new System.Drawing.Point(3, 9);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(448, 42);
+            this.label5.TabIndex = 3;
+            this.label5.Text = "[EXPERIMENTAL MODE]";
+            this.label5.Visible = false;
+            // 
             // label4
             // 
             this.label4.AutoSize = true;
@@ -171,39 +183,31 @@
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.deleteToolStripMenuItem,
-            this.lockAngleToolStripMenuItem,
             this.angleConstraintToolStripMenuItem,
             this.clearConstraintToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(194, 92);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 92);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenuStrip1_Opening);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.DeleteToolStripMenuItem_Click);
             // 
-            // lockAngleToolStripMenuItem
-            // 
-            this.lockAngleToolStripMenuItem.Name = "lockAngleToolStripMenuItem";
-            this.lockAngleToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-            this.lockAngleToolStripMenuItem.Text = "Lock Angle";
-            this.lockAngleToolStripMenuItem.Click += new System.EventHandler(this.LockAngleToolStripMenuItem_Click);
-            // 
             // angleConstraintToolStripMenuItem
             // 
-            this.angleConstraintToolStripMenuItem.Enabled = false;
             this.angleConstraintToolStripMenuItem.Name = "angleConstraintToolStripMenuItem";
-            this.angleConstraintToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-            this.angleConstraintToolStripMenuItem.Text = "Angle Constraint";
+            this.angleConstraintToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.angleConstraintToolStripMenuItem.Text = "Lock Angle";
             this.angleConstraintToolStripMenuItem.Click += new System.EventHandler(this.AngleConstraintToolStripMenuItem_Click);
             // 
             // clearConstraintToolStripMenuItem
             // 
             this.clearConstraintToolStripMenuItem.Name = "clearConstraintToolStripMenuItem";
-            this.clearConstraintToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-            this.clearConstraintToolStripMenuItem.Text = "Clear Angle Constraint";
+            this.clearConstraintToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.clearConstraintToolStripMenuItem.Text = "Clear Lock";
             this.clearConstraintToolStripMenuItem.Click += new System.EventHandler(this.ClearConstraintToolStripMenuItem_Click);
             // 
             // contextMenuStrip2
@@ -243,19 +247,6 @@
             this.clearLockToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.clearLockToolStripMenuItem.Text = "Clear Lock";
             this.clearLockToolStripMenuItem.Click += new System.EventHandler(this.ClearLockToolStripMenuItem_Click);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.BackColor = System.Drawing.SystemColors.Window;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label5.ForeColor = System.Drawing.Color.Firebrick;
-            this.label5.Location = new System.Drawing.Point(3, 9);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(448, 42);
-            this.label5.TabIndex = 3;
-            this.label5.Text = "[EXPERIMENTAL MODE]";
-            this.label5.Visible = false;
             // 
             // PolygonApp
             // 
@@ -303,7 +294,6 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ToolStripMenuItem lockAngleToolStripMenuItem;
         private System.Windows.Forms.Label label5;
     }
 }

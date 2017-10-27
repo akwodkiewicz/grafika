@@ -188,6 +188,17 @@ namespace PolygonApp
         #endregion
 
         #region ToolStrips
+        private void ContextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if(_polygon.IsVertexConstrained(_clickedVertexId))
+            {
+                var angle = _polygon.CalculateAngleForVertexId(_clickedVertexId);
+                angleConstraintToolStripMenuItem.Text = $"Angle Locked ({angle})";
+            }
+            else
+                angleConstraintToolStripMenuItem.Text = "Lock Angle";
+        }
+
         private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try { _polygon.DeleteVertex(_clickedVertexId); }
@@ -232,7 +243,16 @@ namespace PolygonApp
             var form = new AngleConstraintForm(angle);
 
             if (form.ShowDialog() == DialogResult.OK)
-                _polygon.SetAngleConstraint(_clickedVertexId, form.Angle);
+            {
+                try
+                {
+                    _polygon.SetAngleConstraint(_clickedVertexId, form.Angle);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    MessageBox.Show(ex.Message, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
         }
 
         private void ClearLockToolStripMenuItem_Click(object sender, EventArgs e)
@@ -243,12 +263,6 @@ namespace PolygonApp
         private void ClearConstraintToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _polygon.ClearVertexConstraints(_clickedVertexId);
-        }
-
-        private void LockAngleToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var angle = _polygon.CalculateAngleForVertexId(_clickedVertexId);
-            _polygon.SetAngleConstraint(_clickedVertexId, angle);
         }
         #endregion
 
