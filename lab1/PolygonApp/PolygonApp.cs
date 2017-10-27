@@ -20,6 +20,7 @@ namespace PolygonApp
         private bool _editMode = false;
         private bool _selectAllMode = false;
         private bool _experimentalMode = false;
+        private bool _antialiasing = false;
         private Polygon pickedPolygon;
 
         public PolygonApp()
@@ -85,6 +86,8 @@ namespace PolygonApp
                     CreateMode = true;
             }
         }
+
+        public bool Antialiasing { get => _antialiasing; set => _antialiasing = value; }
         #endregion
 
         #region PictureBox Interaction
@@ -177,8 +180,8 @@ namespace PolygonApp
 
         private void PictureBox_Paint(object sender, PaintEventArgs e)
         {
-            _polygon.Draw(_canvas);
-            _polygon2.Draw(_canvas);
+            _polygon.Draw(_canvas, _antialiasing);
+            _polygon2.Draw(_canvas, _antialiasing);
             e.Graphics.DrawImage(_canvas, 0, 0, _canvas.Width, _canvas.Height);
             _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
         }
@@ -230,6 +233,11 @@ namespace PolygonApp
                         ExperimentalMode = !ExperimentalMode;
                         break;
                 }
+        }
+        private void RadioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            Antialiasing = !radioButton1.Checked;
+            pictureBox.Invalidate();
         }
         #endregion
 

@@ -48,6 +48,10 @@
             this.lockHorizontallyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lockVerticallyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearLockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -57,6 +61,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -71,6 +76,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.panel2);
             this.splitContainer1.Panel1.Controls.Add(this.label2);
             this.splitContainer1.Panel1.Controls.Add(this.panel1);
             this.splitContainer1.Panel1.Controls.Add(this.label3);
@@ -89,7 +95,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold);
-            this.label2.Location = new System.Drawing.Point(247, 9);
+            this.label2.Location = new System.Drawing.Point(347, 9);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(188, 54);
             this.label2.TabIndex = 6;
@@ -110,9 +116,9 @@
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.label1.Location = new System.Drawing.Point(3, 4);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(73, 16);
+            this.label1.Size = new System.Drawing.Size(75, 16);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Vertex size";
+            this.label1.Text = "Vertex Size";
             // 
             // trackBar1
             // 
@@ -131,7 +137,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold);
-            this.label3.Location = new System.Drawing.Point(524, 9);
+            this.label3.Location = new System.Drawing.Point(551, 9);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(427, 90);
             this.label3.TabIndex = 4;
@@ -186,27 +192,27 @@
             this.angleConstraintToolStripMenuItem,
             this.clearConstraintToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 92);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(134, 70);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenuStrip1_Opening);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.DeleteToolStripMenuItem_Click);
             // 
             // angleConstraintToolStripMenuItem
             // 
             this.angleConstraintToolStripMenuItem.Name = "angleConstraintToolStripMenuItem";
-            this.angleConstraintToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.angleConstraintToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.angleConstraintToolStripMenuItem.Text = "Lock Angle";
             this.angleConstraintToolStripMenuItem.Click += new System.EventHandler(this.AngleConstraintToolStripMenuItem_Click);
             // 
             // clearConstraintToolStripMenuItem
             // 
             this.clearConstraintToolStripMenuItem.Name = "clearConstraintToolStripMenuItem";
-            this.clearConstraintToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.clearConstraintToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.clearConstraintToolStripMenuItem.Text = "Clear Lock";
             this.clearConstraintToolStripMenuItem.Click += new System.EventHandler(this.ClearConstraintToolStripMenuItem_Click);
             // 
@@ -248,6 +254,48 @@
             this.clearLockToolStripMenuItem.Text = "Clear Lock";
             this.clearLockToolStripMenuItem.Click += new System.EventHandler(this.ClearLockToolStripMenuItem_Click);
             // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.label6);
+            this.panel2.Controls.Add(this.radioButton2);
+            this.panel2.Controls.Add(this.radioButton1);
+            this.panel2.Location = new System.Drawing.Point(211, 23);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(116, 71);
+            this.panel2.TabIndex = 7;
+            // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Checked = true;
+            this.radioButton1.Location = new System.Drawing.Point(14, 22);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(78, 17);
+            this.radioButton1.TabIndex = 0;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "Bresenham";
+            this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioButton1.CheckedChanged += new System.EventHandler(this.RadioButton1_CheckedChanged);
+            // 
+            // radioButton2
+            // 
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.Location = new System.Drawing.Point(14, 45);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(76, 17);
+            this.radioButton2.TabIndex = 1;
+            this.radioButton2.Text = "Xiaolin Wu";
+            this.radioButton2.UseVisualStyleBackColor = true;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(11, 4);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(79, 13);
+            this.label6.TabIndex = 2;
+            this.label6.Text = "Line Rendering";
+            // 
             // PolygonApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -271,6 +319,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.contextMenuStrip2.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -295,6 +345,10 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.RadioButton radioButton1;
     }
 }
 

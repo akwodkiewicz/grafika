@@ -5,7 +5,7 @@ using PolygonApp.Commons;
 
 namespace PolygonApp.Geometry
 {
-    class Line : IDrawable
+    class Line
     {
         private Vertex _start;
         private Vertex _end;
@@ -42,9 +42,12 @@ namespace PolygonApp.Geometry
         #endregion
 
         #region Public Methods
-        public void Draw(Bitmap canvas)
+        public void Draw(Bitmap canvas, bool antialiasing)
         {
-            Bresenham(canvas);
+            if (antialiasing)
+                XiaolinWu(canvas);
+            else
+                Bresenham(canvas);
             // Drawing a `horizontal` mark
             if (Constraint == Constraint.Horizontal)
             {
@@ -157,6 +160,60 @@ namespace PolygonApp.Geometry
             }
         }
 
+        private void XiaolinWu(Bitmap canvas)
+        {
+            int x0 = Start.X, x1 = End.X, y0 = Start.Y, y1 = End.Y;
+            bool steep = Math.Abs(y1 - y0) > Math.Abs(x1 - x0);
+
+            if (steep) { x0 = Start.Y;x1 = End.Y; y0 = Start.X; y1 = End.X; }
+            if (x0 > x1) { x0 = End.X; x1 = Start.X; y0 = End.Y; y1 = Start.Y; }
+            var dx = x1 - x0;
+            var dy = y1 - y0;
+            var grad = (double)dy / dx;
+            if (dx == 0)
+                grad = 1;
+
+            var xend = x0;
+            var yend = y0;
+            var xgap = ReverseFractionalPart(x0 + 0.5);
+            var xpxl1 = xend;
+            var ypxl1 = y0;
+
+            var intery = yend + grad;
+
+            xend = x1;
+            yend = y1;
+            xgap = FractionalPart(x1 + 0.5);
+            var xpxl2 = xend;
+            var ypxl2 = yend;
+
+            if (steep)
+            {
+                for (int x = xpxl1; x <= xpxl2; x++)
+                {
+                    canvas.SetPixel((int)Math.Floor(intery), x, GetColor(ReverseFractionalPart(intery)));
+                    canvas.SetPixel((int)Math.Floor(intery)+1, x, GetColor(FractionalPart(intery)));
+                    intery += grad;
+                }
+            }
+            else
+            {
+                for (int x = xpxl1; x <= xpxl2; x++)
+                {
+                    canvas.SetPixel(x, (int)Math.Floor(intery), GetColor(ReverseFractionalPart(intery)));
+                    canvas.SetPixel(x, (int)Math.Floor(intery) + 1, GetColor(FractionalPart(intery)));
+                    intery += grad;
+                }
+            }
+
+        }
+        private Color GetColor(double intensity)
+        {
+            var value = (int)(255 * intensity);
+            return Color.FromArgb(value, value, value);
+        }
+        private double FractionalPart(double x) { return x - Math.Floor(x); }
+        private double ReverseFractionalPart(double x) { return 1 - FractionalPart(x); }
         private double DistanceSquared(Point a, Point b) => (a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y);
         private double DotProduct(Point a, Point b) => a.X * b.X + a.Y * b.Y;
         #endregion

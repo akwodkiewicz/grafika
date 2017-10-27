@@ -5,7 +5,7 @@ using PolygonApp.Commons;
 
 namespace PolygonApp.Geometry
 {
-    class Polygon : IDrawable
+    class Polygon
     {
         private const int _maxVertices = 20;
         private const int _lineProximity = 500;
@@ -138,13 +138,13 @@ namespace PolygonApp.Geometry
 
         }
 
-        public void Draw(Bitmap canvas)
+        public void Draw(Bitmap canvas, bool antialiasing)
         {
             if (_verticesCount > 1)
                 for (int i = 0; i < _verticesCount - 1; i++)
-                    _lines[i].Draw(canvas);
+                    _lines[i].Draw(canvas, antialiasing);
             if (_closed)
-                _lines[_verticesCount - 1].Draw(canvas);
+                _lines[_verticesCount - 1].Draw(canvas, antialiasing);
             for (int i = 0; i < _verticesCount; i++)
                 _vertices[i].Draw(canvas);
         }
