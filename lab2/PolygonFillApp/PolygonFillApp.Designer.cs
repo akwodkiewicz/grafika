@@ -43,6 +43,7 @@
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addVertexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fillToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -191,16 +192,24 @@
             // contextMenuStrip2
             // 
             this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addVertexToolStripMenuItem});
+            this.addVertexToolStripMenuItem,
+            this.fillToolStripMenuItem});
             this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(132, 26);
+            this.contextMenuStrip2.Size = new System.Drawing.Size(153, 70);
             // 
             // addVertexToolStripMenuItem
             // 
             this.addVertexToolStripMenuItem.Name = "addVertexToolStripMenuItem";
-            this.addVertexToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
+            this.addVertexToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.addVertexToolStripMenuItem.Text = "Add Vertex";
             this.addVertexToolStripMenuItem.Click += new System.EventHandler(this.AddVertexToolStripMenuItem_Click);
+            // 
+            // fillToolStripMenuItem
+            // 
+            this.fillToolStripMenuItem.Name = "fillToolStripMenuItem";
+            this.fillToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.fillToolStripMenuItem.Text = "Fill";
+            this.fillToolStripMenuItem.Click += new System.EventHandler(this.FillToolStripMenuItem_Click);
             // 
             // PolygonFillApp
             // 
@@ -244,6 +253,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ToolStripMenuItem fillToolStripMenuItem;
     }
 }
 

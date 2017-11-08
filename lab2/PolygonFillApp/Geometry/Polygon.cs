@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PolygonApp.Algorithms;
+using System;
 using System.Drawing;
 
 namespace PolygonApp.Geometry
@@ -10,20 +11,23 @@ namespace PolygonApp.Geometry
         private const int _vertexProximity = 15;
         private int _verticesCount = 0;
         private bool _closed = false;
+        private bool _filled = false;
         private int _vertexSize;
         private Point _center;
         private Vertex[] _vertices;
-        private Edge[] _lines;
+        private Edge[] _edges;
 
         public Polygon(int vertexSize)
         {
             _vertices = new Vertex[_maxVertices];
-            _lines = new Edge[_maxVertices];
+            _edges = new Edge[_maxVertices];
             _vertexSize = vertexSize;
         }
 
         #region Properties
         public Point Center { get => _center; set => _center = value; }
+        public Edge[] Edges { get => _edges; }
+        public Vertex[] Vertices { get => _vertices; }
         public int VertexSize
         {
             get => _vertexSize;
@@ -35,6 +39,7 @@ namespace PolygonApp.Geometry
             }
         }
         public int VerticesCount { get => _verticesCount; }
+        public bool Filled { get => _filled; private set => _filled = value; }
         #endregion
 
         #region Public Methods
@@ -56,7 +61,7 @@ namespace PolygonApp.Geometry
             _vertices[_verticesCount] = vertex;
 
             Edge line = new Edge(_vertices[_verticesCount - 1], vertex);
-            _lines[_verticesCount - 1] = line;
+            _edges[_verticesCount - 1] = line;
 
             _verticesCount++;
             return _verticesCount - 1;
@@ -66,7 +71,7 @@ namespace PolygonApp.Geometry
         {
             if (VerticesCount == _maxVertices) return;
 
-            var oldLine = _lines[id];
+            var oldLine = _edges[id];
             var x = (oldLine.End.X + oldLine.Start.X) / 2;
             var y = (oldLine.End.Y + oldLine.Start.Y) / 2;
             var middle = new Point(x, y);
@@ -74,7 +79,7 @@ namespace PolygonApp.Geometry
             for (int i = _verticesCount; i > id + 1; i--)
             {
                 _vertices[i] = _vertices[i - 1];
-                _lines[i] = _lines[i - 1];
+                _edges[i] = _edges[i - 1];
             }
 
             // vertices[id+1] and lines[id+1] are now null
@@ -83,7 +88,7 @@ namespace PolygonApp.Geometry
             _vertices[id + 1] = vertex;
             var line = new Edge(vertex, oldLine.End);
             oldLine.End = vertex;
-            _lines[id + 1] = line;
+            _edges[id + 1] = line;
 
             _verticesCount++;
         }
@@ -92,13 +97,13 @@ namespace PolygonApp.Geometry
         {
             if (_verticesCount == _maxVertices)
             {
-                _lines[_verticesCount - 1] = new Edge(_vertices[_verticesCount - 1], _vertices[0]);
+                _edges[_verticesCount - 1] = new Edge(_vertices[_verticesCount - 1], _vertices[0]);
             }
             else
             {
                 _verticesCount--;
                 _vertices[_verticesCount] = null;
-                _lines[_verticesCount - 1] = new Edge(_vertices[_verticesCount - 1], _vertices[0]);
+                _edges[_verticesCount - 1] = new Edge(_vertices[_verticesCount - 1], _vertices[0]);
             }
             _closed = true;
         }
@@ -112,8 +117,8 @@ namespace PolygonApp.Geometry
             RearrangeVertices();
 
             var prevId = (id == 0) ? _verticesCount - 1 : id - 1;
-            _lines[prevId].End = _lines[id].End;
-            _lines[id] = null;
+            _edges[prevId].End = _edges[id].End;
+            _edges[id] = null;
             RearrangeLines();
 
             _verticesCount--;
@@ -122,13 +127,17 @@ namespace PolygonApp.Geometry
 
         public void Draw(Bitmap canvas)
         {
+            if (_filled)
+                PolygonFill.SimplePolygonFill(this, canvas);
+
             if (_verticesCount > 1)
                 for (int i = 0; i < _verticesCount - 1; i++)
-                    _lines[i].Draw(canvas);
+                    _edges[i].Draw(canvas);
             if (_closed)
-                _lines[_verticesCount - 1].Draw(canvas);
+                _edges[_verticesCount - 1].Draw(canvas);
             for (int i = 0; i < _verticesCount; i++)
                 _vertices[i].Draw(canvas);
+
         }
 
         public int GetLineIdFromPoint(Point point)
@@ -138,7 +147,7 @@ namespace PolygonApp.Geometry
             int bestId = -1;
             for (int i = 0; i < iMax; i++)
             {
-                var dist = _lines[i].GetSquaredDistanceFromPoint(point);
+                var dist = _edges[i].GetSquaredDistanceFromPoint(point);
                 if (dist < minimumDistance)
                 {
                     minimumDistance = dist;
@@ -147,7 +156,7 @@ namespace PolygonApp.Geometry
             }
             if (minimumDistance < _lineProximity)
             {
-                _lines[bestId].LastClickPoint = point;
+                _edges[bestId].LastClickPoint = point;
                 return bestId;
             }
             else
@@ -165,15 +174,15 @@ namespace PolygonApp.Geometry
 
         public void MoveLine(int id, Point location)
         {
-            var dx = location.X - _lines[id].LastClickPoint.X;
-            var dy = location.Y - _lines[id].LastClickPoint.Y;
+            var dx = location.X - _edges[id].LastClickPoint.X;
+            var dy = location.Y - _edges[id].LastClickPoint.Y;
 
             var nextPoint = new Point(_vertices[NextId(id)].Center.X, _vertices[NextId(id)].Center.Y);
             SetPointForVertexId(id, new Point(_vertices[id].Center.X + dx, _vertices[id].Center.Y + dy));
             if (nextPoint == new Point(_vertices[NextId(id)].Center.X, _vertices[NextId(id)].Center.Y))
                 SetPointForVertexId(NextId(id), new Point(_vertices[NextId(id)].Center.X + dx, _vertices[NextId(id)].Center.Y + dy));
 
-            _lines[id].LastClickPoint = location;
+            _edges[id].LastClickPoint = location;
         }
 
         public void MovePolygon(Point point)
@@ -186,7 +195,11 @@ namespace PolygonApp.Geometry
             _center.Y = point.Y;
         }
 
-        
+        public void FillPolygon()
+        {
+            Filled = true;
+        }
+
         public void SetPointForVertexId(int id, Point point)
         {
             if (!_closed)
@@ -215,26 +228,26 @@ namespace PolygonApp.Geometry
         {
             for (int i = 0; i < _verticesCount; i++)
             {
-                if (_lines[i] == null && i + 1 < _verticesCount)
+                if (_edges[i] == null && i + 1 < _verticesCount)
                 {
-                    _lines[i] = _lines[i + 1];
-                    _lines[i + 1] = null;
+                    _edges[i] = _edges[i + 1];
+                    _edges[i + 1] = null;
                 }
             }
             if (_verticesCount == 3)
             {
                 int id = 0;
-                if (_lines[1] != null)
+                if (_edges[1] != null)
                     id = 1;
-                else if (_lines[2] != null)
+                else if (_edges[2] != null)
                     id = 2;
                 if (id != 0)
                 {
-                    _lines[0] = _lines[id];
-                    _lines[id] = null;
+                    _edges[0] = _edges[id];
+                    _edges[id] = null;
                 }
-                _lines[0].Start = _vertices[0];
-                _lines[0].End = _vertices[1];
+                _edges[0].Start = _vertices[0];
+                _edges[0].End = _vertices[1];
             }
         }
         private int PrevId(int id) { return (id == 0) ? _verticesCount - 1 : id - 1; }

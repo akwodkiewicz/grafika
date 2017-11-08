@@ -260,5 +260,10 @@ namespace PolygonApp
             else return _polygon2;
         }
         #endregion
+
+        private void FillToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _polygon.FillPolygon();
+        }
     }
 }
