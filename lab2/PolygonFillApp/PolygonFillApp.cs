@@ -4,6 +4,8 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using PolygonApp.Geometry;
+using PolygonApp.Algorithms;
+using System.Collections.Generic;
 
 namespace PolygonApp
 {

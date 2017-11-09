@@ -1,6 +1,7 @@
 ﻿using PolygonApp.Algorithms;
 using System;
 using System.Drawing;
+using System.Collections.Generic;
 
 namespace PolygonApp.Geometry
 {
@@ -12,7 +13,7 @@ namespace PolygonApp.Geometry
         private int _verticesCount = 0;
         private bool _closed = false;
         private bool _filled = false;
-        private int _vertexSize;
+        private int _vertexSize = 15;
         private Point _center;
         private Vertex[] _vertices;
         private Edge[] _edges;
@@ -22,6 +23,27 @@ namespace PolygonApp.Geometry
             _vertices = new Vertex[_maxVertices];
             _edges = new Edge[_maxVertices];
             _vertexSize = vertexSize;
+        }
+
+        public Polygon(List<Vertex> vertices)
+        {          
+            _vertices = new Vertex[_maxVertices];
+            _edges = new Edge[_maxVertices];
+
+            int i = 0;
+            foreach (var v in vertices)
+            {
+                _vertices[i++] = v;
+                if (i == _maxVertices)
+                    break;
+            }
+            _verticesCount = i;
+            for (i = 0; i < _verticesCount; i++)
+            {
+                int j = (i + 1) % _verticesCount;
+                _edges[i] = new Edge(_vertices[i], _vertices[j]);
+            }
+            _closed = true;
         }
 
         #region Properties

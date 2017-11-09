@@ -13,7 +13,7 @@ namespace PolygonApp.Geometry
         private Color _backColor;
         private bool _moved;
 
-        public Vertex(Point point, int size)
+        public Vertex(Point point, int size=15)
         {
             _center = point;
             _size = size;
