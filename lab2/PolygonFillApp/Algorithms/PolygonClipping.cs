@@ -1,10 +1,11 @@
-﻿using PolygonApp.Geometry;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using PolygonApp.Geometry;
 
 namespace PolygonApp.Algorithms
 {
@@ -31,6 +32,8 @@ namespace PolygonApp.Algorithms
             var output = new List<Vertex>(subjectV);
             for (int i = 0; i < clipV.Length; i++)
             {
+                if (output.Count == 0)
+                    return null;
                 Edge e = clip.Edges[i];
                 Vertex pNext = clipV[(i + 2) % clipV.Length];
 
@@ -90,7 +93,7 @@ namespace PolygonApp.Algorithms
             var signList = threes.Select((tuple) =>
             {
                 (var a, var b, var c) = tuple;
-                return ((a.X - b.X) * (b.Y - c.Y) - (a.Y - b.Y) * (b.X - c.X)) > 0;
+                return ((long)((a.X - b.X) * (b.Y - c.Y)) - (long)((a.Y - b.Y) * (b.X - c.X))) > 0;
             });
             return signList.All(b => b) || !signList.Any(b => b);
         }

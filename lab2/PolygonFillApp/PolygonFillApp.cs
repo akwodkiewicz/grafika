@@ -108,6 +108,13 @@ namespace PolygonApp
                         _polygonManager.StartCreating();
                         SetTitle();
                         break;
+                    case 'v':
+                        try { _polygonManager.Clip(); }
+                        catch (InvalidOperationException exc)
+                        {
+                            MessageBox.Show(exc.Message, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                        break;
                     case 'r':
                         Reset();
                         break;

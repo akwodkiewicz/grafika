@@ -48,8 +48,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Algorithms\PolygonClipping.cs" />
     <Compile Include="Algorithms\PolygonFill.cs" />
+    <Compile Include="Algorithms\PolygonClipping.cs" />
     <Compile Include="PolygonFillApp.cs">
       <SubType>Form</SubType>
     </Compile>
