@@ -225,8 +225,14 @@ namespace PolygonApp
                         Reset();
                         break;
                     case 'i':
-                        _polygon = PolygonClipping.SutherlandHodgman(_polygon, _polygon2);
-                        _polygon2 = null;
+                        var temp = PolygonClipping.SutherlandHodgman(_polygon, _polygon2);
+                        if (temp == null)
+                            MessageBox.Show("Neither of both polygons is convex!");
+                        else
+                        {
+                            _polygon = temp;
+                            _polygon2 = null;
+                        }
                         break;
                 }
         }
