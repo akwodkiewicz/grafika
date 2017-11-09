@@ -4,6 +4,8 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using PolygonApp.Geometry;
+using PolygonApp.Algorithms;
+using System.Collections.Generic;
 
 namespace PolygonApp
 {
@@ -25,9 +27,22 @@ namespace PolygonApp
         {
             InitializeComponent();
             _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
+            //Init();
             _polygon = new Polygon(trackBar1.Value);
             _polygon2 = new Polygon(trackBar1.Value);
             _pickedPolygon = _polygon;
+        }
+
+        public void Init()
+        {
+            var list = new List<Vertex>()
+            {
+                new Vertex(new Point(50, 50)),
+                new Vertex(new Point(180, 50)),
+                new Vertex(new Point(180, 200)),
+                new Vertex(new Point(50, 200))
+            };
+            _polygon = new Polygon(list);
         }
 
         #region Properties
@@ -85,7 +100,7 @@ namespace PolygonApp
                 _draggedVertexId = _polygon.AddVertex(e.Location);
                 if (_draggedVertexId == -1) { CreateMode = false; }
             }
-            else if(Create2ndMode)
+            else if (Create2ndMode)
             {
                 _draggedVertexId = _polygon2.AddVertex(e.Location);
                 if (_draggedVertexId == -1) { Create2ndMode = false; }
@@ -165,7 +180,8 @@ namespace PolygonApp
         private void PictureBox_Paint(object sender, PaintEventArgs e)
         {
             _polygon.Draw(_canvas);
-            _polygon2.Draw(_canvas);
+            if (_polygon2 != null)
+                _polygon2.Draw(_canvas);
             e.Graphics.DrawImage(_canvas, 0, 0, _canvas.Width, _canvas.Height);
             _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
         }
@@ -208,6 +224,10 @@ namespace PolygonApp
                     case 'r':
                         Reset();
                         break;
+                    case 'i':
+                        _polygon = PolygonClipping.SutherlandHodgman(_polygon, _polygon2);
+                        _polygon2 = null;
+                        break;
                 }
         }
         #endregion
@@ -246,7 +266,7 @@ namespace PolygonApp
         }
         private void SetTitle()
         {
-            if(CreateMode || Create2ndMode)
+            if (CreateMode || Create2ndMode)
                 Text = "Polygon Editor [Create Mode]";
             else
                 Text = "Polygon Editor [Edit Mode]";
