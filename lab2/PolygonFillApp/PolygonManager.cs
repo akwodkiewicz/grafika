@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using PolygonApp.Algorithms;
+
 namespace PolygonApp
 {
     class PolygonManager
@@ -132,6 +134,20 @@ namespace PolygonApp
         public void Fill()
         {
             _currentPoly?.FillPolygon();
+        }
+
+        public void Clip()
+        {
+            if (_polygons.Count < 2)
+                throw new InvalidOperationException("There is no clipping polygon!");
+
+            var result = PolygonClipping.SutherlandHodgman(_polygons[0], _polygons[1]);
+            if (result == null)
+                throw new InvalidOperationException("There is no clipping polygon!");
+
+            _polygons.RemoveAt(1);
+            _polygons.RemoveAt(0);
+            _polygons.Add(result);
         }
         #endregion
 
