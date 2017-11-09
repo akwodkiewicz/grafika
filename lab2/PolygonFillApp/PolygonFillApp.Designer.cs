@@ -29,14 +29,12 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PolygonFillApp));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -63,39 +61,48 @@
             this.splitContainer1.IsSplitterFixed = true;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
-            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.label2);
-            this.splitContainer1.Panel1.Controls.Add(this.panel1);
             this.splitContainer1.Panel1.Controls.Add(this.label3);
+            this.splitContainer1.Panel1.Controls.Add(this.panel1);
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.BackColor = System.Drawing.SystemColors.Window;
-            this.splitContainer1.Panel2.Controls.Add(this.label5);
             this.splitContainer1.Panel2.Controls.Add(this.label4);
             this.splitContainer1.Panel2.Controls.Add(this.pictureBox);
             this.splitContainer1.Size = new System.Drawing.Size(1022, 679);
-            this.splitContainer1.SplitterDistance = 111;
+            this.splitContainer1.SplitterDistance = 200;
             this.splitContainer1.TabIndex = 0;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold);
-            this.label2.Location = new System.Drawing.Point(347, 9);
+            this.label2.Location = new System.Drawing.Point(7, 9);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(188, 54);
             this.label2.TabIndex = 6;
             this.label2.Text = "Create Mode:\r\n[LMB]      Add Vertex\r\n[Return]  Close Polygon";
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold);
+            this.label3.Location = new System.Drawing.Point(11, 83);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(175, 90);
+            this.label3.TabIndex = 4;
+            this.label3.Text = "Edit Mode:\r\n[RMB]   Context Menu\r\n[A]        Move Polygon\r\n[C]        Create Mode" +
+    "\r\n[R]        Reset Canvas";
+            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.trackBar1);
-            this.panel1.Location = new System.Drawing.Point(24, 23);
+            this.panel1.Location = new System.Drawing.Point(11, 431);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(181, 71);
             this.panel1.TabIndex = 5;
@@ -123,29 +130,6 @@
             this.trackBar1.Value = 16;
             this.trackBar1.ValueChanged += new System.EventHandler(this.TrackBar1_ValueChanged);
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold);
-            this.label3.Location = new System.Drawing.Point(551, 9);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(427, 90);
-            this.label3.TabIndex = 4;
-            this.label3.Text = resources.GetString("label3.Text");
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.BackColor = System.Drawing.SystemColors.Window;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label5.ForeColor = System.Drawing.Color.Firebrick;
-            this.label5.Location = new System.Drawing.Point(3, 9);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(448, 42);
-            this.label5.TabIndex = 3;
-            this.label5.Text = "[EXPERIMENTAL MODE]";
-            this.label5.Visible = false;
-            // 
             // label4
             // 
             this.label4.AutoSize = true;
@@ -166,7 +150,7 @@
             this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox.Location = new System.Drawing.Point(0, 0);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(1020, 562);
+            this.pictureBox.Size = new System.Drawing.Size(816, 677);
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
             this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBox_Paint);
@@ -195,19 +179,19 @@
             this.addVertexToolStripMenuItem,
             this.fillToolStripMenuItem});
             this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(153, 70);
+            this.contextMenuStrip2.Size = new System.Drawing.Size(132, 48);
             // 
             // addVertexToolStripMenuItem
             // 
             this.addVertexToolStripMenuItem.Name = "addVertexToolStripMenuItem";
-            this.addVertexToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.addVertexToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.addVertexToolStripMenuItem.Text = "Add Vertex";
             this.addVertexToolStripMenuItem.Click += new System.EventHandler(this.AddVertexToolStripMenuItem_Click);
             // 
             // fillToolStripMenuItem
             // 
             this.fillToolStripMenuItem.Name = "fillToolStripMenuItem";
-            this.fillToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.fillToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.fillToolStripMenuItem.Text = "Fill";
             this.fillToolStripMenuItem.Click += new System.EventHandler(this.FillToolStripMenuItem_Click);
             // 
@@ -252,7 +236,6 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ToolStripMenuItem fillToolStripMenuItem;
     }
 }
