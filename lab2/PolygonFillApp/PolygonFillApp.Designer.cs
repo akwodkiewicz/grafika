@@ -30,6 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.label13 = new System.Windows.Forms.Label();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
@@ -61,7 +62,10 @@
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addVertexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fillToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
+            this.radioButton3 = new System.Windows.Forms.RadioButton();
+            this.radioButton4 = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -80,6 +84,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
+            this.flowLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -95,6 +100,8 @@
             // 
             this.splitContainer1.Panel1.Controls.Add(this.label13);
             this.splitContainer1.Panel1.Controls.Add(this.flowLayoutPanel1);
+            this.splitContainer1.Panel1.Controls.Add(this.label14);
+            this.splitContainer1.Panel1.Controls.Add(this.flowLayoutPanel2);
             this.splitContainer1.Panel1.Controls.Add(this.label12);
             this.splitContainer1.Panel1.Controls.Add(this.panel3);
             this.splitContainer1.Panel1.Controls.Add(this.panel2);
@@ -112,11 +119,21 @@
             this.splitContainer1.SplitterDistance = 200;
             this.splitContainer1.TabIndex = 0;
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.label13.Location = new System.Drawing.Point(7, 211);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(28, 20);
+            this.label13.TabIndex = 20;
+            this.label13.Text = "Fill";
+            // 
             // flowLayoutPanel1
             // 
             this.flowLayoutPanel1.Controls.Add(this.radioButton1);
             this.flowLayoutPanel1.Controls.Add(this.radioButton2);
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(19, 234);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(11, 234);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(89, 53);
             this.flowLayoutPanel1.TabIndex = 19;
@@ -143,7 +160,7 @@
             this.radioButton2.TabIndex = 20;
             this.radioButton2.Text = "Image";
             this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.CheckedChanged += new System.EventHandler(this.RadioButtonImage_CheckedChanged);
+            this.radioButton2.CheckedChanged += new System.EventHandler(this.RadioButtonColorImage_CheckedChanged);
             // 
             // label12
             // 
@@ -189,7 +206,7 @@
             this.numericUpDown4.Size = new System.Drawing.Size(40, 20);
             this.numericUpDown4.TabIndex = 11;
             this.numericUpDown4.Value = new decimal(new int[] {
-            255,
+            127,
             0,
             0,
             0});
@@ -206,7 +223,7 @@
             // 
             // numericUpDown5
             // 
-            this.numericUpDown5.Location = new System.Drawing.Point(140, 12);
+            this.numericUpDown5.Location = new System.Drawing.Point(79, 12);
             this.numericUpDown5.Maximum = new decimal(new int[] {
             255,
             0,
@@ -233,7 +250,7 @@
             // 
             // numericUpDown6
             // 
-            this.numericUpDown6.Location = new System.Drawing.Point(79, 12);
+            this.numericUpDown6.Location = new System.Drawing.Point(139, 12);
             this.numericUpDown6.Maximum = new decimal(new int[] {
             255,
             0,
@@ -471,15 +488,47 @@
             this.fillToolStripMenuItem.Text = "Fill";
             this.fillToolStripMenuItem.Click += new System.EventHandler(this.FillToolStripMenuItem_Click);
             // 
-            // label13
+            // label14
             // 
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label13.Location = new System.Drawing.Point(15, 211);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(28, 20);
-            this.label13.TabIndex = 20;
-            this.label13.Text = "Fill";
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.label14.Location = new System.Drawing.Point(110, 211);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(90, 20);
+            this.label14.TabIndex = 22;
+            this.label14.Text = "NormalMap";
+            // 
+            // flowLayoutPanel2
+            // 
+            this.flowLayoutPanel2.Controls.Add(this.radioButton3);
+            this.flowLayoutPanel2.Controls.Add(this.radioButton4);
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(110, 234);
+            this.flowLayoutPanel2.Name = "flowLayoutPanel2";
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(89, 53);
+            this.flowLayoutPanel2.TabIndex = 21;
+            // 
+            // radioButton3
+            // 
+            this.radioButton3.AutoSize = true;
+            this.radioButton3.Checked = true;
+            this.radioButton3.Location = new System.Drawing.Point(3, 3);
+            this.radioButton3.Name = "radioButton3";
+            this.radioButton3.Size = new System.Drawing.Size(51, 17);
+            this.radioButton3.TabIndex = 19;
+            this.radioButton3.TabStop = true;
+            this.radioButton3.Text = "None";
+            this.radioButton3.UseVisualStyleBackColor = true;
+            // 
+            // radioButton4
+            // 
+            this.radioButton4.AutoSize = true;
+            this.radioButton4.Location = new System.Drawing.Point(3, 26);
+            this.radioButton4.Name = "radioButton4";
+            this.radioButton4.Size = new System.Drawing.Size(54, 17);
+            this.radioButton4.TabIndex = 20;
+            this.radioButton4.Text = "Image";
+            this.radioButton4.UseVisualStyleBackColor = true;
+            this.radioButton4.CheckedChanged += new System.EventHandler(this.RadioButtonNormalImage_CheckedChanged);
             // 
             // PolygonFillApp
             // 
@@ -516,6 +565,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.contextMenuStrip2.ResumeLayout(false);
+            this.flowLayoutPanel2.ResumeLayout(false);
+            this.flowLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -555,6 +606,10 @@
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
+        private System.Windows.Forms.RadioButton radioButton3;
+        private System.Windows.Forms.RadioButton radioButton4;
     }
 }
 

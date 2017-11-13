@@ -22,13 +22,13 @@ namespace PolygonApp
         private Color _lightVector;
         private Color _solidColor;
         private Bitmap _texture;
+        private Bitmap _normalMap;
         private ManagerState _state;
         private FillType _fillType;
 
-        public PolygonManager(int vertexSize, Color lightColor)
+        public PolygonManager()
         {
-            VertexSize = vertexSize;
-            LightColor = lightColor;
+            VertexSize = 15;
             SolidColor = Color.White;
             StartCreating();
         }
@@ -65,22 +65,23 @@ namespace PolygonApp
                 _fillType = FillType.Solid;
             }
         }
+        public Bitmap NormalMap { get => _normalMap; set => _normalMap = value; }
         #endregion
 
         public void Draw(Bitmap canvas)
         {
             IFillModule fillModule;
+            fillModule = new LightFillModule(new SolidFillModule(_solidColor), _lightColor);
             switch (_fillType)
             {
                 case FillType.Texture:
-                    fillModule = new LightAngleFillModule(new LightFillModule(new TextureFillModule(_texture), _lightColor), _lightVector);
+                    fillModule = new LightAngleFillModule(new LightFillModule(new TextureFillModule(_texture), _lightColor), _lightVector, _normalMap);
                     break;
                 case FillType.Solid:
                 default:
-                    fillModule = new LightAngleFillModule(new LightFillModule(new SolidFillModule(_solidColor), _lightColor), _lightVector);
+                    fillModule = new LightAngleFillModule(new LightFillModule(new SolidFillModule(_solidColor), _lightColor), _lightVector, _normalMap);
                     break;
             }
-
             foreach (var p in _polygons)
                 p.Draw(canvas, fillModule);
         }

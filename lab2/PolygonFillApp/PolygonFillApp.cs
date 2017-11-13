@@ -19,10 +19,16 @@ namespace PolygonApp
         {
             InitializeComponent();
             _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
-            _polygonManager = new PolygonManager(trackBar1.Value, Color.FromArgb(
-                                    (int)numericUpDown1.Value,
-                                    (int)numericUpDown2.Value,
-                                    (int)numericUpDown3.Value));
+            _polygonManager = new PolygonManager()
+            {
+                LightColor = Color.FromArgb((int)numericUpDown1.Value,
+                                             (int)numericUpDown2.Value,
+                                             (int)numericUpDown3.Value),
+                LightVector = Color.FromArgb((int)numericUpDown4.Value,
+                                             (int)numericUpDown5.Value,
+                                             (int)numericUpDown6.Value),
+                VertexSize = trackBar1.Value
+            };
         }
 
         #region Properties
@@ -157,10 +163,16 @@ namespace PolygonApp
         private void Reset()
         {
             _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
-            _polygonManager = new PolygonManager(trackBar1.Value, Color.FromArgb(
-                                    (int)numericUpDown1.Value,
-                                    (int)numericUpDown2.Value,
-                                    (int)numericUpDown3.Value));
+            _polygonManager = new PolygonManager()
+            {
+                LightColor = Color.FromArgb((int)numericUpDown1.Value,
+                                             (int)numericUpDown2.Value,
+                                             (int)numericUpDown3.Value),
+                LightVector = Color.FromArgb((int)numericUpDown4.Value,
+                                             (int)numericUpDown5.Value,
+                                             (int)numericUpDown6.Value),
+                VertexSize = trackBar1.Value
+            };
             SelectAllMode = false;
             SetTitle();
             pictureBox.Invalidate();
@@ -198,13 +210,13 @@ namespace PolygonApp
             pictureBox.Invalidate();
         }
 
-        private void RadioButtonImage_CheckedChanged(object sender, EventArgs e)
+        private void RadioButtonColorImage_CheckedChanged(object sender, EventArgs e)
         {
             if (!((RadioButton)sender).Checked)
                 return;
             var dialog = new OpenFileDialog
             {
-                Filter = "Image Files(*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF"
+                Filter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG"
             };
             if(dialog.ShowDialog() == DialogResult.OK)
             {
@@ -225,5 +237,22 @@ namespace PolygonApp
             }
         }
 
+        private void RadioButtonNormalImage_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!((RadioButton)sender).Checked)
+            {
+                _polygonManager.NormalMap = null;
+                return;
+            }
+            var dialog = new OpenFileDialog
+            {
+                Filter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG"
+            };
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                Bitmap normalMap = new Bitmap(dialog.OpenFile());
+                _polygonManager.NormalMap = normalMap;
+            }
+        }
     }
 }
