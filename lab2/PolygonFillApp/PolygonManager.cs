@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using PolygonApp.Algorithms;
+using PolygonApp.FillModules;
 
 namespace PolygonApp
 {
@@ -17,11 +18,18 @@ namespace PolygonApp
         private int _currentVertex;
         private int _currentLine;
         private int _vertexSize;
+        private Color _lightColor;
+        private Color _lightVector;
+        private Color _solidColor;
+        private Bitmap _texture;
         private ManagerState _state;
+        private FillType _fillType;
 
-        public PolygonManager(int vertexSize)
+        public PolygonManager(int vertexSize, Color lightColor)
         {
             VertexSize = vertexSize;
+            LightColor = lightColor;
+            SolidColor = Color.White;
             StartCreating();
         }
 
@@ -37,12 +45,44 @@ namespace PolygonApp
             }
         }
         internal ManagerState State { get => _state; private set => _state = value; }
+        public Color LightColor { get => _lightColor; set => _lightColor = value; }
+        public Color LightVector { get => _lightVector; set => _lightVector = value; }
+        public Bitmap Texture
+        {
+            get => _texture;
+            set
+            {
+                _texture = value;
+                _fillType = FillType.Texture;
+            }
+        }
+        public Color SolidColor
+        {
+            get => _solidColor;
+            set
+            {
+                _solidColor = value;
+                _fillType = FillType.Solid;
+            }
+        }
         #endregion
 
         public void Draw(Bitmap canvas)
         {
+            IFillModule fillModule;
+            switch (_fillType)
+            {
+                case FillType.Texture:
+                    fillModule = new LightAngleFillModule(new LightFillModule(new TextureFillModule(_texture), _lightColor), _lightVector);
+                    break;
+                case FillType.Solid:
+                default:
+                    fillModule = new LightAngleFillModule(new LightFillModule(new SolidFillModule(_solidColor), _lightColor), _lightVector);
+                    break;
+            }
+
             foreach (var p in _polygons)
-                p.Draw(canvas);
+                p.Draw(canvas, fillModule);
         }
 
         #region ReadyState
@@ -183,5 +223,11 @@ namespace PolygonApp
         Vertex,
         Line,
         None
+    }
+
+    enum FillType
+    {
+        Solid,
+        Texture
     }
 }

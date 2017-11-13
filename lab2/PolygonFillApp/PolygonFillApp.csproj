@@ -50,6 +50,11 @@
   <ItemGroup>
     <Compile Include="Algorithms\PolygonFill.cs" />
     <Compile Include="Algorithms\PolygonClipping.cs" />
+    <Compile Include="FillModules\IFillModule.cs" />
+    <Compile Include="FillModules\LightAngleFillModule.cs" />
+    <Compile Include="FillModules\LightFillModule.cs" />
+    <Compile Include="FillModules\SolidFillModule.cs" />
+    <Compile Include="FillModules\TextureFillModule.cs" />
     <Compile Include="PolygonFillApp.cs">
       <SubType>Form</SubType>
     </Compile>

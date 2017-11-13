@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.Collections.Generic;
+using PolygonApp.FillModules;
 
 namespace PolygonApp.Geometry
 {
@@ -147,10 +148,10 @@ namespace PolygonApp.Geometry
 
         }
 
-        public void Draw(Bitmap canvas)
+        public void Draw(Bitmap canvas, IFillModule fillModule)
         {
             if (_filled)
-                PolygonFill.SimplePolygonFill(this, canvas);
+                PolygonFill.Fill(this, canvas, fillModule);
 
             if (_verticesCount > 1)
                 for (int i = 0; i < _verticesCount - 1; i++)

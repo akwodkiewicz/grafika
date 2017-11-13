@@ -1,4 +1,5 @@
-﻿using PolygonApp.Geometry;
+﻿using PolygonApp.FillModules;
+using PolygonApp.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,7 +26,7 @@ namespace PolygonApp.Algorithms
 
     static class PolygonFill
     {
-        static public void SimplePolygonFill(Polygon poly, Bitmap canvas)
+        static public void Fill(Polygon poly, Bitmap canvas, IFillModule fillModule)
         {
             var (edgeTable, numOfScanLines, y0) = CreateEdgeTable(poly);
             var activeEdgeList = new List<EdgeBucket>();
@@ -52,7 +53,7 @@ namespace PolygonApp.Algorithms
                     for (int x = pair.first.x; x <= pair.second.x; x++)
                     {
                         Debug.WriteLineIf(i==20, $"Coloring ({x},{y})");
-                        canvas.SetPixel(x, y, Color.Aquamarine);
+                        canvas.SetPixel(x, y, fillModule.GetColor(x,y));
                     }
 
                 for (int k = 0; k < activeEdgeList.Count; k++)

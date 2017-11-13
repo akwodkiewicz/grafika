@@ -19,7 +19,10 @@ namespace PolygonApp
         {
             InitializeComponent();
             _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
-            _polygonManager = new PolygonManager(trackBar1.Value);
+            _polygonManager = new PolygonManager(trackBar1.Value, Color.FromArgb(
+                                    (int)numericUpDown1.Value,
+                                    (int)numericUpDown2.Value,
+                                    (int)numericUpDown3.Value));
         }
 
         #region Properties
@@ -154,7 +157,10 @@ namespace PolygonApp
         private void Reset()
         {
             _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
-            _polygonManager = new PolygonManager(trackBar1.Value);
+            _polygonManager = new PolygonManager(trackBar1.Value, Color.FromArgb(
+                                    (int)numericUpDown1.Value,
+                                    (int)numericUpDown2.Value,
+                                    (int)numericUpDown3.Value));
             SelectAllMode = false;
             SetTitle();
             pictureBox.Invalidate();
@@ -173,6 +179,51 @@ namespace PolygonApp
             pictureBox.Invalidate();
         }
         #endregion
+
+        private void LightColor_ValueChanged(object sender, EventArgs e)
+        {
+            _polygonManager.LightColor = Color.FromArgb(
+                                    (int)numericUpDown1.Value,
+                                    (int)numericUpDown2.Value,
+                                    (int)numericUpDown3.Value);
+            pictureBox.Invalidate();
+        }
+
+        private void LightVector_ValueChanged(object sender, EventArgs e)
+        {
+            _polygonManager.LightVector = Color.FromArgb(
+                                    (int)numericUpDown4.Value,
+                                    (int)numericUpDown5.Value,
+                                    (int)numericUpDown6.Value);
+            pictureBox.Invalidate();
+        }
+
+        private void RadioButtonImage_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!((RadioButton)sender).Checked)
+                return;
+            var dialog = new OpenFileDialog
+            {
+                Filter = "Image Files(*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF"
+            };
+            if(dialog.ShowDialog() == DialogResult.OK)
+            {
+                Bitmap texture = new Bitmap(dialog.OpenFile());
+                _polygonManager.Texture = texture;
+            }
+
+        }
+
+        private void RadioButtonSolidColor_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!((RadioButton)sender).Checked)
+                return;
+            var dialog = new ColorDialog();
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                _polygonManager.SolidColor = dialog.Color;
+            }
+        }
 
     }
 }
