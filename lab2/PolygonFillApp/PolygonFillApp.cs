@@ -14,6 +14,7 @@ namespace PolygonApp
         private Bitmap _canvas;
         private PolygonManager _polygonManager;
         private bool _selectAllMode = false;
+        private Color _lightPosition = Color.FromArgb(255, 127, 255);
 
         public PolygonFillApp()
         {
@@ -21,12 +22,7 @@ namespace PolygonApp
             _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
             _polygonManager = new PolygonManager()
             {
-                LightColor = Color.FromArgb((int)numericUpDown1.Value,
-                                             (int)numericUpDown2.Value,
-                                             (int)numericUpDown3.Value),
-                LightVector = Color.FromArgb((int)numericUpDown4.Value,
-                                             (int)numericUpDown5.Value,
-                                             (int)numericUpDown6.Value),
+                LightColor = lightColorPic.BackColor,
                 VertexSize = trackBar1.Value
             };
         }
@@ -165,12 +161,7 @@ namespace PolygonApp
             _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
             _polygonManager = new PolygonManager()
             {
-                LightColor = Color.FromArgb((int)numericUpDown1.Value,
-                                             (int)numericUpDown2.Value,
-                                             (int)numericUpDown3.Value),
-                LightVector = Color.FromArgb((int)numericUpDown4.Value,
-                                             (int)numericUpDown5.Value,
-                                             (int)numericUpDown6.Value),
+                LightColor = lightColorPic.BackColor,
                 VertexSize = trackBar1.Value
             };
             SelectAllMode = false;
@@ -194,25 +185,15 @@ namespace PolygonApp
 
         private void LightColor_ValueChanged(object sender, EventArgs e)
         {
-            _polygonManager.LightColor = Color.FromArgb(
-                                    (int)numericUpDown1.Value,
-                                    (int)numericUpDown2.Value,
-                                    (int)numericUpDown3.Value);
+            _polygonManager.LightColor = lightColorPic.BackColor;
             pictureBox.Invalidate();
         }
 
         private void LightVector_ValueChanged(object sender, EventArgs e)
         {
-            _polygonManager.LightVector = Color.FromArgb(
-                                    (int)numericUpDown4.Value,
-                                    (int)numericUpDown5.Value,
-                                    (int)numericUpDown6.Value);
+            _polygonManager.LightVector = _lightPosition;
             pictureBox.Invalidate();
         }
-
-
-
-
 
         private void RadioButtonNormalImage_CheckedChanged(object sender, EventArgs e)
         {
@@ -240,6 +221,7 @@ namespace PolygonApp
             _polygonManager.FillType = FillType.Solid;
             pictureBox.Invalidate();
         }
+
         private void FillSolidButton_Click(object sender, EventArgs e)
         {
             var dialog = new ColorDialog();
@@ -249,6 +231,7 @@ namespace PolygonApp
                 fillSolidPic.BackColor = dialog.Color;
             }
         }
+
         private void FillTextureRadio_CheckedChanged(object sender, EventArgs e)
         {
             if (!((RadioButton)sender).Checked)
@@ -261,10 +244,12 @@ namespace PolygonApp
                 fillSolidRadio.Checked = true;
             pictureBox.Invalidate();
         }
+
         private void FillTextureButton_Click(object sender, EventArgs e)
         {
-            OpenImage();            
+            OpenImage();
         }
+
         private void OpenImage()
         {
             var dialog = new OpenFileDialog
@@ -277,6 +262,35 @@ namespace PolygonApp
                 fillTexturePic.Image = texture;
                 _polygonManager.Texture = texture;
             }
+        }
+        #endregion
+
+        #region LIGHT
+        private void LightColorButton_Click(object sender, EventArgs e)
+        {
+            var dialog = new ColorDialog();
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                _polygonManager.LightColor = dialog.Color;
+                lightColorPic.BackColor = dialog.Color;
+            }
+        }
+
+        private void LightPosInfinity_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!((RadioButton)sender).Checked)
+                return;
+            _polygonManager.LightVector = Color.FromArgb(0, 0, 255);
+            pictureBox.Invalidate();
+        }
+
+        private void LightPosAuto_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!((RadioButton)sender).Checked)
+                return;
+            // animate movement
+            _polygonManager.LightVector = _lightPosition;
+            pictureBox.Invalidate();
         }
         #endregion
 

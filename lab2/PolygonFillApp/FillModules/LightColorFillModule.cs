@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace PolygonApp.FillModules
 {
-    class LightFillModule : IFillModule
+    class LightColorFillModule : IFillModule
     {
         private IFillModule _baseModule;
         private Color _light;
-        public LightFillModule(IFillModule baseModule, Color light)
+        public LightColorFillModule(IFillModule baseModule, Color light)
         {
             _baseModule = baseModule;
             _light = light;

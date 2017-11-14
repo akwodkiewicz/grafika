@@ -47,24 +47,8 @@ namespace PolygonApp
         internal ManagerState State { get => _state; private set => _state = value; }
         public Color LightColor { get => _lightColor; set => _lightColor = value; }
         public Color LightVector { get => _lightVector; set => _lightVector = value; }
-        public Bitmap Texture
-        {
-            get => _texture;
-            set
-            {
-                _texture = value;
-                _fillType = FillType.Texture;
-            }
-        }
-        public Color SolidColor
-        {
-            get => _solidColor;
-            set
-            {
-                _solidColor = value;
-                _fillType = FillType.Solid;
-            }
-        }
+        public Bitmap Texture { get => _texture; set => _texture = value;  }
+        public Color SolidColor { get => _solidColor; set => _solidColor = value;  }
         public Bitmap NormalMap { get => _normalMap; set => _normalMap = value; }
         public FillType FillType { get => _fillType; set => _fillType = value; }
         #endregion
@@ -72,17 +56,20 @@ namespace PolygonApp
         public void Draw(Bitmap canvas)
         {
             IFillModule fillModule;
-            fillModule = new LightFillModule(new SolidFillModule(_solidColor), _lightColor);
             switch (_fillType)
             {
                 case FillType.Texture:
-                    fillModule = new LightAngleFillModule(new LightFillModule(new TextureFillModule(_texture), _lightColor), _lightVector, _normalMap);
+                    fillModule = new TextureFillModule(_texture);
                     break;
                 case FillType.Solid:
                 default:
-                    fillModule = new LightAngleFillModule(new LightFillModule(new SolidFillModule(_solidColor), _lightColor), _lightVector, _normalMap);
+                    fillModule = new SolidFillModule(_solidColor);
                     break;
             }
+            fillModule = new LightColorFillModule(fillModule, _lightColor);
+           
+            fillModule = new LightAngleFillModule(fillModule, _lightVector, _normalMap);
+
             foreach (var p in _polygons)
                 p.Draw(canvas, fillModule);
         }
