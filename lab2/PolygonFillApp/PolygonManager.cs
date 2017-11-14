@@ -66,6 +66,7 @@ namespace PolygonApp
             }
         }
         public Bitmap NormalMap { get => _normalMap; set => _normalMap = value; }
+        public FillType FillType { get => _fillType; set => _fillType = value; }
         #endregion
 
         public void Draw(Bitmap canvas)

@@ -210,32 +210,9 @@ namespace PolygonApp
             pictureBox.Invalidate();
         }
 
-        private void RadioButtonColorImage_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!((RadioButton)sender).Checked)
-                return;
-            var dialog = new OpenFileDialog
-            {
-                Filter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG"
-            };
-            if(dialog.ShowDialog() == DialogResult.OK)
-            {
-                Bitmap texture = new Bitmap(dialog.OpenFile());
-                _polygonManager.Texture = texture;
-            }
 
-        }
 
-        private void RadioButtonSolidColor_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!((RadioButton)sender).Checked)
-                return;
-            var dialog = new ColorDialog();
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                _polygonManager.SolidColor = dialog.Color;
-            }
-        }
+
 
         private void RadioButtonNormalImage_CheckedChanged(object sender, EventArgs e)
         {
@@ -254,5 +231,55 @@ namespace PolygonApp
                 _polygonManager.NormalMap = normalMap;
             }
         }
+
+        #region FILL
+        private void FillSolidRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!((RadioButton)sender).Checked)
+                return;
+            _polygonManager.FillType = FillType.Solid;
+            pictureBox.Invalidate();
+        }
+        private void FillSolidButton_Click(object sender, EventArgs e)
+        {
+            var dialog = new ColorDialog();
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                _polygonManager.SolidColor = dialog.Color;
+                fillSolidPic.BackColor = dialog.Color;
+            }
+        }
+        private void FillTextureRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!((RadioButton)sender).Checked)
+                return;
+            if (fillTexturePic.Image == null)
+                OpenImage();
+            if (fillTexturePic.Image != null)
+                _polygonManager.FillType = FillType.Texture;
+            else
+                fillSolidRadio.Checked = true;
+            pictureBox.Invalidate();
+        }
+        private void FillTextureButton_Click(object sender, EventArgs e)
+        {
+            OpenImage();            
+        }
+        private void OpenImage()
+        {
+            var dialog = new OpenFileDialog
+            {
+                Filter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG"
+            };
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                Bitmap texture = new Bitmap(dialog.OpenFile());
+                fillTexturePic.Image = texture;
+                _polygonManager.Texture = texture;
+            }
+        }
+        #endregion
+
+
     }
 }

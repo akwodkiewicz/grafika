@@ -30,10 +30,17 @@
         {
             this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.label13 = new System.Windows.Forms.Label();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.fillGroupBox = new System.Windows.Forms.GroupBox();
+            this.fillSolidButton = new System.Windows.Forms.Button();
+            this.fillTextureButton = new System.Windows.Forms.Button();
+            this.fillSolidPic = new System.Windows.Forms.PictureBox();
+            this.fillTextureRadio = new System.Windows.Forms.RadioButton();
+            this.fillSolidRadio = new System.Windows.Forms.RadioButton();
+            this.fillTexturePic = new System.Windows.Forms.PictureBox();
+            this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
+            this.label14 = new System.Windows.Forms.Label();
+            this.radioButton3 = new System.Windows.Forms.RadioButton();
+            this.radioButton4 = new System.Windows.Forms.RadioButton();
             this.label12 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.label9 = new System.Windows.Forms.Label();
@@ -62,15 +69,14 @@
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addVertexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fillToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label14 = new System.Windows.Forms.Label();
-            this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
-            this.radioButton3 = new System.Windows.Forms.RadioButton();
-            this.radioButton4 = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
+            this.fillGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fillSolidPic)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.fillTexturePic)).BeginInit();
+            this.flowLayoutPanel2.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).BeginInit();
@@ -84,7 +90,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
-            this.flowLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -98,9 +103,7 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.label13);
-            this.splitContainer1.Panel1.Controls.Add(this.flowLayoutPanel1);
-            this.splitContainer1.Panel1.Controls.Add(this.label14);
+            this.splitContainer1.Panel1.Controls.Add(this.fillGroupBox);
             this.splitContainer1.Panel1.Controls.Add(this.flowLayoutPanel2);
             this.splitContainer1.Panel1.Controls.Add(this.label12);
             this.splitContainer1.Panel1.Controls.Add(this.panel3);
@@ -116,51 +119,136 @@
             this.splitContainer1.Panel2.Controls.Add(this.label4);
             this.splitContainer1.Panel2.Controls.Add(this.pictureBox);
             this.splitContainer1.Size = new System.Drawing.Size(1022, 679);
-            this.splitContainer1.SplitterDistance = 200;
+            this.splitContainer1.SplitterDistance = 220;
             this.splitContainer1.TabIndex = 0;
             // 
-            // label13
+            // fillGroupBox
             // 
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label13.Location = new System.Drawing.Point(7, 211);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(28, 20);
-            this.label13.TabIndex = 20;
-            this.label13.Text = "Fill";
+            this.fillGroupBox.Controls.Add(this.fillSolidButton);
+            this.fillGroupBox.Controls.Add(this.fillTextureButton);
+            this.fillGroupBox.Controls.Add(this.fillSolidPic);
+            this.fillGroupBox.Controls.Add(this.fillTextureRadio);
+            this.fillGroupBox.Controls.Add(this.fillSolidRadio);
+            this.fillGroupBox.Controls.Add(this.fillTexturePic);
+            this.fillGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.fillGroupBox.Location = new System.Drawing.Point(5, 191);
+            this.fillGroupBox.Name = "fillGroupBox";
+            this.fillGroupBox.Size = new System.Drawing.Size(213, 104);
+            this.fillGroupBox.TabIndex = 22;
+            this.fillGroupBox.TabStop = false;
+            this.fillGroupBox.Text = "Fill";
             // 
-            // flowLayoutPanel1
+            // fillSolidButton
             // 
-            this.flowLayoutPanel1.Controls.Add(this.radioButton1);
-            this.flowLayoutPanel1.Controls.Add(this.radioButton2);
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(11, 234);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(89, 53);
-            this.flowLayoutPanel1.TabIndex = 19;
+            this.fillSolidButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.fillSolidButton.Location = new System.Drawing.Point(148, 21);
+            this.fillSolidButton.Margin = new System.Windows.Forms.Padding(0);
+            this.fillSolidButton.Name = "fillSolidButton";
+            this.fillSolidButton.Size = new System.Drawing.Size(60, 30);
+            this.fillSolidButton.TabIndex = 24;
+            this.fillSolidButton.Text = "Pick";
+            this.fillSolidButton.UseVisualStyleBackColor = true;
+            this.fillSolidButton.Click += new System.EventHandler(this.FillSolidButton_Click);
             // 
-            // radioButton1
+            // fillTextureButton
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Checked = true;
-            this.radioButton1.Location = new System.Drawing.Point(3, 3);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(75, 17);
-            this.radioButton1.TabIndex = 19;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "Solid Color";
-            this.radioButton1.UseVisualStyleBackColor = true;
-            this.radioButton1.CheckedChanged += new System.EventHandler(this.RadioButtonSolidColor_CheckedChanged);
+            this.fillTextureButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.fillTextureButton.Location = new System.Drawing.Point(148, 62);
+            this.fillTextureButton.Margin = new System.Windows.Forms.Padding(0);
+            this.fillTextureButton.Name = "fillTextureButton";
+            this.fillTextureButton.Size = new System.Drawing.Size(60, 30);
+            this.fillTextureButton.TabIndex = 23;
+            this.fillTextureButton.Text = "Open";
+            this.fillTextureButton.UseVisualStyleBackColor = true;
+            this.fillTextureButton.Click += new System.EventHandler(this.FillTextureButton_Click);
             // 
-            // radioButton2
+            // fillSolidPic
             // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(3, 26);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(54, 17);
-            this.radioButton2.TabIndex = 20;
-            this.radioButton2.Text = "Image";
-            this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.CheckedChanged += new System.EventHandler(this.RadioButtonColorImage_CheckedChanged);
+            this.fillSolidPic.BackColor = System.Drawing.SystemColors.Window;
+            this.fillSolidPic.Location = new System.Drawing.Point(84, 18);
+            this.fillSolidPic.Name = "fillSolidPic";
+            this.fillSolidPic.Size = new System.Drawing.Size(60, 35);
+            this.fillSolidPic.TabIndex = 22;
+            this.fillSolidPic.TabStop = false;
+            // 
+            // fillTextureRadio
+            // 
+            this.fillTextureRadio.AutoSize = true;
+            this.fillTextureRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.fillTextureRadio.Location = new System.Drawing.Point(5, 69);
+            this.fillTextureRadio.Name = "fillTextureRadio";
+            this.fillTextureRadio.Size = new System.Drawing.Size(61, 17);
+            this.fillTextureRadio.TabIndex = 20;
+            this.fillTextureRadio.Text = "Texture";
+            this.fillTextureRadio.UseVisualStyleBackColor = true;
+            this.fillTextureRadio.CheckedChanged += new System.EventHandler(this.FillTextureRadio_CheckedChanged);
+            // 
+            // fillSolidRadio
+            // 
+            this.fillSolidRadio.AutoSize = true;
+            this.fillSolidRadio.Checked = true;
+            this.fillSolidRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.fillSolidRadio.Location = new System.Drawing.Point(5, 27);
+            this.fillSolidRadio.Name = "fillSolidRadio";
+            this.fillSolidRadio.Size = new System.Drawing.Size(75, 17);
+            this.fillSolidRadio.TabIndex = 19;
+            this.fillSolidRadio.TabStop = true;
+            this.fillSolidRadio.Text = "Solid Color";
+            this.fillSolidRadio.UseVisualStyleBackColor = true;
+            this.fillSolidRadio.CheckedChanged += new System.EventHandler(this.FillSolidRadio_CheckedChanged);
+            // 
+            // fillTexturePic
+            // 
+            this.fillTexturePic.BackColor = System.Drawing.SystemColors.Window;
+            this.fillTexturePic.Location = new System.Drawing.Point(84, 60);
+            this.fillTexturePic.Name = "fillTexturePic";
+            this.fillTexturePic.Size = new System.Drawing.Size(60, 35);
+            this.fillTexturePic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.fillTexturePic.TabIndex = 21;
+            this.fillTexturePic.TabStop = false;
+            // 
+            // flowLayoutPanel2
+            // 
+            this.flowLayoutPanel2.Controls.Add(this.label14);
+            this.flowLayoutPanel2.Controls.Add(this.radioButton3);
+            this.flowLayoutPanel2.Controls.Add(this.radioButton4);
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(5, 503);
+            this.flowLayoutPanel2.Name = "flowLayoutPanel2";
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(105, 71);
+            this.flowLayoutPanel2.TabIndex = 21;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.label14.Location = new System.Drawing.Point(3, 0);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(90, 20);
+            this.label14.TabIndex = 22;
+            this.label14.Text = "NormalMap";
+            // 
+            // radioButton3
+            // 
+            this.radioButton3.AutoSize = true;
+            this.radioButton3.Checked = true;
+            this.radioButton3.Location = new System.Drawing.Point(3, 23);
+            this.radioButton3.Name = "radioButton3";
+            this.radioButton3.Size = new System.Drawing.Size(51, 17);
+            this.radioButton3.TabIndex = 19;
+            this.radioButton3.TabStop = true;
+            this.radioButton3.Text = "None";
+            this.radioButton3.UseVisualStyleBackColor = true;
+            // 
+            // radioButton4
+            // 
+            this.radioButton4.AutoSize = true;
+            this.radioButton4.Location = new System.Drawing.Point(3, 46);
+            this.radioButton4.Name = "radioButton4";
+            this.radioButton4.Size = new System.Drawing.Size(54, 17);
+            this.radioButton4.TabIndex = 20;
+            this.radioButton4.Text = "Image";
+            this.radioButton4.UseVisualStyleBackColor = true;
+            this.radioButton4.CheckedChanged += new System.EventHandler(this.RadioButtonNormalImage_CheckedChanged);
             // 
             // label12
             // 
@@ -443,7 +531,7 @@
             this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox.Location = new System.Drawing.Point(0, 0);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(816, 677);
+            this.pictureBox.Size = new System.Drawing.Size(796, 677);
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
             this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBox_Paint);
@@ -488,48 +576,6 @@
             this.fillToolStripMenuItem.Text = "Fill";
             this.fillToolStripMenuItem.Click += new System.EventHandler(this.FillToolStripMenuItem_Click);
             // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label14.Location = new System.Drawing.Point(110, 211);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(90, 20);
-            this.label14.TabIndex = 22;
-            this.label14.Text = "NormalMap";
-            // 
-            // flowLayoutPanel2
-            // 
-            this.flowLayoutPanel2.Controls.Add(this.radioButton3);
-            this.flowLayoutPanel2.Controls.Add(this.radioButton4);
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(110, 234);
-            this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(89, 53);
-            this.flowLayoutPanel2.TabIndex = 21;
-            // 
-            // radioButton3
-            // 
-            this.radioButton3.AutoSize = true;
-            this.radioButton3.Checked = true;
-            this.radioButton3.Location = new System.Drawing.Point(3, 3);
-            this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(51, 17);
-            this.radioButton3.TabIndex = 19;
-            this.radioButton3.TabStop = true;
-            this.radioButton3.Text = "None";
-            this.radioButton3.UseVisualStyleBackColor = true;
-            // 
-            // radioButton4
-            // 
-            this.radioButton4.AutoSize = true;
-            this.radioButton4.Location = new System.Drawing.Point(3, 26);
-            this.radioButton4.Name = "radioButton4";
-            this.radioButton4.Size = new System.Drawing.Size(54, 17);
-            this.radioButton4.TabIndex = 20;
-            this.radioButton4.Text = "Image";
-            this.radioButton4.UseVisualStyleBackColor = true;
-            this.radioButton4.CheckedChanged += new System.EventHandler(this.RadioButtonNormalImage_CheckedChanged);
-            // 
             // PolygonFillApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -547,8 +593,12 @@
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.flowLayoutPanel1.ResumeLayout(false);
-            this.flowLayoutPanel1.PerformLayout();
+            this.fillGroupBox.ResumeLayout(false);
+            this.fillGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fillSolidPic)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.fillTexturePic)).EndInit();
+            this.flowLayoutPanel2.ResumeLayout(false);
+            this.flowLayoutPanel2.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).EndInit();
@@ -565,8 +615,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.contextMenuStrip2.ResumeLayout(false);
-            this.flowLayoutPanel2.ResumeLayout(false);
-            this.flowLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -602,14 +650,17 @@
         private System.Windows.Forms.NumericUpDown numericUpDown5;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.NumericUpDown numericUpDown6;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-        private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.RadioButton radioButton2;
-        private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
         private System.Windows.Forms.RadioButton radioButton3;
         private System.Windows.Forms.RadioButton radioButton4;
+        private System.Windows.Forms.GroupBox fillGroupBox;
+        private System.Windows.Forms.Button fillSolidButton;
+        private System.Windows.Forms.Button fillTextureButton;
+        private System.Windows.Forms.PictureBox fillSolidPic;
+        private System.Windows.Forms.RadioButton fillTextureRadio;
+        private System.Windows.Forms.RadioButton fillSolidRadio;
+        private System.Windows.Forms.PictureBox fillTexturePic;
     }
 }
 
