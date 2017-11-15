@@ -16,12 +16,17 @@ namespace PolygonApp
         private PolygonManager _polygonManager;
         private bool _selectAllMode = false;
         private (double X, double Y, double Z) _lightPosition;
+        private double _sphereRadius;
+        private (int X, int Y) _sphereCenter;
+        private double _animationSphereRadius;
+        private double _animationParameter = 0;
 
         public PolygonFillApp()
         {
             InitializeComponent();
             _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
-            RecalculateLight(pictureBox.Width/2,pictureBox.Height/2,false);
+            _lightPosition = (pictureBox.Width / 2, pictureBox.Height / 2, 0);
+            RecalculateLight(0,0,false);
             _polygonManager = new PolygonManager()
             {
                 VertexSize = trackBar1.Value,
@@ -273,7 +278,16 @@ namespace PolygonApp
 
         private void LightPosAuto_CheckedChanged(object sender, EventArgs e)
         {
-
+            if (!((RadioButton)sender).Checked)
+            {
+                lightAnimationTimer.Stop();
+                return;
+            }
+            else
+            {
+                lightAnimationTimer.Start();
+                _polygonManager.LightType = LightType.Point;
+            }
         }
 
         private void LightPosPointRadio_CheckedChanged(object sender, EventArgs e)
@@ -297,6 +311,12 @@ namespace PolygonApp
             {
                 x = Math.Min((int)_lightPosition.X, pictureBox.Width); 
                 y = Math.Min((int)_lightPosition.Y, pictureBox.Height);
+            }
+            else
+            { 
+                _sphereRadius = SphereEquation.CalculateR(pictureBox);
+                _sphereCenter = (pictureBox.Width / 2, pictureBox.Height / 2);
+                animatedSphereRadiusNumeric.Maximum = (decimal)(_sphereRadius - 1);
             }
             var z = SphereEquation.CalculateZ(x, y, pictureBox);
             _lightPosition = (x, y, z);
@@ -348,5 +368,14 @@ namespace PolygonApp
             pictureBox.Invalidate();
         }
         #endregion
+
+        private void LightAnimationTimer_Tick(object sender, EventArgs e)
+        {
+            _animationParameter = (_animationParameter + 0.2) % (2 * Math.PI);
+            var x = _sphereCenter.X + Math.Sin(_animationParameter)*((double)animatedSphereRadiusNumeric.Value);
+            var y =_sphereCenter.Y + Math.Cos(_animationParameter)*((double)animatedSphereRadiusNumeric.Value);
+            RecalculateLight((int)x, (int)y, false);
+            pictureBox.Invalidate();
+        }
     }
 }

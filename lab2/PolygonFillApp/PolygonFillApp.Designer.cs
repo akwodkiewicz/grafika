@@ -30,14 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.lightGroupBox = new System.Windows.Forms.GroupBox();
-            this.lightPosGroupBox = new System.Windows.Forms.GroupBox();
-            this.lightPosPointRadio = new System.Windows.Forms.RadioButton();
-            this.lightPosInfinity = new System.Windows.Forms.RadioButton();
-            this.lightPosAuto = new System.Windows.Forms.RadioButton();
-            this.lightColorLabel = new System.Windows.Forms.Label();
-            this.lightColorButton = new System.Windows.Forms.Button();
-            this.lightColorPic = new System.Windows.Forms.PictureBox();
             this.fillGroupBox = new System.Windows.Forms.GroupBox();
             this.fillSolidButton = new System.Windows.Forms.Button();
             this.fillTextureButton = new System.Windows.Forms.Button();
@@ -45,8 +37,20 @@
             this.fillTextureRadio = new System.Windows.Forms.RadioButton();
             this.fillSolidRadio = new System.Windows.Forms.RadioButton();
             this.fillTexturePic = new System.Windows.Forms.PictureBox();
+            this.lightGroupBox = new System.Windows.Forms.GroupBox();
+            this.lightPosGroupBox = new System.Windows.Forms.GroupBox();
+            this.lightPosPointRadio = new System.Windows.Forms.RadioButton();
+            this.lightPosLabel = new System.Windows.Forms.Label();
+            this.lightPosInfinity = new System.Windows.Forms.RadioButton();
+            this.lightPosAuto = new System.Windows.Forms.RadioButton();
+            this.lightColorLabel = new System.Windows.Forms.Label();
+            this.lightColorButton = new System.Windows.Forms.Button();
+            this.lightColorPic = new System.Windows.Forms.PictureBox();
+            this.normalMapGroupBox = new System.Windows.Forms.GroupBox();
+            this.normalMapButton = new System.Windows.Forms.Button();
             this.normalMapNoneRadio = new System.Windows.Forms.RadioButton();
             this.normalMapImageRadio = new System.Windows.Forms.RadioButton();
+            this.normalMapPic = new System.Windows.Forms.PictureBox();
             this.label3 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
@@ -59,27 +63,27 @@
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addVertexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fillToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.lightPosLabel = new System.Windows.Forms.Label();
-            this.normalMapGroupBox = new System.Windows.Forms.GroupBox();
-            this.normalMapButton = new System.Windows.Forms.Button();
-            this.normalMapPic = new System.Windows.Forms.PictureBox();
+            this.lightAnimationTimer = new System.Windows.Forms.Timer(this.components);
+            this.animatedSphereRadiusNumeric = new System.Windows.Forms.NumericUpDown();
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.lightGroupBox.SuspendLayout();
-            this.lightPosGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.lightColorPic)).BeginInit();
             this.fillGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fillSolidPic)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fillTexturePic)).BeginInit();
+            this.lightGroupBox.SuspendLayout();
+            this.lightPosGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.lightColorPic)).BeginInit();
+            this.normalMapGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.normalMapPic)).BeginInit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
-            this.normalMapGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.normalMapPic)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.animatedSphereRadiusNumeric)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -108,103 +112,6 @@
             this.splitContainer1.Size = new System.Drawing.Size(1026, 602);
             this.splitContainer1.SplitterDistance = 220;
             this.splitContainer1.TabIndex = 0;
-            // 
-            // lightGroupBox
-            // 
-            this.lightGroupBox.Controls.Add(this.lightPosGroupBox);
-            this.lightGroupBox.Controls.Add(this.lightColorLabel);
-            this.lightGroupBox.Controls.Add(this.lightColorButton);
-            this.lightGroupBox.Controls.Add(this.lightColorPic);
-            this.lightGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lightGroupBox.Location = new System.Drawing.Point(5, 119);
-            this.lightGroupBox.Name = "lightGroupBox";
-            this.lightGroupBox.Size = new System.Drawing.Size(207, 155);
-            this.lightGroupBox.TabIndex = 25;
-            this.lightGroupBox.TabStop = false;
-            this.lightGroupBox.Text = "Light";
-            // 
-            // lightPosGroupBox
-            // 
-            this.lightPosGroupBox.Controls.Add(this.lightPosPointRadio);
-            this.lightPosGroupBox.Controls.Add(this.lightPosLabel);
-            this.lightPosGroupBox.Controls.Add(this.lightPosInfinity);
-            this.lightPosGroupBox.Controls.Add(this.lightPosAuto);
-            this.lightPosGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.lightPosGroupBox.Location = new System.Drawing.Point(5, 55);
-            this.lightPosGroupBox.Name = "lightPosGroupBox";
-            this.lightPosGroupBox.Size = new System.Drawing.Size(196, 94);
-            this.lightPosGroupBox.TabIndex = 30;
-            this.lightPosGroupBox.TabStop = false;
-            this.lightPosGroupBox.Text = "Position";
-            // 
-            // lightPosPointRadio
-            // 
-            this.lightPosPointRadio.AutoSize = true;
-            this.lightPosPointRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lightPosPointRadio.Location = new System.Drawing.Point(18, 46);
-            this.lightPosPointRadio.Name = "lightPosPointRadio";
-            this.lightPosPointRadio.Size = new System.Drawing.Size(49, 17);
-            this.lightPosPointRadio.TabIndex = 30;
-            this.lightPosPointRadio.Text = "Point";
-            this.lightPosPointRadio.UseVisualStyleBackColor = true;
-            this.lightPosPointRadio.CheckedChanged += new System.EventHandler(this.LightPosPointRadio_CheckedChanged);
-            // 
-            // lightPosInfinity
-            // 
-            this.lightPosInfinity.AutoSize = true;
-            this.lightPosInfinity.Checked = true;
-            this.lightPosInfinity.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lightPosInfinity.Location = new System.Drawing.Point(18, 23);
-            this.lightPosInfinity.Name = "lightPosInfinity";
-            this.lightPosInfinity.Size = new System.Drawing.Size(140, 17);
-            this.lightPosInfinity.TabIndex = 27;
-            this.lightPosInfinity.TabStop = true;
-            this.lightPosInfinity.Text = "Infinity (Directional Light)";
-            this.lightPosInfinity.UseVisualStyleBackColor = true;
-            this.lightPosInfinity.CheckedChanged += new System.EventHandler(this.LightPosInfinity_CheckedChanged);
-            // 
-            // lightPosAuto
-            // 
-            this.lightPosAuto.AutoSize = true;
-            this.lightPosAuto.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lightPosAuto.Location = new System.Drawing.Point(18, 69);
-            this.lightPosAuto.Name = "lightPosAuto";
-            this.lightPosAuto.Size = new System.Drawing.Size(47, 17);
-            this.lightPosAuto.TabIndex = 29;
-            this.lightPosAuto.Text = "Auto";
-            this.lightPosAuto.UseVisualStyleBackColor = true;
-            this.lightPosAuto.CheckedChanged += new System.EventHandler(this.LightPosAuto_CheckedChanged);
-            // 
-            // lightColorLabel
-            // 
-            this.lightColorLabel.AutoSize = true;
-            this.lightColorLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.lightColorLabel.Location = new System.Drawing.Point(9, 28);
-            this.lightColorLabel.Name = "lightColorLabel";
-            this.lightColorLabel.Size = new System.Drawing.Size(40, 16);
-            this.lightColorLabel.TabIndex = 25;
-            this.lightColorLabel.Text = "Color";
-            // 
-            // lightColorButton
-            // 
-            this.lightColorButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lightColorButton.Location = new System.Drawing.Point(148, 21);
-            this.lightColorButton.Margin = new System.Windows.Forms.Padding(0);
-            this.lightColorButton.Name = "lightColorButton";
-            this.lightColorButton.Size = new System.Drawing.Size(53, 30);
-            this.lightColorButton.TabIndex = 24;
-            this.lightColorButton.Text = "Pick";
-            this.lightColorButton.UseVisualStyleBackColor = true;
-            this.lightColorButton.Click += new System.EventHandler(this.LightColorButton_Click);
-            // 
-            // lightColorPic
-            // 
-            this.lightColorPic.BackColor = System.Drawing.SystemColors.Window;
-            this.lightColorPic.Location = new System.Drawing.Point(97, 18);
-            this.lightColorPic.Name = "lightColorPic";
-            this.lightColorPic.Size = new System.Drawing.Size(44, 35);
-            this.lightColorPic.TabIndex = 22;
-            this.lightColorPic.TabStop = false;
             // 
             // fillGroupBox
             // 
@@ -291,6 +198,141 @@
             this.fillTexturePic.TabIndex = 21;
             this.fillTexturePic.TabStop = false;
             // 
+            // lightGroupBox
+            // 
+            this.lightGroupBox.Controls.Add(this.lightPosGroupBox);
+            this.lightGroupBox.Controls.Add(this.lightColorLabel);
+            this.lightGroupBox.Controls.Add(this.lightColorButton);
+            this.lightGroupBox.Controls.Add(this.lightColorPic);
+            this.lightGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lightGroupBox.Location = new System.Drawing.Point(5, 119);
+            this.lightGroupBox.Name = "lightGroupBox";
+            this.lightGroupBox.Size = new System.Drawing.Size(207, 181);
+            this.lightGroupBox.TabIndex = 25;
+            this.lightGroupBox.TabStop = false;
+            this.lightGroupBox.Text = "Light";
+            // 
+            // lightPosGroupBox
+            // 
+            this.lightPosGroupBox.Controls.Add(this.label5);
+            this.lightPosGroupBox.Controls.Add(this.animatedSphereRadiusNumeric);
+            this.lightPosGroupBox.Controls.Add(this.lightPosPointRadio);
+            this.lightPosGroupBox.Controls.Add(this.lightPosLabel);
+            this.lightPosGroupBox.Controls.Add(this.lightPosInfinity);
+            this.lightPosGroupBox.Controls.Add(this.lightPosAuto);
+            this.lightPosGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
+            this.lightPosGroupBox.Location = new System.Drawing.Point(5, 55);
+            this.lightPosGroupBox.Name = "lightPosGroupBox";
+            this.lightPosGroupBox.Size = new System.Drawing.Size(196, 120);
+            this.lightPosGroupBox.TabIndex = 30;
+            this.lightPosGroupBox.TabStop = false;
+            this.lightPosGroupBox.Text = "Position";
+            // 
+            // lightPosPointRadio
+            // 
+            this.lightPosPointRadio.AutoSize = true;
+            this.lightPosPointRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lightPosPointRadio.Location = new System.Drawing.Point(18, 46);
+            this.lightPosPointRadio.Name = "lightPosPointRadio";
+            this.lightPosPointRadio.Size = new System.Drawing.Size(49, 17);
+            this.lightPosPointRadio.TabIndex = 30;
+            this.lightPosPointRadio.Text = "Point";
+            this.lightPosPointRadio.UseVisualStyleBackColor = true;
+            this.lightPosPointRadio.CheckedChanged += new System.EventHandler(this.LightPosPointRadio_CheckedChanged);
+            // 
+            // lightPosLabel
+            // 
+            this.lightPosLabel.AutoSize = true;
+            this.lightPosLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.lightPosLabel.Location = new System.Drawing.Point(93, 48);
+            this.lightPosLabel.Name = "lightPosLabel";
+            this.lightPosLabel.Size = new System.Drawing.Size(40, 13);
+            this.lightPosLabel.TabIndex = 26;
+            this.lightPosLabel.Text = "(x, y, z)";
+            // 
+            // lightPosInfinity
+            // 
+            this.lightPosInfinity.AutoSize = true;
+            this.lightPosInfinity.Checked = true;
+            this.lightPosInfinity.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lightPosInfinity.Location = new System.Drawing.Point(18, 23);
+            this.lightPosInfinity.Name = "lightPosInfinity";
+            this.lightPosInfinity.Size = new System.Drawing.Size(140, 17);
+            this.lightPosInfinity.TabIndex = 27;
+            this.lightPosInfinity.TabStop = true;
+            this.lightPosInfinity.Text = "Infinity (Directional Light)";
+            this.lightPosInfinity.UseVisualStyleBackColor = true;
+            this.lightPosInfinity.CheckedChanged += new System.EventHandler(this.LightPosInfinity_CheckedChanged);
+            // 
+            // lightPosAuto
+            // 
+            this.lightPosAuto.AutoSize = true;
+            this.lightPosAuto.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lightPosAuto.Location = new System.Drawing.Point(18, 69);
+            this.lightPosAuto.Name = "lightPosAuto";
+            this.lightPosAuto.Size = new System.Drawing.Size(69, 17);
+            this.lightPosAuto.TabIndex = 29;
+            this.lightPosAuto.Text = "Animated";
+            this.lightPosAuto.UseVisualStyleBackColor = true;
+            this.lightPosAuto.CheckedChanged += new System.EventHandler(this.LightPosAuto_CheckedChanged);
+            // 
+            // lightColorLabel
+            // 
+            this.lightColorLabel.AutoSize = true;
+            this.lightColorLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
+            this.lightColorLabel.Location = new System.Drawing.Point(9, 28);
+            this.lightColorLabel.Name = "lightColorLabel";
+            this.lightColorLabel.Size = new System.Drawing.Size(40, 16);
+            this.lightColorLabel.TabIndex = 25;
+            this.lightColorLabel.Text = "Color";
+            // 
+            // lightColorButton
+            // 
+            this.lightColorButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lightColorButton.Location = new System.Drawing.Point(148, 21);
+            this.lightColorButton.Margin = new System.Windows.Forms.Padding(0);
+            this.lightColorButton.Name = "lightColorButton";
+            this.lightColorButton.Size = new System.Drawing.Size(53, 30);
+            this.lightColorButton.TabIndex = 24;
+            this.lightColorButton.Text = "Pick";
+            this.lightColorButton.UseVisualStyleBackColor = true;
+            this.lightColorButton.Click += new System.EventHandler(this.LightColorButton_Click);
+            // 
+            // lightColorPic
+            // 
+            this.lightColorPic.BackColor = System.Drawing.SystemColors.Window;
+            this.lightColorPic.Location = new System.Drawing.Point(97, 18);
+            this.lightColorPic.Name = "lightColorPic";
+            this.lightColorPic.Size = new System.Drawing.Size(44, 35);
+            this.lightColorPic.TabIndex = 22;
+            this.lightColorPic.TabStop = false;
+            // 
+            // normalMapGroupBox
+            // 
+            this.normalMapGroupBox.Controls.Add(this.normalMapButton);
+            this.normalMapGroupBox.Controls.Add(this.normalMapNoneRadio);
+            this.normalMapGroupBox.Controls.Add(this.normalMapImageRadio);
+            this.normalMapGroupBox.Controls.Add(this.normalMapPic);
+            this.normalMapGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.normalMapGroupBox.Location = new System.Drawing.Point(5, 306);
+            this.normalMapGroupBox.Name = "normalMapGroupBox";
+            this.normalMapGroupBox.Size = new System.Drawing.Size(207, 98);
+            this.normalMapGroupBox.TabIndex = 3;
+            this.normalMapGroupBox.TabStop = false;
+            this.normalMapGroupBox.Text = "NormalMap";
+            // 
+            // normalMapButton
+            // 
+            this.normalMapButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.normalMapButton.Location = new System.Drawing.Point(148, 51);
+            this.normalMapButton.Margin = new System.Windows.Forms.Padding(0);
+            this.normalMapButton.Name = "normalMapButton";
+            this.normalMapButton.Size = new System.Drawing.Size(53, 30);
+            this.normalMapButton.TabIndex = 26;
+            this.normalMapButton.Text = "Open";
+            this.normalMapButton.UseVisualStyleBackColor = true;
+            this.normalMapButton.Click += new System.EventHandler(this.NormalMapButton_Click);
+            // 
             // normalMapNoneRadio
             // 
             this.normalMapNoneRadio.AutoSize = true;
@@ -315,6 +357,16 @@
             this.normalMapImageRadio.Text = "Image";
             this.normalMapImageRadio.UseVisualStyleBackColor = true;
             this.normalMapImageRadio.CheckedChanged += new System.EventHandler(this.NormalMapImageRadio_CheckedChanged);
+            // 
+            // normalMapPic
+            // 
+            this.normalMapPic.BackColor = System.Drawing.SystemColors.Window;
+            this.normalMapPic.Location = new System.Drawing.Point(97, 49);
+            this.normalMapPic.Name = "normalMapPic";
+            this.normalMapPic.Size = new System.Drawing.Size(44, 35);
+            this.normalMapPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.normalMapPic.TabIndex = 25;
+            this.normalMapPic.TabStop = false;
             // 
             // label3
             // 
@@ -437,51 +489,26 @@
             this.fillToolStripMenuItem.Text = "Fill";
             this.fillToolStripMenuItem.Click += new System.EventHandler(this.FillToolStripMenuItem_Click);
             // 
-            // lightPosLabel
+            // lightAnimationTimer
             // 
-            this.lightPosLabel.AutoSize = true;
-            this.lightPosLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.lightPosLabel.Location = new System.Drawing.Point(67, 48);
-            this.lightPosLabel.Name = "lightPosLabel";
-            this.lightPosLabel.Size = new System.Drawing.Size(40, 13);
-            this.lightPosLabel.TabIndex = 26;
-            this.lightPosLabel.Text = "(x, y, z)";
+            this.lightAnimationTimer.Tick += new System.EventHandler(this.LightAnimationTimer_Tick);
             // 
-            // normalMapGroupBox
+            // animatedSphereRadiusNumeric
             // 
-            this.normalMapGroupBox.Controls.Add(this.normalMapButton);
-            this.normalMapGroupBox.Controls.Add(this.normalMapNoneRadio);
-            this.normalMapGroupBox.Controls.Add(this.normalMapImageRadio);
-            this.normalMapGroupBox.Controls.Add(this.normalMapPic);
-            this.normalMapGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.normalMapGroupBox.Location = new System.Drawing.Point(5, 280);
-            this.normalMapGroupBox.Name = "normalMapGroupBox";
-            this.normalMapGroupBox.Size = new System.Drawing.Size(207, 98);
-            this.normalMapGroupBox.TabIndex = 3;
-            this.normalMapGroupBox.TabStop = false;
-            this.normalMapGroupBox.Text = "NormalMap";
+            this.animatedSphereRadiusNumeric.Location = new System.Drawing.Point(128, 85);
+            this.animatedSphereRadiusNumeric.Name = "animatedSphereRadiusNumeric";
+            this.animatedSphereRadiusNumeric.Size = new System.Drawing.Size(46, 22);
+            this.animatedSphereRadiusNumeric.TabIndex = 31;
             // 
-            // normalMapButton
+            // label5
             // 
-            this.normalMapButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.normalMapButton.Location = new System.Drawing.Point(148, 51);
-            this.normalMapButton.Margin = new System.Windows.Forms.Padding(0);
-            this.normalMapButton.Name = "normalMapButton";
-            this.normalMapButton.Size = new System.Drawing.Size(53, 30);
-            this.normalMapButton.TabIndex = 26;
-            this.normalMapButton.Text = "Open";
-            this.normalMapButton.UseVisualStyleBackColor = true;
-            this.normalMapButton.Click += new System.EventHandler(this.NormalMapButton_Click);
-            // 
-            // normalMapPic
-            // 
-            this.normalMapPic.BackColor = System.Drawing.SystemColors.Window;
-            this.normalMapPic.Location = new System.Drawing.Point(97, 49);
-            this.normalMapPic.Name = "normalMapPic";
-            this.normalMapPic.Size = new System.Drawing.Size(44, 35);
-            this.normalMapPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.normalMapPic.TabIndex = 25;
-            this.normalMapPic.TabStop = false;
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.label5.Location = new System.Drawing.Point(33, 90);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(80, 13);
+            this.label5.TabIndex = 32;
+            this.label5.Text = "Sphere Radius:";
             // 
             // PolygonFillApp
             // 
@@ -501,24 +528,25 @@
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.fillGroupBox.ResumeLayout(false);
+            this.fillGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fillSolidPic)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.fillTexturePic)).EndInit();
             this.lightGroupBox.ResumeLayout(false);
             this.lightGroupBox.PerformLayout();
             this.lightPosGroupBox.ResumeLayout(false);
             this.lightPosGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.lightColorPic)).EndInit();
-            this.fillGroupBox.ResumeLayout(false);
-            this.fillGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.fillSolidPic)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.fillTexturePic)).EndInit();
+            this.normalMapGroupBox.ResumeLayout(false);
+            this.normalMapGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.normalMapPic)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.contextMenuStrip2.ResumeLayout(false);
-            this.normalMapGroupBox.ResumeLayout(false);
-            this.normalMapGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.normalMapPic)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.animatedSphereRadiusNumeric)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -559,6 +587,9 @@
         private System.Windows.Forms.GroupBox normalMapGroupBox;
         private System.Windows.Forms.Button normalMapButton;
         private System.Windows.Forms.PictureBox normalMapPic;
+        private System.Windows.Forms.Timer lightAnimationTimer;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.NumericUpDown animatedSphereRadiusNumeric;
     }
 }
 

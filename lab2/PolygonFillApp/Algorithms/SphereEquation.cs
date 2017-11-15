@@ -17,5 +17,12 @@ namespace PolygonApp.Algorithms
             var r = Math.Sqrt(x_0 * x_0 + y_0 * y_0);
             return Math.Sqrt(r * r - (x - x_0) * (x - x_0) - (y - y_0) * (y - y_0)) + z_0;
         }
+
+        public static double CalculateR(PictureBox pictureBox)
+        {
+            var x_0 = pictureBox.Width / 2;
+            var y_0 = pictureBox.Height / 2;
+            return Math.Sqrt(x_0 * x_0 + y_0 * y_0);
+        }
     }
 }
