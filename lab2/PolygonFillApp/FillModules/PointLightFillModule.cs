@@ -37,7 +37,7 @@ namespace PolygonApp.FillModules
             else
                 normal = CreateNormalVector(GetNormalMapColor(x, y));
 
-            (double X, double Y, double Z) lightVector = (_lightPos.X - x, _lightPos.Y - y, _lightPos.Z);
+            (double X, double Y, double Z) lightVector = (_lightPos.X - x, -(_lightPos.Y - y), _lightPos.Z);
             lightVector = NormalizeVector(lightVector);
             lightVector.Z = 1.0;
             var cos = (normal.X * lightVector.X + normal.Y * lightVector.Y + normal.Z * lightVector.Z)
