@@ -12,6 +12,7 @@ namespace PolygonApp
     public partial class PolygonFillApp : Form
     {
         private Bitmap _canvas;
+        private Bitmap _normalMap;
         private PolygonManager _polygonManager;
         private bool _selectAllMode = false;
         private (double X, double Y, double Z) _lightPosition;
@@ -197,23 +198,7 @@ namespace PolygonApp
         }
         #endregion
 
-        private void RadioButtonNormalImage_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!((RadioButton)sender).Checked)
-            {
-                _polygonManager.NormalMap = null;
-                return;
-            }
-            var dialog = new OpenFileDialog
-            {
-                Filter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG"
-            };
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                Bitmap normalMap = new Bitmap(dialog.OpenFile());
-                _polygonManager.NormalMap = normalMap;
-            }
-        }
+
 
         #region FILL
         private void FillSolidRadio_CheckedChanged(object sender, EventArgs e)
@@ -320,8 +305,48 @@ namespace PolygonApp
             lightPosLabel.Text = $"({_lightPosition.X}, {_lightPosition.Y}, {(int)_lightPosition.Z})";
             PickLightSource = false;
         }
+
         #endregion
 
+        #region NORMALMAP
+        private void NormalMapButton_Click(object sender, EventArgs e)
+        {
+            var dialog = new OpenFileDialog
+            {
+                Filter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG"
+            };
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                _normalMap = new Bitmap(dialog.OpenFile());
+                normalMapPic.Image = _normalMap;
+            }
+            if (normalMapImageRadio.Checked)
+                _polygonManager.NormalMap = _normalMap;
+            pictureBox.Invalidate();
+        }
 
+        private void NormalMapImageRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!((RadioButton)sender).Checked)
+            {
+                _polygonManager.NormalMap = null;
+                return;
+            }
+            if(_normalMap == null)
+            {
+                var dialog = new OpenFileDialog
+                {
+                    Filter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG"
+                };
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    _normalMap = new Bitmap(dialog.OpenFile());
+                    normalMapPic.Image = _normalMap;
+                }
+            }
+            _polygonManager.NormalMap = _normalMap;
+            pictureBox.Invalidate();
+        }
+        #endregion
     }
 }
