@@ -26,6 +26,7 @@ namespace PolygonApp.Algorithms
                     clip = temp;
                 }
             }
+            var filled = subject.Filled;
 
             var subjectV = subject.Vertices.Where(v => v != null).ToArray();
             var clipV = clip.Vertices.Where(v => v != null).ToArray();
@@ -61,7 +62,10 @@ namespace PolygonApp.Algorithms
                     i--;
                 }
             }
-            return new Polygon(output);
+            return new Polygon(output)
+            {
+                Filled = filled
+            };
         }
 
 

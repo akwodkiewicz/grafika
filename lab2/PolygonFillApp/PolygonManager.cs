@@ -19,12 +19,13 @@ namespace PolygonApp
         private int _currentLine;
         private int _vertexSize;
         private Color _lightColor;
-        private Color _lightVector;
+        private (double X, double Y, double Z) _lightPosition;
         private Color _solidColor;
         private Bitmap _texture;
         private Bitmap _normalMap;
         private ManagerState _state;
         private FillType _fillType;
+        private LightType _lightType;
 
         public PolygonManager()
         {
@@ -46,11 +47,12 @@ namespace PolygonApp
         }
         internal ManagerState State { get => _state; private set => _state = value; }
         public Color LightColor { get => _lightColor; set => _lightColor = value; }
-        public Color LightVector { get => _lightVector; set => _lightVector = value; }
+        public (double X, double Y, double Z) LightPosition { get => _lightPosition; set => _lightPosition = value; }
         public Bitmap Texture { get => _texture; set => _texture = value;  }
         public Color SolidColor { get => _solidColor; set => _solidColor = value;  }
         public Bitmap NormalMap { get => _normalMap; set => _normalMap = value; }
         public FillType FillType { get => _fillType; set => _fillType = value; }
+        public LightType LightType { get => _lightType; set => _lightType = value; }
         #endregion
 
         public void Draw(Bitmap canvas)
@@ -67,8 +69,16 @@ namespace PolygonApp
                     break;
             }
             fillModule = new LightColorFillModule(fillModule, _lightColor);
-           
-            fillModule = new LightAngleFillModule(fillModule, _lightVector, _normalMap);
+            switch (_lightType)
+            {
+                case LightType.Point:
+                    fillModule = new PointLightFillModule(fillModule, _lightPosition, _normalMap);
+                    break;
+                case LightType.Directional:
+                default:
+                    fillModule = new DirectionalLightFillModule(fillModule, _normalMap);
+                    break;
+            }
 
             foreach (var p in _polygons)
                 p.Draw(canvas, fillModule);
@@ -218,5 +228,11 @@ namespace PolygonApp
     {
         Solid,
         Texture
+    }
+
+    enum LightType
+    {
+        Directional,
+        Point
     }
 }

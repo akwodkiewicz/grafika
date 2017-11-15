@@ -40,21 +40,16 @@ namespace PolygonApp.Algorithms
 
                 if (edgeTable[i].list != null)
                     foreach (var e in edgeTable[i].list)
-                    {
                         activeEdgeList.Add(e);
-                        Debug.WriteLine($"[i = {i}] Added: {e.xmin}");
-                    }
+
                 activeEdgeList.Sort((a, b) => a.x.CompareTo(b.x));
 
                 var even = activeEdgeList.Where((x, k) => k % 2 == 0);
                 var odd = activeEdgeList.Where((x, k) => k % 2 == 1);
                 var edgePairs = even.Zip(odd, (first, second) => (first, second));
-                foreach(var pair in edgePairs)
+                foreach (var pair in edgePairs)
                     for (int x = pair.first.x; x <= pair.second.x; x++)
-                    {
-                        Debug.WriteLineIf(i==20, $"Coloring ({x},{y})");
-                        canvas.SetPixel(x, y, fillModule.GetColor(x,y));
-                    }
+                        canvas.SetPixel(x, y, fillModule.GetColor(x, y));
 
                 for (int k = 0; k < activeEdgeList.Count; k++)
                 {

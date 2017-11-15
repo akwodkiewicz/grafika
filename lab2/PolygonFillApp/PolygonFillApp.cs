@@ -14,16 +14,19 @@ namespace PolygonApp
         private Bitmap _canvas;
         private PolygonManager _polygonManager;
         private bool _selectAllMode = false;
-        private Color _lightPosition = Color.FromArgb(255, 127, 255);
+        private (double X, double Y, double Z) _lightPosition;
 
         public PolygonFillApp()
         {
             InitializeComponent();
             _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
+            RecalculateLight(pictureBox.Width/2,pictureBox.Height/2,false);
             _polygonManager = new PolygonManager()
             {
+                VertexSize = trackBar1.Value,
+                SolidColor = fillSolidPic.BackColor,
                 LightColor = lightColorPic.BackColor,
-                VertexSize = trackBar1.Value
+                LightPosition = _lightPosition
             };
         }
 
@@ -37,14 +40,20 @@ namespace PolygonApp
                 label4.Visible = value;
             }
         }
+
+        public bool PickLightSource { get; private set; }
         #endregion
 
         #region PictureBox MouseInteraction
         private void PictureBox_MouseClick(object sender, MouseEventArgs e)
         {
+
             if (_polygonManager.State == ManagerState.Ready || _polygonManager.State == ManagerState.Creating)
                 _polygonManager.AddVertex(e.Location);
 
+            else if (PickLightSource)
+                RecalculateLight(e.X, e.Y, false);
+            
             else if (e.Button == MouseButtons.Right)
                 switch (_polygonManager.Select(e.Location))
                 {
@@ -120,6 +129,9 @@ namespace PolygonApp
                             MessageBox.Show(exc.Message, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
                         break;
+                    case 'l':
+                        PickLightSource = true;
+                        break;
                     case 'r':
                         Reset();
                         break;
@@ -161,13 +173,15 @@ namespace PolygonApp
             _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
             _polygonManager = new PolygonManager()
             {
+                VertexSize = trackBar1.Value,
+                SolidColor = fillSolidPic.BackColor,
                 LightColor = lightColorPic.BackColor,
-                VertexSize = trackBar1.Value
+                LightPosition = _lightPosition
             };
             SelectAllMode = false;
+            PickLightSource = false;
             SetTitle();
             pictureBox.Invalidate();
-            label1.Focus();
         }
         private void SetTitle()
         {
@@ -182,18 +196,6 @@ namespace PolygonApp
             pictureBox.Invalidate();
         }
         #endregion
-
-        private void LightColor_ValueChanged(object sender, EventArgs e)
-        {
-            _polygonManager.LightColor = lightColorPic.BackColor;
-            pictureBox.Invalidate();
-        }
-
-        private void LightVector_ValueChanged(object sender, EventArgs e)
-        {
-            _polygonManager.LightVector = _lightPosition;
-            pictureBox.Invalidate();
-        }
 
         private void RadioButtonNormalImage_CheckedChanged(object sender, EventArgs e)
         {
@@ -280,17 +282,43 @@ namespace PolygonApp
         {
             if (!((RadioButton)sender).Checked)
                 return;
-            _polygonManager.LightVector = Color.FromArgb(0, 0, 255);
+            _polygonManager.LightType = LightType.Directional;
             pictureBox.Invalidate();
         }
 
         private void LightPosAuto_CheckedChanged(object sender, EventArgs e)
         {
+
+        }
+
+        private void LightPosPointRadio_CheckedChanged(object sender, EventArgs e)
+        {
             if (!((RadioButton)sender).Checked)
                 return;
             // animate movement
-            _polygonManager.LightVector = _lightPosition;
+            _polygonManager.LightType = LightType.Point;
+            _polygonManager.LightPosition = _lightPosition;
             pictureBox.Invalidate();
+        }
+
+        private void PolygonFillApp_Resize(object sender, EventArgs e)
+        {
+            RecalculateLight(0, 0, true);
+        }
+
+        private void RecalculateLight(int x, int y, bool resizeOnly)
+        {
+            if (resizeOnly)
+            {
+                x = Math.Min((int)_lightPosition.X, pictureBox.Width); 
+                y = Math.Min((int)_lightPosition.Y, pictureBox.Height);
+            }
+            var z = SphereEquation.CalculateZ(x, y, pictureBox);
+            _lightPosition = (x, y, z);
+            if(_polygonManager != null)
+                _polygonManager.LightPosition = _lightPosition;
+            lightPosLabel.Text = $"({_lightPosition.X}, {_lightPosition.Y}, {(int)_lightPosition.Z})";
+            PickLightSource = false;
         }
         #endregion
 

@@ -7,17 +7,18 @@ using System.Threading.Tasks;
 
 namespace PolygonApp.FillModules
 {
-    class LightAngleFillModule : IFillModule
+    class PointLightFillModule : IFillModule
     {
         private IFillModule _baseModule;
-        private (double X, double Y, double Z) _lightVector;
+        private (double X, double Y, double Z) _lightPos;
         private Bitmap _normalMap;
         private int _xMax;
         private int _yMax;
-        public LightAngleFillModule(IFillModule baseModule, Color lightVector, Bitmap normalMap)
+
+        public PointLightFillModule(IFillModule baseModule, (double X, double Y, double Z) lightPos, Bitmap normalMap)
         {
             _baseModule = baseModule;
-            _lightVector = CreateLightVector(lightVector);
+            _lightPos = lightPos;
             if (normalMap != null)
             {
                 _normalMap = normalMap;
@@ -36,11 +37,15 @@ namespace PolygonApp.FillModules
             else
                 normal = CreateNormalVector(GetNormalMapColor(x, y));
 
-            var cos = normal.X * _lightVector.X + normal.Y * _lightVector.Y + normal.Z * _lightVector.Z;
-
-            var newRed = (int)Math.Min(Math.Max((oldColor.R * cos), 0.0), 255);
-            var newGreen = (int)Math.Min(Math.Max((oldColor.G * cos), 0.0), 255);
-            var newBlue = (int)Math.Min(Math.Max((oldColor.B * cos), 0.0), 255);
+            (double X, double Y, double Z) lightVector = (_lightPos.X - x, _lightPos.Y - y, _lightPos.Z);
+            lightVector = NormalizeVector(lightVector);
+            lightVector.Z = 1.0;
+            var cos = (normal.X * lightVector.X + normal.Y * lightVector.Y + normal.Z * lightVector.Z)
+                     / (VectorLength(normal) * VectorLength(lightVector));
+            cos = Math.Max(0.0, cos);
+            var newRed = (int)(oldColor.R * cos);
+            var newGreen = (int)(oldColor.G * cos);
+            var newBlue = (int)(oldColor.B * cos);
 
             return Color.FromArgb(newRed, newGreen, newBlue);
         }
@@ -56,7 +61,13 @@ namespace PolygonApp.FillModules
             var y = (color.G - 127) / 128.0;
             var z = (color.B) / 255.0;
 
-            return NormalizeVector((x, y, z));
+            var f = 1.0 / z;
+            z = 1.0;
+            y *= f;
+            x *= f;
+
+            //return NormalizeVector((x, y, z));
+            return (x, y, z);
         }
 
         private (double, double, double) CreateLightVector(Color color)
@@ -65,14 +76,20 @@ namespace PolygonApp.FillModules
             var y = color.G / 255.0;
             var z = color.B / 255.0;
 
-            return NormalizeVector((x, y, z));
+            // return NormalizeVector((x, y, z));
+            return (x, y, z);
+        }
+
+        private double VectorLength((double X, double Y, double Z) vector)
+        {
+            return Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
         }
 
         private (double X, double Y, double Z) NormalizeVector((double X, double Y, double Z) vector)
         {
-            var d = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z  * vector.Z);
+            var d = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
             d = (d == 0) ? 1 : d;
-            return (vector.X / d, vector.Y / d, vector.Z/ d);
+            return (vector.X / d, vector.Y / d, vector.Z / d);
         }
     }
 }

@@ -32,6 +32,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.lightGroupBox = new System.Windows.Forms.GroupBox();
             this.lightPosGroupBox = new System.Windows.Forms.GroupBox();
+            this.lightPosPointRadio = new System.Windows.Forms.RadioButton();
             this.lightPosInfinity = new System.Windows.Forms.RadioButton();
             this.lightPosAuto = new System.Windows.Forms.RadioButton();
             this.lightColorLabel = new System.Windows.Forms.Label();
@@ -60,6 +61,7 @@
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addVertexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fillToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lightPosLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -83,6 +85,7 @@
             this.splitContainer1.BackColor = System.Drawing.SystemColors.Control;
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer1.IsSplitterFixed = true;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
@@ -100,7 +103,7 @@
             this.splitContainer1.Panel2.BackColor = System.Drawing.SystemColors.Window;
             this.splitContainer1.Panel2.Controls.Add(this.label4);
             this.splitContainer1.Panel2.Controls.Add(this.pictureBox);
-            this.splitContainer1.Size = new System.Drawing.Size(1022, 679);
+            this.splitContainer1.Size = new System.Drawing.Size(1026, 602);
             this.splitContainer1.SplitterDistance = 220;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -113,22 +116,36 @@
             this.lightGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.lightGroupBox.Location = new System.Drawing.Point(2, 119);
             this.lightGroupBox.Name = "lightGroupBox";
-            this.lightGroupBox.Size = new System.Drawing.Size(210, 111);
+            this.lightGroupBox.Size = new System.Drawing.Size(210, 155);
             this.lightGroupBox.TabIndex = 25;
             this.lightGroupBox.TabStop = false;
             this.lightGroupBox.Text = "Light";
             // 
             // lightPosGroupBox
             // 
+            this.lightPosGroupBox.Controls.Add(this.lightPosPointRadio);
+            this.lightPosGroupBox.Controls.Add(this.lightPosLabel);
             this.lightPosGroupBox.Controls.Add(this.lightPosInfinity);
             this.lightPosGroupBox.Controls.Add(this.lightPosAuto);
             this.lightPosGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
             this.lightPosGroupBox.Location = new System.Drawing.Point(3, 55);
             this.lightPosGroupBox.Name = "lightPosGroupBox";
-            this.lightPosGroupBox.Size = new System.Drawing.Size(205, 49);
+            this.lightPosGroupBox.Size = new System.Drawing.Size(205, 94);
             this.lightPosGroupBox.TabIndex = 30;
             this.lightPosGroupBox.TabStop = false;
             this.lightPosGroupBox.Text = "Position";
+            // 
+            // lightPosPointRadio
+            // 
+            this.lightPosPointRadio.AutoSize = true;
+            this.lightPosPointRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lightPosPointRadio.Location = new System.Drawing.Point(18, 46);
+            this.lightPosPointRadio.Name = "lightPosPointRadio";
+            this.lightPosPointRadio.Size = new System.Drawing.Size(49, 17);
+            this.lightPosPointRadio.TabIndex = 30;
+            this.lightPosPointRadio.Text = "Point";
+            this.lightPosPointRadio.UseVisualStyleBackColor = true;
+            this.lightPosPointRadio.CheckedChanged += new System.EventHandler(this.LightPosPointRadio_CheckedChanged);
             // 
             // lightPosInfinity
             // 
@@ -137,10 +154,10 @@
             this.lightPosInfinity.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.lightPosInfinity.Location = new System.Drawing.Point(18, 23);
             this.lightPosInfinity.Name = "lightPosInfinity";
-            this.lightPosInfinity.Size = new System.Drawing.Size(55, 17);
+            this.lightPosInfinity.Size = new System.Drawing.Size(140, 17);
             this.lightPosInfinity.TabIndex = 27;
             this.lightPosInfinity.TabStop = true;
-            this.lightPosInfinity.Text = "Infinity";
+            this.lightPosInfinity.Text = "Infinity (Directional Light)";
             this.lightPosInfinity.UseVisualStyleBackColor = true;
             this.lightPosInfinity.CheckedChanged += new System.EventHandler(this.LightPosInfinity_CheckedChanged);
             // 
@@ -148,7 +165,7 @@
             // 
             this.lightPosAuto.AutoSize = true;
             this.lightPosAuto.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lightPosAuto.Location = new System.Drawing.Point(120, 23);
+            this.lightPosAuto.Location = new System.Drawing.Point(18, 69);
             this.lightPosAuto.Name = "lightPosAuto";
             this.lightPosAuto.Size = new System.Drawing.Size(47, 17);
             this.lightPosAuto.TabIndex = 29;
@@ -277,7 +294,7 @@
             this.flowLayoutPanel2.Controls.Add(this.label14);
             this.flowLayoutPanel2.Controls.Add(this.radioButton3);
             this.flowLayoutPanel2.Controls.Add(this.radioButton4);
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(16, 518);
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(14, 293);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
             this.flowLayoutPanel2.Size = new System.Drawing.Size(105, 71);
             this.flowLayoutPanel2.TabIndex = 21;
@@ -319,7 +336,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold);
-            this.label3.Location = new System.Drawing.Point(144, 559);
+            this.label3.Location = new System.Drawing.Point(25, 458);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(175, 90);
             this.label3.TabIndex = 4;
@@ -391,7 +408,7 @@
             this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox.Location = new System.Drawing.Point(0, 0);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(796, 677);
+            this.pictureBox.Size = new System.Drawing.Size(800, 600);
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
             this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBox_Paint);
@@ -436,17 +453,28 @@
             this.fillToolStripMenuItem.Text = "Fill";
             this.fillToolStripMenuItem.Click += new System.EventHandler(this.FillToolStripMenuItem_Click);
             // 
+            // lightPosLabel
+            // 
+            this.lightPosLabel.AutoSize = true;
+            this.lightPosLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.lightPosLabel.Location = new System.Drawing.Point(67, 48);
+            this.lightPosLabel.Name = "lightPosLabel";
+            this.lightPosLabel.Size = new System.Drawing.Size(40, 13);
+            this.lightPosLabel.TabIndex = 26;
+            this.lightPosLabel.Text = "(x, y, z)";
+            // 
             // PolygonFillApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1022, 679);
+            this.ClientSize = new System.Drawing.Size(1026, 602);
             this.Controls.Add(this.splitContainer1);
             this.KeyPreview = true;
             this.Name = "PolygonFillApp";
             this.Text = "Polygon Editor [Create Mode]";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.PolygonApp_KeyDown);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.PolygonApp_KeyPress);
+            this.Resize += new System.EventHandler(this.PolygonFillApp_Resize);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -507,6 +535,8 @@
         private System.Windows.Forms.Button lightColorButton;
         private System.Windows.Forms.PictureBox lightColorPic;
         private System.Windows.Forms.GroupBox lightPosGroupBox;
+        private System.Windows.Forms.RadioButton lightPosPointRadio;
+        private System.Windows.Forms.Label lightPosLabel;
     }
 }
 

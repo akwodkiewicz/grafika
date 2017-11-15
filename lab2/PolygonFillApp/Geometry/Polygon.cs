@@ -62,7 +62,7 @@ namespace PolygonApp.Geometry
             }
         }
         public int VerticesCount { get => _verticesCount; }
-        public bool Filled { get => _filled; private set => _filled = value; }
+        public bool Filled { get => _filled; set => _filled = value; }
         #endregion
 
         #region Public Methods
