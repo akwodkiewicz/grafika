@@ -23,6 +23,7 @@ namespace PolygonApp
         private Color _solidColor;
         private Bitmap _texture;
         private Bitmap _normalMap;
+        private Bitmap _heightMap;
         private ManagerState _state;
         private FillType _fillType;
         private LightType _lightType;
@@ -53,6 +54,7 @@ namespace PolygonApp
         public Bitmap NormalMap { get => _normalMap; set => _normalMap = value; }
         public FillType FillType { get => _fillType; set => _fillType = value; }
         public LightType LightType { get => _lightType; set => _lightType = value; }
+        public Bitmap HeightMap { get => _heightMap; set => _heightMap = value; }
         #endregion
 
         public void Draw(Bitmap canvas)
@@ -72,11 +74,11 @@ namespace PolygonApp
             switch (_lightType)
             {
                 case LightType.Point:
-                    fillModule = new PointLightFillModule(fillModule, _lightPosition, _normalMap);
+                    fillModule = new PointLightFillModule(fillModule, _lightPosition, _normalMap, _heightMap);
                     break;
                 case LightType.Directional:
                 default:
-                    fillModule = new DirectionalLightFillModule(fillModule, _normalMap);
+                    fillModule = new DirectionalLightFillModule(fillModule, _normalMap, _heightMap);
                     break;
             }
 

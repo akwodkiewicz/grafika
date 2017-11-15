@@ -39,6 +39,8 @@
             this.fillTexturePic = new System.Windows.Forms.PictureBox();
             this.lightGroupBox = new System.Windows.Forms.GroupBox();
             this.lightPosGroupBox = new System.Windows.Forms.GroupBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.animatedSphereRadiusNumeric = new System.Windows.Forms.NumericUpDown();
             this.lightPosPointRadio = new System.Windows.Forms.RadioButton();
             this.lightPosLabel = new System.Windows.Forms.Label();
             this.lightPosInfinity = new System.Windows.Forms.RadioButton();
@@ -51,21 +53,24 @@
             this.normalMapNoneRadio = new System.Windows.Forms.RadioButton();
             this.normalMapImageRadio = new System.Windows.Forms.RadioButton();
             this.normalMapPic = new System.Windows.Forms.PictureBox();
-            this.label3 = new System.Windows.Forms.Label();
+            this.heightMapGroupBox = new System.Windows.Forms.GroupBox();
+            this.heightMapButton = new System.Windows.Forms.Button();
+            this.heightMapNoneRadio = new System.Windows.Forms.RadioButton();
+            this.heightMapImageRadio = new System.Windows.Forms.RadioButton();
+            this.heightMapPic = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.pictureBox = new System.Windows.Forms.PictureBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addVertexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fillToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lightAnimationTimer = new System.Windows.Forms.Timer(this.components);
-            this.animatedSphereRadiusNumeric = new System.Windows.Forms.NumericUpDown();
-            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -75,15 +80,17 @@
             ((System.ComponentModel.ISupportInitialize)(this.fillTexturePic)).BeginInit();
             this.lightGroupBox.SuspendLayout();
             this.lightPosGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.animatedSphereRadiusNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lightColorPic)).BeginInit();
             this.normalMapGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.normalMapPic)).BeginInit();
+            this.heightMapGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.heightMapPic)).BeginInit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.animatedSphereRadiusNumeric)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -101,7 +108,7 @@
             this.splitContainer1.Panel1.Controls.Add(this.fillGroupBox);
             this.splitContainer1.Panel1.Controls.Add(this.lightGroupBox);
             this.splitContainer1.Panel1.Controls.Add(this.normalMapGroupBox);
-            this.splitContainer1.Panel1.Controls.Add(this.label3);
+            this.splitContainer1.Panel1.Controls.Add(this.heightMapGroupBox);
             this.splitContainer1.Panel1.Controls.Add(this.panel1);
             // 
             // splitContainer1.Panel2
@@ -109,6 +116,7 @@
             this.splitContainer1.Panel2.BackColor = System.Drawing.SystemColors.Window;
             this.splitContainer1.Panel2.Controls.Add(this.label4);
             this.splitContainer1.Panel2.Controls.Add(this.pictureBox);
+            this.splitContainer1.Panel2.Controls.Add(this.label3);
             this.splitContainer1.Size = new System.Drawing.Size(1026, 602);
             this.splitContainer1.SplitterDistance = 220;
             this.splitContainer1.TabIndex = 0;
@@ -227,6 +235,23 @@
             this.lightPosGroupBox.TabIndex = 30;
             this.lightPosGroupBox.TabStop = false;
             this.lightPosGroupBox.Text = "Position";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.label5.Location = new System.Drawing.Point(33, 90);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(80, 13);
+            this.label5.TabIndex = 32;
+            this.label5.Text = "Sphere Radius:";
+            // 
+            // animatedSphereRadiusNumeric
+            // 
+            this.animatedSphereRadiusNumeric.Location = new System.Drawing.Point(128, 85);
+            this.animatedSphereRadiusNumeric.Name = "animatedSphereRadiusNumeric";
+            this.animatedSphereRadiusNumeric.Size = new System.Drawing.Size(46, 22);
+            this.animatedSphereRadiusNumeric.TabIndex = 31;
             // 
             // lightPosPointRadio
             // 
@@ -368,17 +393,66 @@
             this.normalMapPic.TabIndex = 25;
             this.normalMapPic.TabStop = false;
             // 
-            // label3
+            // heightMapGroupBox
             // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold);
-            this.label3.Location = new System.Drawing.Point(25, 458);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(175, 90);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Edit Mode:\r\n[RMB]   Context Menu\r\n[A]        Move Polygon\r\n[C]        Create Mode" +
-    "\r\n[R]        Reset Canvas";
-            this.label3.Visible = false;
+            this.heightMapGroupBox.Controls.Add(this.heightMapButton);
+            this.heightMapGroupBox.Controls.Add(this.heightMapNoneRadio);
+            this.heightMapGroupBox.Controls.Add(this.heightMapImageRadio);
+            this.heightMapGroupBox.Controls.Add(this.heightMapPic);
+            this.heightMapGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.heightMapGroupBox.Location = new System.Drawing.Point(5, 410);
+            this.heightMapGroupBox.Name = "heightMapGroupBox";
+            this.heightMapGroupBox.Size = new System.Drawing.Size(207, 98);
+            this.heightMapGroupBox.TabIndex = 27;
+            this.heightMapGroupBox.TabStop = false;
+            this.heightMapGroupBox.Text = "HeightMap";
+            // 
+            // heightMapButton
+            // 
+            this.heightMapButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.heightMapButton.Location = new System.Drawing.Point(148, 51);
+            this.heightMapButton.Margin = new System.Windows.Forms.Padding(0);
+            this.heightMapButton.Name = "heightMapButton";
+            this.heightMapButton.Size = new System.Drawing.Size(53, 30);
+            this.heightMapButton.TabIndex = 26;
+            this.heightMapButton.Text = "Open";
+            this.heightMapButton.UseVisualStyleBackColor = true;
+            this.heightMapButton.Click += new System.EventHandler(this.HeightMapButton_Click);
+            // 
+            // heightMapNoneRadio
+            // 
+            this.heightMapNoneRadio.AutoSize = true;
+            this.heightMapNoneRadio.Checked = true;
+            this.heightMapNoneRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.heightMapNoneRadio.Location = new System.Drawing.Point(12, 25);
+            this.heightMapNoneRadio.Name = "heightMapNoneRadio";
+            this.heightMapNoneRadio.Size = new System.Drawing.Size(51, 17);
+            this.heightMapNoneRadio.TabIndex = 19;
+            this.heightMapNoneRadio.TabStop = true;
+            this.heightMapNoneRadio.Text = "None";
+            this.heightMapNoneRadio.UseVisualStyleBackColor = true;
+            // 
+            // heightMapImageRadio
+            // 
+            this.heightMapImageRadio.AutoSize = true;
+            this.heightMapImageRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.heightMapImageRadio.Location = new System.Drawing.Point(12, 58);
+            this.heightMapImageRadio.Name = "heightMapImageRadio";
+            this.heightMapImageRadio.Size = new System.Drawing.Size(54, 17);
+            this.heightMapImageRadio.TabIndex = 20;
+            this.heightMapImageRadio.Text = "Image";
+            this.heightMapImageRadio.UseVisualStyleBackColor = true;
+            this.heightMapImageRadio.CheckedChanged += new System.EventHandler(this.HeightMapImageRadio_CheckedChanged);
+            // 
+            // heightMapPic
+            // 
+            this.heightMapPic.BackColor = System.Drawing.SystemColors.Window;
+            this.heightMapPic.Location = new System.Drawing.Point(97, 49);
+            this.heightMapPic.Name = "heightMapPic";
+            this.heightMapPic.Size = new System.Drawing.Size(44, 35);
+            this.heightMapPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.heightMapPic.TabIndex = 25;
+            this.heightMapPic.TabStop = false;
             // 
             // panel1
             // 
@@ -453,6 +527,18 @@
             this.pictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseMove);
             this.pictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseUp);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold);
+            this.label3.Location = new System.Drawing.Point(147, 430);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(175, 90);
+            this.label3.TabIndex = 4;
+            this.label3.Text = "Edit Mode:\r\n[RMB]   Context Menu\r\n[A]        Move Polygon\r\n[C]        Create Mode" +
+    "\r\n[R]        Reset Canvas";
+            this.label3.Visible = false;
+            // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -493,23 +579,6 @@
             // 
             this.lightAnimationTimer.Tick += new System.EventHandler(this.LightAnimationTimer_Tick);
             // 
-            // animatedSphereRadiusNumeric
-            // 
-            this.animatedSphereRadiusNumeric.Location = new System.Drawing.Point(128, 85);
-            this.animatedSphereRadiusNumeric.Name = "animatedSphereRadiusNumeric";
-            this.animatedSphereRadiusNumeric.Size = new System.Drawing.Size(46, 22);
-            this.animatedSphereRadiusNumeric.TabIndex = 31;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.label5.Location = new System.Drawing.Point(33, 90);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(80, 13);
-            this.label5.TabIndex = 32;
-            this.label5.Text = "Sphere Radius:";
-            // 
             // PolygonFillApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -523,7 +592,6 @@
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.PolygonApp_KeyPress);
             this.Resize += new System.EventHandler(this.PolygonFillApp_Resize);
             this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -536,17 +604,20 @@
             this.lightGroupBox.PerformLayout();
             this.lightPosGroupBox.ResumeLayout(false);
             this.lightPosGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.animatedSphereRadiusNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.lightColorPic)).EndInit();
             this.normalMapGroupBox.ResumeLayout(false);
             this.normalMapGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.normalMapPic)).EndInit();
+            this.heightMapGroupBox.ResumeLayout(false);
+            this.heightMapGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.heightMapPic)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.contextMenuStrip2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.animatedSphereRadiusNumeric)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -590,6 +661,11 @@
         private System.Windows.Forms.Timer lightAnimationTimer;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.NumericUpDown animatedSphereRadiusNumeric;
+        private System.Windows.Forms.GroupBox heightMapGroupBox;
+        private System.Windows.Forms.Button heightMapButton;
+        private System.Windows.Forms.RadioButton heightMapNoneRadio;
+        private System.Windows.Forms.RadioButton heightMapImageRadio;
+        private System.Windows.Forms.PictureBox heightMapPic;
     }
 }
 

@@ -12,17 +12,26 @@ namespace PolygonApp.FillModules
         private IFillModule _baseModule;
         private (double X, double Y, double Z) _lightVector;
         private Bitmap _normalMap;
-        private int _xMax;
-        private int _yMax;
-        public DirectionalLightFillModule(IFillModule baseModule, Bitmap normalMap)
+        private Bitmap _heightMap;
+        private int _xNormalMax;
+        private int _yNormalMax;
+        private int _xHeightMax;
+        private int _yHeightMax;
+        public DirectionalLightFillModule(IFillModule baseModule, Bitmap normalMap, Bitmap heightMap)
         {
             _baseModule = baseModule;
             _lightVector = (0.0, 0.0, 1.0);
             if (normalMap != null)
             {
                 _normalMap = normalMap;
-                _xMax = normalMap.Width;
-                _yMax = normalMap.Height;
+                _xNormalMax = normalMap.Width;
+                _yNormalMax = normalMap.Height;
+            }
+            if (heightMap != null)
+            {
+                _heightMap = heightMap;
+                _xHeightMax = heightMap.Width;
+                _yHeightMax = heightMap.Height;
             }
         }
 
@@ -31,13 +40,23 @@ namespace PolygonApp.FillModules
             var oldColor = _baseModule.GetColor(x, y);
 
             (double X, double Y, double Z) normal;
+            (double X, double Y, double Z) displacement;
+            (double X, double Y, double Z) normalPrim;
+
             if (_normalMap == null)
                 normal = (0.0, 0.0, 1.0);
             else
                 normal = CreateNormalVector(GetNormalMapColor(x, y));
 
-            var cos = (normal.X * _lightVector.X + normal.Y * _lightVector.Y + normal.Z * _lightVector.Z)
-                      / (VectorLength(normal) * VectorLength(_lightVector));
+            if (_heightMap == null)
+                displacement = (0.0, 0.0, 0.0);
+            else
+                displacement = CreateDisplacementVector(x, y, normal);
+
+            normalPrim = (normal.X + displacement.X, normal.Y + displacement.Y, normal.Z + displacement.Z);
+
+            var cos = (normalPrim.X * _lightVector.X + normalPrim.Y * _lightVector.Y + normalPrim.Z * _lightVector.Z)
+                      / (VectorLength(normalPrim) * VectorLength(_lightVector));
             cos = Math.Max(0.0, cos);
             var newRed = (int)(oldColor.R * cos);
             var newGreen = (int)(oldColor.G * cos);
@@ -46,9 +65,24 @@ namespace PolygonApp.FillModules
             return Color.FromArgb(newRed, newGreen, newBlue);
         }
 
+        private (double X, double Y, double Z) CreateDisplacementVector(int x, int y, (double X, double Y, double Z) normal)
+        {
+
+            var color = _heightMap.GetPixel(x % _xHeightMax, y % _yHeightMax);
+            var xColor = _heightMap.GetPixel((x + 1) % _xHeightMax, y % _yHeightMax);
+            var yColor = _heightMap.GetPixel(x % _xHeightMax, (y + 1) % _yHeightMax);
+            (double X, double Y, double Z) dhx = ((xColor.R - color.R) / 255.0, (xColor.G - color.G) / 255.0, (xColor.B - color.B) / 255.0);
+            (double X, double Y, double Z) dhy = ((yColor.R - color.R) / 255.0, (yColor.G - color.G) / 255.0, (yColor.B - color.B) / 255.0);
+
+            (double X, double Y, double Z) t = (1.0, 0.0, -normal.X);
+            (double X, double Y, double Z) b = (0.0, 1.0, -normal.Y);
+
+            return (t.X * dhx.X + b.X * dhy.X, t.Y * dhx.Y + b.Y * dhy.Y, t.Z * dhx.Z + b.Z * dhy.Z);
+        }
+
         private Color GetNormalMapColor(int x, int y)
         {
-            return _normalMap.GetPixel(x % _xMax, y % _yMax);
+            return _normalMap.GetPixel(x % _xNormalMax, y % _yNormalMax);
         }
 
         private (double X, double Y, double Z) CreateNormalVector(Color color)
@@ -62,7 +96,6 @@ namespace PolygonApp.FillModules
             y *= f;
             x *= f;
 
-            //return NormalizeVector((x, y, z));
             return (x, y, z);
         }
 
@@ -72,7 +105,6 @@ namespace PolygonApp.FillModules
             var y = color.G / 255.0;
             var z = color.B / 255.0;
 
-            // return NormalizeVector((x, y, z));
             return (x, y, z);
         }
 
@@ -80,12 +112,5 @@ namespace PolygonApp.FillModules
         {
             return Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
         }
-
-        //private (double X, double Y, double Z) NormalizeVector((double X, double Y, double Z) vector)
-        //{
-        //    var d = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z  * vector.Z);
-        //    d = (d == 0) ? 1 : d;
-        //    return (vector.X / d, vector.Y / d, vector.Z/ d);
-        //}
     }
 }

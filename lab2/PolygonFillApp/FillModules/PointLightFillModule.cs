@@ -12,18 +12,27 @@ namespace PolygonApp.FillModules
         private IFillModule _baseModule;
         private (double X, double Y, double Z) _lightPos;
         private Bitmap _normalMap;
-        private int _xMax;
-        private int _yMax;
+        private Bitmap _heightMap;
+        private int _xNormalMax;
+        private int _yNormalMax;
+        private int _xHeightMax;
+        private int _yHeightMax;
 
-        public PointLightFillModule(IFillModule baseModule, (double X, double Y, double Z) lightPos, Bitmap normalMap)
+        public PointLightFillModule(IFillModule baseModule, (double X, double Y, double Z) lightPos, Bitmap normalMap, Bitmap heightMap)
         {
             _baseModule = baseModule;
             _lightPos = lightPos;
             if (normalMap != null)
             {
                 _normalMap = normalMap;
-                _xMax = normalMap.Width;
-                _yMax = normalMap.Height;
+                _xNormalMax = normalMap.Width;
+                _yNormalMax = normalMap.Height;
+            }
+            if (heightMap != null)
+            {
+                _heightMap = heightMap;
+                _xHeightMax = heightMap.Width;
+                _yHeightMax = heightMap.Height;
             }
         }
 
@@ -32,16 +41,27 @@ namespace PolygonApp.FillModules
             var oldColor = _baseModule.GetColor(x, y);
 
             (double X, double Y, double Z) normal;
+            (double X, double Y, double Z) displacement;
+            (double X, double Y, double Z) normalPrim;
+
             if (_normalMap == null)
                 normal = (0.0, 0.0, 1.0);
             else
                 normal = CreateNormalVector(GetNormalMapColor(x, y));
 
+            if (_heightMap == null)
+                displacement = (0.0, 0.0, 0.0);
+            else
+                displacement = CreateDiffuseVector(x, y, normal);
+
+            normalPrim = (normal.X+displacement.X, normal.Y+displacement.Y, normal.Z+displacement.Z);
+
             (double X, double Y, double Z) lightVector = (_lightPos.X - x, -(_lightPos.Y - y), _lightPos.Z);
             lightVector = NormalizeVector(lightVector);
             lightVector.Z = 1.0;
-            var cos = (normal.X * lightVector.X + normal.Y * lightVector.Y + normal.Z * lightVector.Z)
-                     / (VectorLength(normal) * VectorLength(lightVector));
+
+            var cos = (normalPrim.X * lightVector.X + normalPrim.Y * lightVector.Y + normalPrim.Z * lightVector.Z)
+                     / (VectorLength(normalPrim) * VectorLength(lightVector));
             cos = Math.Max(0.0, cos);
             var newRed = (int)(oldColor.R * cos);
             var newGreen = (int)(oldColor.G * cos);
@@ -50,9 +70,24 @@ namespace PolygonApp.FillModules
             return Color.FromArgb(newRed, newGreen, newBlue);
         }
 
+        private (double X, double Y, double Z) CreateDiffuseVector(int x, int y, (double X, double Y, double Z) normal)
+        {
+
+            var color = _heightMap.GetPixel(x % _xHeightMax, y % _yHeightMax);
+            var xColor = _heightMap.GetPixel((x+1) % _xHeightMax, y % _yHeightMax);
+            var yColor = _heightMap.GetPixel(x % _xHeightMax, (y+1) % _yHeightMax);
+            (double X, double Y, double Z) dhx = ((xColor.R - color.R) / 255.0, (xColor.G - color.G) / 255.0, (xColor.B - color.B) / 255.0);
+            (double X, double Y, double Z) dhy = ((yColor.R - color.R) / 255.0, (yColor.G - color.G) / 255.0, (yColor.B - color.B) / 255.0);
+
+            (double X, double Y, double Z) t = (1.0, 0.0, -normal.X);
+            (double X, double Y, double Z) b = (0.0, 1.0, normal.Y);
+
+            return (t.X * dhx.X + b.X * dhy.X, t.Y * dhx.Y + b.Y * dhy.Y, t.Z * dhx.Z + b.Z * dhy.Z);
+        }
+
         private Color GetNormalMapColor(int x, int y)
         {
-            return _normalMap.GetPixel(x % _xMax, y % _yMax);
+            return _normalMap.GetPixel(x % _xNormalMax, y % _yNormalMax);
         }
 
         private (double X, double Y, double Z) CreateNormalVector(Color color)

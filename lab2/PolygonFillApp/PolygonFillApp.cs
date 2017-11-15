@@ -13,6 +13,7 @@ namespace PolygonApp
     {
         private Bitmap _canvas;
         private Bitmap _normalMap;
+        private Bitmap _heightMap;
         private PolygonManager _polygonManager;
         private bool _selectAllMode = false;
         private (double X, double Y, double Z) _lightPosition;
@@ -26,7 +27,7 @@ namespace PolygonApp
             InitializeComponent();
             _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
             _lightPosition = (pictureBox.Width / 2, pictureBox.Height / 2, 0);
-            RecalculateLight(0,0,false);
+            RecalculateLight(0, 0, false);
             _polygonManager = new PolygonManager()
             {
                 VertexSize = trackBar1.Value,
@@ -59,7 +60,7 @@ namespace PolygonApp
 
             else if (PickLightSource)
                 RecalculateLight(e.X, e.Y, false);
-            
+
             else if (e.Button == MouseButtons.Right)
                 switch (_polygonManager.Select(e.Location))
                 {
@@ -309,23 +310,31 @@ namespace PolygonApp
         {
             if (resizeOnly)
             {
-                x = Math.Min((int)_lightPosition.X, pictureBox.Width); 
+                x = Math.Min((int)_lightPosition.X, pictureBox.Width);
                 y = Math.Min((int)_lightPosition.Y, pictureBox.Height);
             }
             else
-            { 
+            {
                 _sphereRadius = SphereEquation.CalculateR(pictureBox);
                 _sphereCenter = (pictureBox.Width / 2, pictureBox.Height / 2);
                 animatedSphereRadiusNumeric.Maximum = (decimal)(_sphereRadius - 1);
             }
             var z = SphereEquation.CalculateZ(x, y, pictureBox);
             _lightPosition = (x, y, z);
-            if(_polygonManager != null)
+            if (_polygonManager != null)
                 _polygonManager.LightPosition = _lightPosition;
             lightPosLabel.Text = $"({_lightPosition.X}, {_lightPosition.Y}, {(int)_lightPosition.Z})";
             PickLightSource = false;
         }
 
+        private void LightAnimationTimer_Tick(object sender, EventArgs e)
+        {
+            _animationParameter = (_animationParameter + 0.2) % (2 * Math.PI);
+            var x = _sphereCenter.X + Math.Sin(_animationParameter) * ((double)animatedSphereRadiusNumeric.Value);
+            var y = _sphereCenter.Y + Math.Cos(_animationParameter) * ((double)animatedSphereRadiusNumeric.Value);
+            RecalculateLight((int)x, (int)y, false);
+            pictureBox.Invalidate();
+        }
         #endregion
 
         #region NORMALMAP
@@ -350,32 +359,72 @@ namespace PolygonApp
             if (!((RadioButton)sender).Checked)
             {
                 _polygonManager.NormalMap = null;
+                pictureBox.Invalidate();
                 return;
             }
-            if(_normalMap == null)
+            if (_normalMap == null)
             {
                 var dialog = new OpenFileDialog
                 {
                     Filter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG"
                 };
-                if (dialog.ShowDialog() == DialogResult.OK)
+                if (dialog.ShowDialog() != DialogResult.OK)
                 {
-                    _normalMap = new Bitmap(dialog.OpenFile());
-                    normalMapPic.Image = _normalMap;
+                    normalMapNoneRadio.Checked = true;
+                    return;
                 }
+                _normalMap = new Bitmap(dialog.OpenFile());
+
             }
+            normalMapPic.Image = _normalMap;
             _polygonManager.NormalMap = _normalMap;
             pictureBox.Invalidate();
         }
         #endregion
 
-        private void LightAnimationTimer_Tick(object sender, EventArgs e)
+
+        #region HEIGHTMAP
+        private void HeightMapButton_Click(object sender, EventArgs e)
         {
-            _animationParameter = (_animationParameter + 0.2) % (2 * Math.PI);
-            var x = _sphereCenter.X + Math.Sin(_animationParameter)*((double)animatedSphereRadiusNumeric.Value);
-            var y =_sphereCenter.Y + Math.Cos(_animationParameter)*((double)animatedSphereRadiusNumeric.Value);
-            RecalculateLight((int)x, (int)y, false);
+            var dialog = new OpenFileDialog
+            {
+                Filter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG"
+            };
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                _heightMap = new Bitmap(dialog.OpenFile());
+                heightMapPic.Image = _heightMap;
+            }
+            if (heightMapImageRadio.Checked)
+                _polygonManager.HeightMap = _heightMap;
             pictureBox.Invalidate();
         }
+
+        private void HeightMapImageRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!((RadioButton)sender).Checked)
+            {
+                _polygonManager.HeightMap = null;
+                pictureBox.Invalidate();
+                return;
+            }
+            if (_heightMap == null)
+            {
+                var dialog = new OpenFileDialog
+                {
+                    Filter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG"
+                };
+                if (dialog.ShowDialog() != DialogResult.OK)
+                {
+                    heightMapNoneRadio.Checked = true;
+                    return;
+                }
+                _heightMap = new Bitmap(dialog.OpenFile());
+            }
+            heightMapPic.Image = _heightMap;
+            _polygonManager.HeightMap = _heightMap;
+            pictureBox.Invalidate();
+        }
+        #endregion
     }
 }
