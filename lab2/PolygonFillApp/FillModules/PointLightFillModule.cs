@@ -11,8 +11,8 @@ namespace PolygonApp.FillModules
     {
         private (double X, double Y, double Z) _lightPos;
         
-        public PointLightFillModule(IFillModule baseModule, (double X, double Y, double Z) lightPos, Bitmap normalMap, Bitmap heightMap)
-            : base(baseModule, normalMap, heightMap)
+        public PointLightFillModule(IFillModule baseModule, (double X, double Y, double Z) lightPos, Color[][] normalMapColors, (int X, int Y) normalMax, Color[][] heightMapColors, (int X, int Y) heightMax)
+           : base(baseModule, normalMapColors, normalMax, heightMapColors, heightMax)
         {
             _lightPos = lightPos;
 
@@ -26,12 +26,12 @@ namespace PolygonApp.FillModules
             (double X, double Y, double Z) displacement;
             (double X, double Y, double Z) normalPrim;
 
-            if (_normalMap == null)
+            if (_xNormalMax == 0)
                 normal = (0.0, 0.0, 1.0);
             else
                 normal = CreateNormalVector(GetNormalMapColor(x, y));
 
-            if (_heightMap == null)
+            if (_xHeightMax == 0)
                 displacement = (0.0, 0.0, 0.0);
             else
                 displacement = CreateDisplacementVector(x, y, normal);

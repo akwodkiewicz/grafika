@@ -10,8 +10,6 @@ namespace PolygonApp.FillModules
     abstract class AbstractLightFillModule : IFillModule
     {
         protected IFillModule _baseModule;
-        protected Bitmap _normalMap;
-        protected Bitmap _heightMap;
         protected Color[][] _normalMapColors;
         protected Color[][] _heightMapColors;
         protected int _xNormalMax;
@@ -19,37 +17,18 @@ namespace PolygonApp.FillModules
         protected int _xHeightMax;
         protected int _yHeightMax;
 
-        public AbstractLightFillModule(IFillModule baseModule, Bitmap normalMap, Bitmap heightMap)
+        public AbstractLightFillModule(IFillModule baseModule, Color[][] normalMapColors, (int X, int Y) normalMax, Color[][] heightMapColors, (int X, int Y) heightMax)
         {
             _baseModule = baseModule;
-            if (normalMap != null)
-            {
-                _normalMap = normalMap;
-                _xNormalMax = normalMap.Width;
-                _yNormalMax = normalMap.Height;
 
-                _normalMapColors = new Color[_xNormalMax][];
-                for (int i = 0; i < _xNormalMax; i++)
-                    _normalMapColors[i] = new Color[_yNormalMax];
+            _normalMapColors = normalMapColors;
+            _xNormalMax = normalMax.X;
+            _yNormalMax = normalMax.Y;
 
-                for (int y = 0; y < _normalMap.Height; y++)
-                    for (int x = 0; x < _normalMap.Width; x++)
-                        _normalMapColors[x][y] = _normalMap.GetPixel(x, y);
-            }
-            if (heightMap != null)
-            {
-                _heightMap = heightMap;
-                _xHeightMax = heightMap.Width;
-                _yHeightMax = heightMap.Height;
+            _heightMapColors = heightMapColors;
+            _xHeightMax = heightMax.X;
+            _yHeightMax = heightMax.Y;
 
-                _heightMapColors = new Color[_xHeightMax][];
-                for (int i = 0; i < _xHeightMax; i++)
-                    _heightMapColors[i] = new Color[_yHeightMax];
-
-                for (int y = 0; y < _heightMap.Height; y++)
-                    for (int x = 0; x < _heightMap.Width; x++)
-                        _heightMapColors[x][y] = _heightMap.GetPixel(x, y);
-            }
         }
 
         abstract public Color GetColor(int x, int y);
@@ -57,9 +36,9 @@ namespace PolygonApp.FillModules
         protected (double X, double Y, double Z) CreateDisplacementVector(int x, int y, (double X, double Y, double Z) normal)
         {
 
-            var color = _heightMap.GetPixel(x % _xHeightMax, y % _yHeightMax);
-            var xColor = _heightMap.GetPixel((x + 1) % _xHeightMax, y % _yHeightMax);
-            var yColor = _heightMap.GetPixel(x % _xHeightMax, (y + 1) % _yHeightMax);
+            var color = _heightMapColors[x % _xHeightMax][ y % _yHeightMax];
+            var xColor = _heightMapColors[(x+1) % _xHeightMax][y % _yHeightMax];
+            var yColor = _heightMapColors[x % _xHeightMax][(y+1) % _yHeightMax];
             (double X, double Y, double Z) dhx = ((xColor.R - color.R) / 255.0, (xColor.G - color.G) / 255.0, (xColor.B - color.B) / 255.0);
             (double X, double Y, double Z) dhy = ((yColor.R - color.R) / 255.0, (yColor.G - color.G) / 255.0, (yColor.B - color.B) / 255.0);
 

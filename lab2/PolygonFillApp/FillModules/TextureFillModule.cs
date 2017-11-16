@@ -14,19 +14,11 @@ namespace PolygonApp.FillModules
         private int _xMax;
         private int _yMax;
 
-        public TextureFillModule(Bitmap texture)
+        public TextureFillModule(Color[][] textureColors, int xMax, int yMax)
         {
-            _texture = texture;
-            _xMax = texture.Width;
-            _yMax = texture.Height;
-
-            _textureColors = new Color[_xMax][];
-            for (int i = 0; i < _xMax; i++)
-                _textureColors[i] = new Color[_yMax];
-
-            for (int y = 0; y < _texture.Height; y++)
-                for (int x = 0; x < _texture.Width; x++)
-                    _textureColors[x][y] = _texture.GetPixel(x, y);
+            _textureColors = textureColors;
+            _xMax = xMax;
+            _yMax = yMax;
         }
 
         public Color GetColor(int x, int y)

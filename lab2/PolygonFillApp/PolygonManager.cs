@@ -24,6 +24,11 @@ namespace PolygonApp
         private Bitmap _texture;
         private Bitmap _normalMap;
         private Bitmap _heightMap;
+        private Color[][] _textureColors;
+        private Color[][] _normalMapColors;
+        private Color[][] _heightMapColors;
+        private (int X, int Y) _normalMax;
+        private (int X, int Y) _heightMax;
         private ManagerState _state;
         private FillType _fillType;
         private LightType _lightType;
@@ -49,12 +54,69 @@ namespace PolygonApp
         internal ManagerState State { get => _state; private set => _state = value; }
         public Color LightColor { get => _lightColor; set => _lightColor = value; }
         public (double X, double Y, double Z) LightPosition { get => _lightPosition; set => _lightPosition = value; }
-        public Bitmap Texture { get => _texture; set => _texture = value;  }
-        public Color SolidColor { get => _solidColor; set => _solidColor = value;  }
-        public Bitmap NormalMap { get => _normalMap; set => _normalMap = value; }
+        public Bitmap Texture
+        {
+            get => _texture;
+            set
+            {
+                _texture = value;
+
+                _textureColors = new Color[_texture.Width][];
+                for (int i = 0; i < _texture.Width; i++)
+                    _textureColors[i] = new Color[_texture.Height];
+
+                for (int y = 0; y < _texture.Height; y++)
+                    for (int x = 0; x < _texture.Width; x++)
+                        _textureColors[x][y] = _texture.GetPixel(x, y);
+            }
+        }
+        public Color SolidColor { get => _solidColor; set => _solidColor = value; }
+        public Bitmap NormalMap
+        {
+            get => _normalMap;
+            set
+            {
+                _normalMap = value;
+                if(value == null)
+                {
+                    _normalMax = (0, 0);
+                    return;
+                }
+                _normalMax = (_normalMap.Width, _normalMap.Height);
+
+                _normalMapColors = new Color[_normalMap.Width][];
+                for (int i = 0; i < _normalMap.Width; i++)
+                    _normalMapColors[i] = new Color[_normalMap.Height];
+
+                for (int y = 0; y < _normalMap.Height; y++)
+                    for (int x = 0; x < _normalMap.Width; x++)
+                        _normalMapColors[x][y] = _normalMap.GetPixel(x, y);
+            }
+        }
         public FillType FillType { get => _fillType; set => _fillType = value; }
         public LightType LightType { get => _lightType; set => _lightType = value; }
-        public Bitmap HeightMap { get => _heightMap; set => _heightMap = value; }
+        public Bitmap HeightMap
+        {
+            get => _heightMap;
+            set
+            {
+                _heightMap = value;
+                if (value == null)
+                {
+                    _heightMax = (0, 0);
+                    return;
+                }
+                _heightMax = (_heightMap.Width, _heightMap.Height);
+
+                _heightMapColors = new Color[_heightMap.Width][];
+                for (int i = 0; i < _heightMap.Width; i++)
+                    _heightMapColors[i] = new Color[_heightMap.Height];
+
+                for (int y = 0; y < _heightMap.Height; y++)
+                    for (int x = 0; x < _heightMap.Width; x++)
+                        _heightMapColors[x][y] = _heightMap.GetPixel(x, y);
+            }
+        }
         #endregion
 
         public void Draw(Bitmap canvas)
@@ -63,7 +125,7 @@ namespace PolygonApp
             switch (_fillType)
             {
                 case FillType.Texture:
-                    fillModule = new TextureFillModule(_texture);
+                    fillModule = new TextureFillModule(_textureColors, _texture.Width, _texture.Height);
                     break;
                 case FillType.Solid:
                 default:
@@ -74,11 +136,11 @@ namespace PolygonApp
             switch (_lightType)
             {
                 case LightType.Point:
-                    fillModule = new PointLightFillModule(fillModule, _lightPosition, _normalMap, _heightMap);
+                    fillModule = new PointLightFillModule(fillModule, _lightPosition, _normalMapColors, _normalMax, _heightMapColors, _heightMax);
                     break;
                 case LightType.Directional:
                 default:
-                    fillModule = new DirectionalLightFillModule(fillModule, _normalMap, _heightMap);
+                    fillModule = new DirectionalLightFillModule(fillModule, _normalMapColors, _normalMax, _heightMapColors, _heightMax);
                     break;
             }
 
