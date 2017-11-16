@@ -36,7 +36,7 @@ namespace PolygonApp.FillModules
             else
                 displacement = CreateDisplacementVector(x, y, normal);
 
-            normalPrim = (normal.X+displacement.X, normal.Y+displacement.Y, normal.Z+displacement.Z);
+            normalPrim = (normal.X+displacement.X, normal.Y+displacement.Y, normal.Z+0.1*displacement.Z);
 
             (double X, double Y, double Z) lightVector = (_lightPos.X - x, -(_lightPos.Y - y), _lightPos.Z);
             lightVector = NormalizeVector(lightVector);

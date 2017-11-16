@@ -9,7 +9,6 @@ namespace PolygonApp.FillModules
 {
     class TextureFillModule : IFillModule
     {
-        private Bitmap _texture;
         private Color[][] _textureColors;
         private int _xMax;
         private int _yMax;

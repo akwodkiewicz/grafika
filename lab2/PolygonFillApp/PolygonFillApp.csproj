@@ -97,5 +97,32 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\normal1.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bump2.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bump3.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\normal1.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\normal2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\normal3.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\texture1.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\texture2.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\texture3.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

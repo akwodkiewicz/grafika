@@ -39,15 +39,22 @@
             this.fillTexturePic = new System.Windows.Forms.PictureBox();
             this.lightGroupBox = new System.Windows.Forms.GroupBox();
             this.lightPosGroupBox = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.overrideHeightCheckBox = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.animatedSphereRadiusNumeric = new System.Windows.Forms.NumericUpDown();
+            this.lightSphereRadiusNumeric = new System.Windows.Forms.NumericUpDown();
             this.lightPosPointRadio = new System.Windows.Forms.RadioButton();
             this.lightPosLabel = new System.Windows.Forms.Label();
             this.lightPosInfinity = new System.Windows.Forms.RadioButton();
             this.lightPosAuto = new System.Windows.Forms.RadioButton();
+            this.lightPosHeightNumeric = new System.Windows.Forms.NumericUpDown();
             this.lightColorLabel = new System.Windows.Forms.Label();
             this.lightColorButton = new System.Windows.Forms.Button();
             this.lightColorPic = new System.Windows.Forms.PictureBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.presetButton1 = new System.Windows.Forms.Button();
+            this.presetButton2 = new System.Windows.Forms.Button();
+            this.presetButton3 = new System.Windows.Forms.Button();
             this.normalMapGroupBox = new System.Windows.Forms.GroupBox();
             this.normalMapButton = new System.Windows.Forms.Button();
             this.normalMapNoneRadio = new System.Windows.Forms.RadioButton();
@@ -58,10 +65,6 @@
             this.heightMapNoneRadio = new System.Windows.Forms.RadioButton();
             this.heightMapImageRadio = new System.Windows.Forms.RadioButton();
             this.heightMapPic = new System.Windows.Forms.PictureBox();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.trackBar1 = new System.Windows.Forms.TrackBar();
-            this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -80,14 +83,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.fillTexturePic)).BeginInit();
             this.lightGroupBox.SuspendLayout();
             this.lightPosGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.animatedSphereRadiusNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.lightSphereRadiusNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.lightPosHeightNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lightColorPic)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.normalMapGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.normalMapPic)).BeginInit();
             this.heightMapGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.heightMapPic)).BeginInit();
-            this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
@@ -107,9 +110,9 @@
             // 
             this.splitContainer1.Panel1.Controls.Add(this.fillGroupBox);
             this.splitContainer1.Panel1.Controls.Add(this.lightGroupBox);
+            this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
             this.splitContainer1.Panel1.Controls.Add(this.normalMapGroupBox);
             this.splitContainer1.Panel1.Controls.Add(this.heightMapGroupBox);
-            this.splitContainer1.Panel1.Controls.Add(this.panel1);
             // 
             // splitContainer1.Panel2
             // 
@@ -117,7 +120,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.label4);
             this.splitContainer1.Panel2.Controls.Add(this.pictureBox);
             this.splitContainer1.Panel2.Controls.Add(this.label3);
-            this.splitContainer1.Size = new System.Drawing.Size(1026, 602);
+            this.splitContainer1.Size = new System.Drawing.Size(1026, 655);
             this.splitContainer1.SplitterDistance = 220;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -215,43 +218,71 @@
             this.lightGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.lightGroupBox.Location = new System.Drawing.Point(5, 119);
             this.lightGroupBox.Name = "lightGroupBox";
-            this.lightGroupBox.Size = new System.Drawing.Size(207, 181);
+            this.lightGroupBox.Size = new System.Drawing.Size(207, 230);
             this.lightGroupBox.TabIndex = 25;
             this.lightGroupBox.TabStop = false;
             this.lightGroupBox.Text = "Light";
             // 
             // lightPosGroupBox
             // 
+            this.lightPosGroupBox.Controls.Add(this.label1);
+            this.lightPosGroupBox.Controls.Add(this.overrideHeightCheckBox);
             this.lightPosGroupBox.Controls.Add(this.label5);
-            this.lightPosGroupBox.Controls.Add(this.animatedSphereRadiusNumeric);
+            this.lightPosGroupBox.Controls.Add(this.lightSphereRadiusNumeric);
             this.lightPosGroupBox.Controls.Add(this.lightPosPointRadio);
             this.lightPosGroupBox.Controls.Add(this.lightPosLabel);
             this.lightPosGroupBox.Controls.Add(this.lightPosInfinity);
             this.lightPosGroupBox.Controls.Add(this.lightPosAuto);
+            this.lightPosGroupBox.Controls.Add(this.lightPosHeightNumeric);
             this.lightPosGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
             this.lightPosGroupBox.Location = new System.Drawing.Point(5, 55);
             this.lightPosGroupBox.Name = "lightPosGroupBox";
-            this.lightPosGroupBox.Size = new System.Drawing.Size(196, 120);
+            this.lightPosGroupBox.Size = new System.Drawing.Size(196, 169);
             this.lightPosGroupBox.TabIndex = 30;
             this.lightPosGroupBox.TabStop = false;
             this.lightPosGroupBox.Text = "Position";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.label1.Location = new System.Drawing.Point(15, 119);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(64, 13);
+            this.label1.TabIndex = 35;
+            this.label1.Text = "Light Height";
+            // 
+            // overrideHeightCheckBox
+            // 
+            this.overrideHeightCheckBox.AutoSize = true;
+            this.overrideHeightCheckBox.Checked = true;
+            this.overrideHeightCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.overrideHeightCheckBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.overrideHeightCheckBox.Location = new System.Drawing.Point(18, 142);
+            this.overrideHeightCheckBox.Name = "overrideHeightCheckBox";
+            this.overrideHeightCheckBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.overrideHeightCheckBox.Size = new System.Drawing.Size(106, 17);
+            this.overrideHeightCheckBox.TabIndex = 34;
+            this.overrideHeightCheckBox.Text = "Attach to Sphere";
+            this.overrideHeightCheckBox.UseVisualStyleBackColor = true;
+            this.overrideHeightCheckBox.CheckedChanged += new System.EventHandler(this.OverrideHeightCheckBox_CheckedChanged);
             // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.label5.Location = new System.Drawing.Point(33, 90);
+            this.label5.Location = new System.Drawing.Point(15, 95);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(80, 13);
+            this.label5.Size = new System.Drawing.Size(77, 13);
             this.label5.TabIndex = 32;
-            this.label5.Text = "Sphere Radius:";
+            this.label5.Text = "Sphere Radius";
             // 
-            // animatedSphereRadiusNumeric
+            // lightSphereRadiusNumeric
             // 
-            this.animatedSphereRadiusNumeric.Location = new System.Drawing.Point(128, 85);
-            this.animatedSphereRadiusNumeric.Name = "animatedSphereRadiusNumeric";
-            this.animatedSphereRadiusNumeric.Size = new System.Drawing.Size(46, 22);
-            this.animatedSphereRadiusNumeric.TabIndex = 31;
+            this.lightSphereRadiusNumeric.Location = new System.Drawing.Point(101, 90);
+            this.lightSphereRadiusNumeric.Name = "lightSphereRadiusNumeric";
+            this.lightSphereRadiusNumeric.Size = new System.Drawing.Size(46, 22);
+            this.lightSphereRadiusNumeric.TabIndex = 31;
             // 
             // lightPosPointRadio
             // 
@@ -301,6 +332,19 @@
             this.lightPosAuto.UseVisualStyleBackColor = true;
             this.lightPosAuto.CheckedChanged += new System.EventHandler(this.LightPosAuto_CheckedChanged);
             // 
+            // lightPosHeightNumeric
+            // 
+            this.lightPosHeightNumeric.Location = new System.Drawing.Point(101, 114);
+            this.lightPosHeightNumeric.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.lightPosHeightNumeric.Name = "lightPosHeightNumeric";
+            this.lightPosHeightNumeric.Size = new System.Drawing.Size(46, 22);
+            this.lightPosHeightNumeric.TabIndex = 33;
+            this.lightPosHeightNumeric.ValueChanged += new System.EventHandler(this.LightPosHeightNumeric_ValueChanged);
+            // 
             // lightColorLabel
             // 
             this.lightColorLabel.AutoSize = true;
@@ -332,6 +376,52 @@
             this.lightColorPic.TabIndex = 22;
             this.lightColorPic.TabStop = false;
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.presetButton1);
+            this.groupBox1.Controls.Add(this.presetButton2);
+            this.groupBox1.Controls.Add(this.presetButton3);
+            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.groupBox1.Location = new System.Drawing.Point(5, 563);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(207, 56);
+            this.groupBox1.TabIndex = 31;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Presets";
+            // 
+            // presetButton1
+            // 
+            this.presetButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.presetButton1.Location = new System.Drawing.Point(6, 23);
+            this.presetButton1.Name = "presetButton1";
+            this.presetButton1.Size = new System.Drawing.Size(56, 23);
+            this.presetButton1.TabIndex = 28;
+            this.presetButton1.Text = "Preset 1";
+            this.presetButton1.UseVisualStyleBackColor = true;
+            this.presetButton1.Click += new System.EventHandler(this.PresetButton1_Click);
+            // 
+            // presetButton2
+            // 
+            this.presetButton2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.presetButton2.Location = new System.Drawing.Point(75, 23);
+            this.presetButton2.Name = "presetButton2";
+            this.presetButton2.Size = new System.Drawing.Size(56, 23);
+            this.presetButton2.TabIndex = 29;
+            this.presetButton2.Text = "Preset 2";
+            this.presetButton2.UseVisualStyleBackColor = true;
+            this.presetButton2.Click += new System.EventHandler(this.PresetButton2_Click);
+            // 
+            // presetButton3
+            // 
+            this.presetButton3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.presetButton3.Location = new System.Drawing.Point(144, 23);
+            this.presetButton3.Name = "presetButton3";
+            this.presetButton3.Size = new System.Drawing.Size(56, 23);
+            this.presetButton3.TabIndex = 30;
+            this.presetButton3.Text = "Preset 3";
+            this.presetButton3.UseVisualStyleBackColor = true;
+            this.presetButton3.Click += new System.EventHandler(this.PresetButton3_Click);
+            // 
             // normalMapGroupBox
             // 
             this.normalMapGroupBox.Controls.Add(this.normalMapButton);
@@ -339,7 +429,7 @@
             this.normalMapGroupBox.Controls.Add(this.normalMapImageRadio);
             this.normalMapGroupBox.Controls.Add(this.normalMapPic);
             this.normalMapGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.normalMapGroupBox.Location = new System.Drawing.Point(5, 306);
+            this.normalMapGroupBox.Location = new System.Drawing.Point(5, 355);
             this.normalMapGroupBox.Name = "normalMapGroupBox";
             this.normalMapGroupBox.Size = new System.Drawing.Size(207, 98);
             this.normalMapGroupBox.TabIndex = 3;
@@ -400,7 +490,7 @@
             this.heightMapGroupBox.Controls.Add(this.heightMapImageRadio);
             this.heightMapGroupBox.Controls.Add(this.heightMapPic);
             this.heightMapGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.heightMapGroupBox.Location = new System.Drawing.Point(5, 410);
+            this.heightMapGroupBox.Location = new System.Drawing.Point(5, 459);
             this.heightMapGroupBox.Name = "heightMapGroupBox";
             this.heightMapGroupBox.Size = new System.Drawing.Size(207, 98);
             this.heightMapGroupBox.TabIndex = 27;
@@ -454,50 +544,6 @@
             this.heightMapPic.TabIndex = 25;
             this.heightMapPic.TabStop = false;
             // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.trackBar1);
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Location = new System.Drawing.Point(5, 595);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(181, 71);
-            this.panel1.TabIndex = 5;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label1.Location = new System.Drawing.Point(0, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(75, 16);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Vertex Size";
-            // 
-            // trackBar1
-            // 
-            this.trackBar1.LargeChange = 1;
-            this.trackBar1.Location = new System.Drawing.Point(6, 23);
-            this.trackBar1.Maximum = 31;
-            this.trackBar1.Minimum = 3;
-            this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Size = new System.Drawing.Size(173, 45);
-            this.trackBar1.SmallChange = 2;
-            this.trackBar1.TabIndex = 2;
-            this.trackBar1.Value = 16;
-            this.trackBar1.ValueChanged += new System.EventHandler(this.TrackBar1_ValueChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold);
-            this.label2.Location = new System.Drawing.Point(47, 4);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(188, 54);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "Create Mode:\r\n[LMB]      Add Vertex\r\n[Return]  Close Polygon";
-            this.label2.Visible = false;
-            // 
             // label4
             // 
             this.label4.AutoSize = true;
@@ -518,7 +564,7 @@
             this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox.Location = new System.Drawing.Point(0, 0);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(800, 600);
+            this.pictureBox.Size = new System.Drawing.Size(800, 653);
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
             this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBox_Paint);
@@ -583,9 +629,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1026, 602);
+            this.ClientSize = new System.Drawing.Size(1026, 655);
             this.Controls.Add(this.splitContainer1);
             this.KeyPreview = true;
+            this.MinimumSize = new System.Drawing.Size(1042, 694);
             this.Name = "PolygonFillApp";
             this.Text = "Polygon Editor [Create Mode]";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.PolygonApp_KeyDown);
@@ -604,17 +651,16 @@
             this.lightGroupBox.PerformLayout();
             this.lightPosGroupBox.ResumeLayout(false);
             this.lightPosGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.animatedSphereRadiusNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.lightSphereRadiusNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.lightPosHeightNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.lightColorPic)).EndInit();
+            this.groupBox1.ResumeLayout(false);
             this.normalMapGroupBox.ResumeLayout(false);
             this.normalMapGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.normalMapPic)).EndInit();
             this.heightMapGroupBox.ResumeLayout(false);
             this.heightMapGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.heightMapPic)).EndInit();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.contextMenuStrip2.ResumeLayout(false);
@@ -625,17 +671,13 @@
         #endregion
 
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TrackBar trackBar1;
         private System.Windows.Forms.PictureBox pictureBox;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
         private System.Windows.Forms.ToolStripMenuItem addVertexToolStripMenuItem;
-        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ToolStripMenuItem fillToolStripMenuItem;
         private System.Windows.Forms.RadioButton normalMapNoneRadio;
         private System.Windows.Forms.RadioButton normalMapImageRadio;
@@ -660,12 +702,19 @@
         private System.Windows.Forms.PictureBox normalMapPic;
         private System.Windows.Forms.Timer lightAnimationTimer;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.NumericUpDown animatedSphereRadiusNumeric;
+        private System.Windows.Forms.NumericUpDown lightSphereRadiusNumeric;
         private System.Windows.Forms.GroupBox heightMapGroupBox;
         private System.Windows.Forms.Button heightMapButton;
         private System.Windows.Forms.RadioButton heightMapNoneRadio;
         private System.Windows.Forms.RadioButton heightMapImageRadio;
         private System.Windows.Forms.PictureBox heightMapPic;
+        private System.Windows.Forms.NumericUpDown lightPosHeightNumeric;
+        private System.Windows.Forms.CheckBox overrideHeightCheckBox;
+        private System.Windows.Forms.Button presetButton1;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button presetButton2;
+        private System.Windows.Forms.Button presetButton3;
+        private System.Windows.Forms.Label label1;
     }
 }
 

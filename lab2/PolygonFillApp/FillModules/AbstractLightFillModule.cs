@@ -36,9 +36,9 @@ namespace PolygonApp.FillModules
         protected (double X, double Y, double Z) CreateDisplacementVector(int x, int y, (double X, double Y, double Z) normal)
         {
 
-            var color = _heightMapColors[x % _xHeightMax][ y % _yHeightMax];
-            var xColor = _heightMapColors[(x+1) % _xHeightMax][y % _yHeightMax];
-            var yColor = _heightMapColors[x % _xHeightMax][(y+1) % _yHeightMax];
+            var color = _heightMapColors[x % _xHeightMax][y % _yHeightMax];
+            var xColor = _heightMapColors[(x + 1) % _xHeightMax][y % _yHeightMax];
+            var yColor = _heightMapColors[x % _xHeightMax][(y + 1) % _yHeightMax];
             (double X, double Y, double Z) dhx = ((xColor.R - color.R) / 255.0, (xColor.G - color.G) / 255.0, (xColor.B - color.B) / 255.0);
             (double X, double Y, double Z) dhy = ((yColor.R - color.R) / 255.0, (yColor.G - color.G) / 255.0, (yColor.B - color.B) / 255.0);
 
@@ -59,10 +59,17 @@ namespace PolygonApp.FillModules
             var y = (color.G - 127) / 128.0;
             var z = (color.B) / 255.0;
 
-            var f = 1.0 / z;
+            if (z == 0)
+            {
+                x = 1.0;
+                y = 1.0;
+            }
+            else
+            {
+                x /= z;
+                y /= z;
+            }
             z = 1.0;
-            y *= f;
-            x *= f;
 
             return (x, y, z);
         }

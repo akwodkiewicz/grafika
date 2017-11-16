@@ -17,7 +17,7 @@ namespace PolygonApp
         private Polygon _currentPoly;
         private int _currentVertex;
         private int _currentLine;
-        private int _vertexSize;
+        private int _vertexSize = 15;
         private Color _lightColor;
         private (double X, double Y, double Z) _lightPosition;
         private Color _solidColor;
@@ -37,14 +37,13 @@ namespace PolygonApp
         {
             VertexSize = 15;
             SolidColor = Color.White;
-            StartCreating();
         }
 
         #region Properties
         public int VertexSize
         {
             get => _vertexSize;
-            set
+            private set
             {
                 _vertexSize = value;
                 foreach (var p in _polygons)
@@ -60,14 +59,19 @@ namespace PolygonApp
             set
             {
                 _texture = value;
+                if (value != null)
+                {
+                    _fillType = FillType.Texture;
+                    _textureColors = new Color[_texture.Width][];
+                    for (int i = 0; i < _texture.Width; i++)
+                        _textureColors[i] = new Color[_texture.Height];
 
-                _textureColors = new Color[_texture.Width][];
-                for (int i = 0; i < _texture.Width; i++)
-                    _textureColors[i] = new Color[_texture.Height];
-
-                for (int y = 0; y < _texture.Height; y++)
-                    for (int x = 0; x < _texture.Width; x++)
-                        _textureColors[x][y] = _texture.GetPixel(x, y);
+                    for (int y = 0; y < _texture.Height; y++)
+                        for (int x = 0; x < _texture.Width; x++)
+                            _textureColors[x][y] = _texture.GetPixel(x, y);
+                }
+                else
+                    _fillType = FillType.Solid;
             }
         }
         public Color SolidColor { get => _solidColor; set => _solidColor = value; }
@@ -156,6 +160,13 @@ namespace PolygonApp
             _polygons.Add(_currentPoly);
         }
         #endregion
+
+        public void AddPolygon(Polygon poly)
+        {
+            _polygons.Add(poly);
+            _currentPoly = poly;
+            State = ManagerState.Edit;
+        }
 
         public void AddVertex(Point location)
         {

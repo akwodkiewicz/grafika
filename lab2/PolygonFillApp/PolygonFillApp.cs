@@ -14,12 +14,12 @@ namespace PolygonApp
         private Bitmap _canvas;
         private Bitmap _normalMap;
         private Bitmap _heightMap;
+        private Bitmap _texture;
         private PolygonManager _polygonManager;
         private bool _selectAllMode = false;
         private (double X, double Y, double Z) _lightPosition;
         private double _sphereRadius;
         private (int X, int Y) _sphereCenter;
-        private double _animationSphereRadius;
         private double _animationParameter = 0;
 
         public PolygonFillApp()
@@ -27,14 +27,35 @@ namespace PolygonApp
             InitializeComponent();
             _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
             _lightPosition = (pictureBox.Width / 2, pictureBox.Height / 2, 0);
-            RecalculateLight(0, 0, false);
+            RecalculateLight(pictureBox.Width / 2, pictureBox.Height / 2, true);
+            lightPosHeightNumeric.Value = (decimal)_lightPosition.Z;
             _polygonManager = new PolygonManager()
             {
-                VertexSize = trackBar1.Value,
                 SolidColor = fillSolidPic.BackColor,
                 LightColor = lightColorPic.BackColor,
                 LightPosition = _lightPosition
             };
+            Init();
+        }
+
+        public void Init()
+        {
+            lightSphereRadiusNumeric.Value = Math.Min((decimal)(_lightPosition.Z), lightSphereRadiusNumeric.Maximum);
+
+            var list = new List<Vertex>
+            {
+                new Vertex(new Point(100, 100)),
+                new Vertex(new Point(550, 100)),
+                new Vertex(new Point(450, 275)),
+                new Vertex(new Point(480, 460)),
+                new Vertex(new Point(480, 460)),
+                new Vertex(new Point(100, 370)),
+            };
+            var poly = new Polygon(list)
+            {
+                Filled = true
+            };
+            _polygonManager.AddPolygon(poly);
         }
 
         #region Properties
@@ -135,6 +156,7 @@ namespace PolygonApp
                         {
                             MessageBox.Show(exc.Message, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
+                        pictureBox.Invalidate();
                         break;
                     case 'l':
                         PickLightSource = true;
@@ -180,11 +202,23 @@ namespace PolygonApp
             _canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
             _polygonManager = new PolygonManager()
             {
-                VertexSize = trackBar1.Value,
                 SolidColor = fillSolidPic.BackColor,
                 LightColor = lightColorPic.BackColor,
-                LightPosition = _lightPosition
+                LightPosition = _lightPosition,
+                NormalMap = _normalMap,
+                HeightMap = _heightMap,
             };
+            _polygonManager.StartCreating();
+            if (_texture != null)
+            {
+                _polygonManager.Texture = _texture;
+                _polygonManager.FillType = FillType.Texture;
+            }
+            if (lightPosInfinity.Checked)
+                _polygonManager.LightType = LightType.Directional;
+            else
+                _polygonManager.LightType = LightType.Point;
+
             SelectAllMode = false;
             PickLightSource = false;
             SetTitle();
@@ -196,11 +230,6 @@ namespace PolygonApp
                 Text = "Polygon Editor [Create Mode]";
             else
                 Text = "Polygon Editor [Edit Mode]";
-        }
-        private void TrackBar1_ValueChanged(object sender, EventArgs e)
-        {
-            _polygonManager.VertexSize = trackBar1.Value;
-            pictureBox.Invalidate();
         }
         #endregion
 
@@ -229,9 +258,9 @@ namespace PolygonApp
         {
             if (!((RadioButton)sender).Checked)
                 return;
-            if (fillTexturePic.Image == null)
+            if (_texture == null)
                 OpenImage();
-            if (fillTexturePic.Image != null)
+            if (_texture != null)
                 _polygonManager.FillType = FillType.Texture;
             else
                 fillSolidRadio.Checked = true;
@@ -251,9 +280,9 @@ namespace PolygonApp
             };
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                Bitmap texture = new Bitmap(dialog.OpenFile());
-                fillTexturePic.Image = texture;
-                _polygonManager.Texture = texture;
+                _texture = new Bitmap(dialog.OpenFile());
+                fillTexturePic.Image = _texture;
+                _polygonManager.Texture = _texture;
             }
         }
         #endregion
@@ -295,7 +324,6 @@ namespace PolygonApp
         {
             if (!((RadioButton)sender).Checked)
                 return;
-            // animate movement
             _polygonManager.LightType = LightType.Point;
             _polygonManager.LightPosition = _lightPosition;
             pictureBox.Invalidate();
@@ -317,9 +345,13 @@ namespace PolygonApp
             {
                 _sphereRadius = SphereEquation.CalculateR(pictureBox);
                 _sphereCenter = (pictureBox.Width / 2, pictureBox.Height / 2);
-                animatedSphereRadiusNumeric.Maximum = (decimal)(_sphereRadius - 1);
+                lightSphereRadiusNumeric.Maximum = (decimal)(_sphereRadius - 1);
             }
-            var z = SphereEquation.CalculateZ(x, y, pictureBox);
+            double z;
+            if (!overrideHeightCheckBox.Checked)
+                z = (double)lightPosHeightNumeric.Value;
+            else
+                z = SphereEquation.CalculateZ(x, y, pictureBox);
             _lightPosition = (x, y, z);
             if (_polygonManager != null)
                 _polygonManager.LightPosition = _lightPosition;
@@ -330,9 +362,21 @@ namespace PolygonApp
         private void LightAnimationTimer_Tick(object sender, EventArgs e)
         {
             _animationParameter = (_animationParameter + 0.2) % (2 * Math.PI);
-            var x = _sphereCenter.X + Math.Sin(_animationParameter) * ((double)animatedSphereRadiusNumeric.Value);
-            var y = _sphereCenter.Y + Math.Cos(_animationParameter) * ((double)animatedSphereRadiusNumeric.Value);
+            var x = _sphereCenter.X + Math.Sin(_animationParameter) * ((double)lightSphereRadiusNumeric.Value);
+            var y = _sphereCenter.Y + Math.Cos(_animationParameter) * ((double)lightSphereRadiusNumeric.Value);
             RecalculateLight((int)x, (int)y, false);
+            pictureBox.Invalidate();
+        }
+
+        private void OverrideHeightCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            RecalculateLight((int)_lightPosition.X, (int)_lightPosition.Y, false);
+            pictureBox.Invalidate();
+        }
+
+        private void LightPosHeightNumeric_ValueChanged(object sender, EventArgs e)
+        {
+            RecalculateLight((int)_lightPosition.X, (int)_lightPosition.Y, false);
             pictureBox.Invalidate();
         }
         #endregion
@@ -423,6 +467,67 @@ namespace PolygonApp
             }
             heightMapPic.Image = _heightMap;
             _polygonManager.HeightMap = _heightMap;
+            pictureBox.Invalidate();
+        }
+        #endregion
+
+        #region PRESETS
+        private void PresetButton1_Click(object sender, EventArgs e)
+        {
+            LoadPreset("texture1", "normal1", "bump1");  
+        }
+        private void PresetButton2_Click(object sender, EventArgs e)
+        {
+            LoadPreset("texture2", "normal2", "bump2");
+        }
+        private void PresetButton3_Click(object sender, EventArgs e)
+        {
+            LoadPreset("texture3", "normal3", "bump3");
+        }
+        private void LoadPreset(string textureName, string normalMapName, string heightMapName)
+        {
+            object t = Properties.Resources.ResourceManager.GetObject(textureName);
+            if (t is Bitmap)
+            {
+                _texture = t as Bitmap;
+                fillTexturePic.Image = _texture;
+                fillTextureRadio.Checked = true;
+                _polygonManager.Texture = _texture;
+            }
+            else
+            {
+                fillSolidRadio.Checked = true;
+                _polygonManager.Texture = null;
+            }
+
+            object n = Properties.Resources.ResourceManager.GetObject(normalMapName);
+            if (n is Bitmap)
+            {
+                _normalMap = n as Bitmap;
+                normalMapPic.Image = _normalMap;
+                normalMapImageRadio.Checked = true;
+                _polygonManager.NormalMap = _normalMap;
+            }
+            else
+            {
+                normalMapNoneRadio.Checked = true;
+                _polygonManager.NormalMap = null;
+            }
+
+            object h = Properties.Resources.ResourceManager.GetObject(heightMapName);
+            if (h is Bitmap)
+            {
+                _heightMap = h as Bitmap;
+                heightMapPic.Image = _heightMap;
+                heightMapImageRadio.Checked = true;
+                _polygonManager.HeightMap = _heightMap;
+            }
+            else
+            {
+                heightMapNoneRadio.Checked = true;
+                _polygonManager.HeightMap = null;
+            }
+            lightPosPointRadio.Checked = true;
             pictureBox.Invalidate();
         }
         #endregion
