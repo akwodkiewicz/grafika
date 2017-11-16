@@ -51,6 +51,7 @@
     <Compile Include="Algorithms\PolygonFill.cs" />
     <Compile Include="Algorithms\PolygonClipping.cs" />
     <Compile Include="Algorithms\SphereEquation.cs" />
+    <Compile Include="FillModules\AbstractLightFillModule.cs" />
     <Compile Include="FillModules\IFillModule.cs" />
     <Compile Include="FillModules\DirectionalLightFillModule.cs" />
     <Compile Include="FillModules\LightColorFillModule.cs" />

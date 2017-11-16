@@ -7,35 +7,17 @@ using System.Threading.Tasks;
 
 namespace PolygonApp.FillModules
 {
-    class DirectionalLightFillModule : IFillModule
+    class DirectionalLightFillModule : AbstractLightFillModule
     {
-        private IFillModule _baseModule;
         private (double X, double Y, double Z) _lightVector;
-        private Bitmap _normalMap;
-        private Bitmap _heightMap;
-        private int _xNormalMax;
-        private int _yNormalMax;
-        private int _xHeightMax;
-        private int _yHeightMax;
+
         public DirectionalLightFillModule(IFillModule baseModule, Bitmap normalMap, Bitmap heightMap)
+            : base(baseModule, normalMap, heightMap)
         {
-            _baseModule = baseModule;
-            _lightVector = (0.0, 0.0, 1.0);
-            if (normalMap != null)
-            {
-                _normalMap = normalMap;
-                _xNormalMax = normalMap.Width;
-                _yNormalMax = normalMap.Height;
-            }
-            if (heightMap != null)
-            {
-                _heightMap = heightMap;
-                _xHeightMax = heightMap.Width;
-                _yHeightMax = heightMap.Height;
-            }
+            _lightVector = (0.0, 0.0, 1.0);         
         }
 
-        public Color GetColor(int x, int y)
+        public override Color GetColor(int x, int y)
         {
             var oldColor = _baseModule.GetColor(x, y);
 
@@ -63,54 +45,6 @@ namespace PolygonApp.FillModules
             var newBlue = (int)(oldColor.B * cos);
 
             return Color.FromArgb(newRed, newGreen, newBlue);
-        }
-
-        private (double X, double Y, double Z) CreateDisplacementVector(int x, int y, (double X, double Y, double Z) normal)
-        {
-
-            var color = _heightMap.GetPixel(x % _xHeightMax, y % _yHeightMax);
-            var xColor = _heightMap.GetPixel((x + 1) % _xHeightMax, y % _yHeightMax);
-            var yColor = _heightMap.GetPixel(x % _xHeightMax, (y + 1) % _yHeightMax);
-            (double X, double Y, double Z) dhx = ((xColor.R - color.R) / 255.0, (xColor.G - color.G) / 255.0, (xColor.B - color.B) / 255.0);
-            (double X, double Y, double Z) dhy = ((yColor.R - color.R) / 255.0, (yColor.G - color.G) / 255.0, (yColor.B - color.B) / 255.0);
-
-            (double X, double Y, double Z) t = (1.0, 0.0, -normal.X);
-            (double X, double Y, double Z) b = (0.0, 1.0, -normal.Y);
-
-            return (t.X * dhx.X + b.X * dhy.X, t.Y * dhx.Y + b.Y * dhy.Y, t.Z * dhx.Z + b.Z * dhy.Z);
-        }
-
-        private Color GetNormalMapColor(int x, int y)
-        {
-            return _normalMap.GetPixel(x % _xNormalMax, y % _yNormalMax);
-        }
-
-        private (double X, double Y, double Z) CreateNormalVector(Color color)
-        {
-            var x = (color.R - 127) / 128.0;
-            var y = (color.G - 127) / 128.0;
-            var z = (color.B) / 255.0;
-
-            var f = 1.0 / z;
-            z = 1.0;
-            y *= f;
-            x *= f;
-
-            return (x, y, z);
-        }
-
-        private (double, double, double) CreateLightVector(Color color)
-        {
-            var x = color.R / 255.0;
-            var y = color.G / 255.0;
-            var z = color.B / 255.0;
-
-            return (x, y, z);
-        }
-
-        private double VectorLength((double X, double Y, double Z) vector)
-        {
-            return Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
-        }
+        }      
     }
 }
