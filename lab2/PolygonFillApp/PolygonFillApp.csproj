@@ -52,12 +52,14 @@
     <Compile Include="Algorithms\PolygonClipping.cs" />
     <Compile Include="Algorithms\SphereEquation.cs" />
     <Compile Include="FillModules\AbstractLightFillModule.cs" />
+    <Compile Include="FillModules\AdditionFillModule.cs" />
     <Compile Include="FillModules\IFillModule.cs" />
     <Compile Include="FillModules\DirectionalLightFillModule.cs" />
     <Compile Include="FillModules\LightColorFillModule.cs" />
     <Compile Include="FillModules\PointLightFillModule.cs" />
     <Compile Include="FillModules\SolidFillModule.cs" />
     <Compile Include="FillModules\TextureFillModule.cs" />
+    <Compile Include="FillModules\SpotlightFillModule.cs" />
     <Compile Include="PolygonFillApp.cs">
       <SubType>Form</SubType>
     </Compile>

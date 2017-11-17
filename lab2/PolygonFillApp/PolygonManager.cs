@@ -33,6 +33,15 @@ namespace PolygonApp
         private FillType _fillType;
         private LightType _lightType;
         private int _heightMapFactor;
+        private bool _spotlightRed;
+        private bool _spotlightGreen;
+        private bool _spotlightBlue;
+        private bool _mainLight = true;
+        private (int X, int Y) _redSpotlightPos = (400, 0);
+        private (int X, int Y) _greenSpotlightPos = (800, 691);
+        private (int X, int Y) _blueSpotlightPos = (0, 691);
+        private (int X, int Y) _center = (400, 350);
+        private Size _pictureBoxSize;
 
         public PolygonManager()
         {
@@ -124,6 +133,11 @@ namespace PolygonApp
         }
 
         public int HeightMapFactor { get => _heightMapFactor; set => _heightMapFactor = value; }
+        public bool SpotlightRed { get => _spotlightRed; set => _spotlightRed = value; }
+        public Size PictureBoxSize { get => _pictureBoxSize; set => _pictureBoxSize = value; }
+        public bool SpotlightGreen { get => _spotlightGreen; set => _spotlightGreen = value; }
+        public bool SpotlightBlue { get => _spotlightBlue; set => _spotlightBlue = value; }
+        public bool MainLight { get => _mainLight; set => _mainLight = value; }
         #endregion
 
         public void Draw(Bitmap canvas)
@@ -150,6 +164,18 @@ namespace PolygonApp
                     fillModule = new DirectionalLightFillModule(fillModule, _normalMapColors, _normalMax, _heightMapColors, _heightMax, _heightMapFactor);
                     break;
             }
+
+            List<IFillModule> modules = new List<IFillModule>();
+            if (SpotlightRed)
+                modules.Add(new SpotlightFillModule(new SolidFillModule(_solidColor), _normalMapColors, _normalMax, _heightMapColors, _heightMax, _heightMapFactor, _redSpotlightPos,_center, Color.Red));
+            if (SpotlightGreen)
+                modules.Add(new SpotlightFillModule(new SolidFillModule(_solidColor), _normalMapColors, _normalMax, _heightMapColors, _heightMax, _heightMapFactor, _greenSpotlightPos, _center, Color.FromArgb(0,255,0)));
+            if (SpotlightBlue)
+                modules.Add(new SpotlightFillModule(new SolidFillModule(_solidColor), _normalMapColors, _normalMax, _heightMapColors, _heightMax, _heightMapFactor, _blueSpotlightPos, _center, Color.Blue));
+
+            if (MainLight)
+                modules.Add(fillModule);
+            fillModule = new AdditionFillModule(modules.ToArray());
 
             foreach (var p in _polygons)
                 p.Draw(canvas, fillModule);

@@ -35,7 +35,11 @@ namespace PolygonApp
                 SolidColor = fillSolidPic.BackColor,
                 LightColor = lightColorPic.BackColor,
                 LightPosition = _lightPosition,
-                HeightMapFactor = (int)heightMapFactorNumeric.Value
+                HeightMapFactor = (int)heightMapFactorNumeric.Value,
+                MainLight = mainLightCheckBox.Checked,
+                SpotlightRed = redSpotlightCheckBox.Checked,
+                SpotlightBlue = blueSpotlightCheckBox.Checked,
+                SpotlightGreen = greenSpotlightCheckBox.Checked
             };
             Init();
         }
@@ -44,32 +48,40 @@ namespace PolygonApp
         {
             lightSphereRadiusNumeric.Value = Math.Min((decimal)(_lightPosition.Z), lightSphereRadiusNumeric.Maximum);
 
+            //var poly1 = new Polygon(new List<Vertex>
+            //    {
+            //        new Vertex(new Point(100, 100)),
+            //        new Vertex(new Point(550, 100)),
+            //        new Vertex(new Point(450, 275)),
+            //        new Vertex(new Point(480, 460)),
+            //        new Vertex(new Point(480, 460)),
+            //        new Vertex(new Point(100, 370)),
+            //    })
+            //{
+            //    Filled = true
+            //};
+
+            //var poly2 = new Polygon(new List<Vertex>
+            //    {
+            //        new Vertex(new Point(170, 50)),
+            //        new Vertex(new Point(480, 145)),
+            //        new Vertex(new Point(250, 450)),
+            //        new Vertex(new Point(65, 230))
+            //    })
+            //{
+            //    Filled = true
+            //};
             var poly1 = new Polygon(new List<Vertex>
-                {
-                    new Vertex(new Point(100, 100)),
-                    new Vertex(new Point(550, 100)),
-                    new Vertex(new Point(450, 275)),
-                    new Vertex(new Point(480, 460)),
-                    new Vertex(new Point(480, 460)),
-                    new Vertex(new Point(100, 370)),
-                })
             {
-                Filled = true
-            };
 
-            var poly2 = new Polygon(new List<Vertex>
-                {
-                    new Vertex(new Point(170, 50)),
-                    new Vertex(new Point(480, 145)),
-                    new Vertex(new Point(250, 450)),
-                    new Vertex(new Point(65, 230))
-                })
-            {
-                Filled = true
-            };
-
+                        new Vertex(new Point(2, 2)),
+                        new Vertex(new Point(600, 2)),
+                        new Vertex(new Point(600, 600)),
+                        new Vertex(new Point(2, 600))
+            });
+            poly1.Filled = true;
             _polygonManager.AddPolygon(poly1);
-            _polygonManager.AddPolygon(poly2);
+            //_polygonManager.AddPolygon(poly2);
         }
 
         #region Properties
@@ -558,6 +570,30 @@ namespace PolygonApp
         private void HeightMapFactorNumeric_ValueChanged(object sender, EventArgs e)
         {
             _polygonManager.HeightMapFactor = (int)heightMapFactorNumeric.Value;
+            pictureBox.Invalidate();
+        }
+
+        private void RedSpotlightCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            _polygonManager.SpotlightRed = redSpotlightCheckBox.Checked;
+            pictureBox.Invalidate();
+        }
+
+        private void GreenSpotlightCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            _polygonManager.SpotlightGreen = greenSpotlightCheckBox.Checked;
+            pictureBox.Invalidate();
+        }
+
+        private void BlueSpotlightCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            _polygonManager.SpotlightBlue = blueSpotlightCheckBox.Checked;
+            pictureBox.Invalidate();
+        }
+
+        private void MainLightCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            _polygonManager.MainLight = mainLightCheckBox.Checked;
             pictureBox.Invalidate();
         }
     }

@@ -16,7 +16,6 @@ namespace PolygonApp.FillModules
            : base(baseModule, normalMapColors, normalMax, heightMapColors, heightMax, heightMapFactor)
         {
             _lightPos = lightPos;
-
         }
 
         public override Color GetColor(int x, int y)
