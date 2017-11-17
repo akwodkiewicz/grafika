@@ -16,8 +16,10 @@ namespace PolygonApp.FillModules
         protected int _yNormalMax;
         protected int _xHeightMax;
         protected int _yHeightMax;
+        protected int _heightMapFactor;
 
-        public AbstractLightFillModule(IFillModule baseModule, Color[][] normalMapColors, (int X, int Y) normalMax, Color[][] heightMapColors, (int X, int Y) heightMax)
+        public AbstractLightFillModule(IFillModule baseModule, Color[][] normalMapColors, (int X, int Y) normalMax, 
+            Color[][] heightMapColors, (int X, int Y) heightMax, int heightMapFactor)
         {
             _baseModule = baseModule;
 
@@ -29,13 +31,13 @@ namespace PolygonApp.FillModules
             _xHeightMax = heightMax.X;
             _yHeightMax = heightMax.Y;
 
+            _heightMapFactor = heightMapFactor;
         }
 
         abstract public Color GetColor(int x, int y);
 
         protected (double X, double Y, double Z) CreateDisplacementVector(int x, int y, (double X, double Y, double Z) normal)
         {
-
             var color = _heightMapColors[x % _xHeightMax][y % _yHeightMax];
             var xColor = _heightMapColors[(x + 1) % _xHeightMax][y % _yHeightMax];
             var yColor = _heightMapColors[x % _xHeightMax][(y + 1) % _yHeightMax];
@@ -45,7 +47,7 @@ namespace PolygonApp.FillModules
             (double X, double Y, double Z) t = (1.0, 0.0, -normal.X);
             (double X, double Y, double Z) b = (0.0, 1.0, -normal.Y);
 
-            return (t.X * dhx.X + b.X * dhy.X, t.Y * dhx.Y + b.Y * dhy.Y, t.Z * dhx.Z + b.Z * dhy.Z);
+            return (_heightMapFactor*(t.X * dhx.X + b.X * dhy.X),_heightMapFactor*( t.Y * dhx.Y + b.Y * dhy.Y),_heightMapFactor*( t.Z * dhx.Z + b.Z * dhy.Z));
         }
 
         protected Color GetNormalMapColor(int x, int y)

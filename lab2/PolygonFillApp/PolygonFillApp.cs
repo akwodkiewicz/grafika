@@ -29,11 +29,13 @@ namespace PolygonApp
             _lightPosition = (pictureBox.Width / 2, pictureBox.Height / 2, 0);
             RecalculateLight(pictureBox.Width / 2, pictureBox.Height / 2, true);
             lightPosHeightNumeric.Value = (decimal)_lightPosition.Z;
+            heightMapFactorNumeric.Value = 1;
             _polygonManager = new PolygonManager()
             {
                 SolidColor = fillSolidPic.BackColor,
                 LightColor = lightColorPic.BackColor,
-                LightPosition = _lightPosition
+                LightPosition = _lightPosition,
+                HeightMapFactor = (int)heightMapFactorNumeric.Value
             };
             Init();
         }
@@ -219,6 +221,7 @@ namespace PolygonApp
                 LightPosition = _lightPosition,
                 NormalMap = _normalMap,
                 HeightMap = _heightMap,
+                HeightMapFactor = (int)heightMapFactorNumeric.Value
             };
             _polygonManager.StartCreating();
             if (_texture != null)
@@ -550,6 +553,12 @@ namespace PolygonApp
             var text = "Press Right Mouse Button near the polygon edge to open the context menu\n\n" +
                 "C - Create new polygon\nA - Toggle Select All Mode\nL, LMB - Pick light source location\nV - Clip polygon";
             MessageBox.Show(text, caption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void HeightMapFactorNumeric_ValueChanged(object sender, EventArgs e)
+        {
+            _polygonManager.HeightMapFactor = (int)heightMapFactorNumeric.Value;
+            pictureBox.Invalidate();
         }
     }
 }

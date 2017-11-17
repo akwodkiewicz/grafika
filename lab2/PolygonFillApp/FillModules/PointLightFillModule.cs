@@ -11,8 +11,9 @@ namespace PolygonApp.FillModules
     {
         private (double X, double Y, double Z) _lightPos;
         
-        public PointLightFillModule(IFillModule baseModule, (double X, double Y, double Z) lightPos, Color[][] normalMapColors, (int X, int Y) normalMax, Color[][] heightMapColors, (int X, int Y) heightMax)
-           : base(baseModule, normalMapColors, normalMax, heightMapColors, heightMax)
+        public PointLightFillModule(IFillModule baseModule, (double X, double Y, double Z) lightPos, Color[][] normalMapColors, 
+            (int X, int Y) normalMax, Color[][] heightMapColors, (int X, int Y) heightMax, int heightMapFactor)
+           : base(baseModule, normalMapColors, normalMax, heightMapColors, heightMax, heightMapFactor)
         {
             _lightPos = lightPos;
 

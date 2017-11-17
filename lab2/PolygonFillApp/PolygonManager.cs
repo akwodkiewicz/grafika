@@ -32,6 +32,7 @@ namespace PolygonApp
         private ManagerState _state;
         private FillType _fillType;
         private LightType _lightType;
+        private int _heightMapFactor;
 
         public PolygonManager()
         {
@@ -121,6 +122,8 @@ namespace PolygonApp
                         _heightMapColors[x][y] = _heightMap.GetPixel(x, y);
             }
         }
+
+        public int HeightMapFactor { get => _heightMapFactor; set => _heightMapFactor = value; }
         #endregion
 
         public void Draw(Bitmap canvas)
@@ -140,11 +143,11 @@ namespace PolygonApp
             switch (_lightType)
             {
                 case LightType.Point:
-                    fillModule = new PointLightFillModule(fillModule, _lightPosition, _normalMapColors, _normalMax, _heightMapColors, _heightMax);
+                    fillModule = new PointLightFillModule(fillModule, _lightPosition, _normalMapColors, _normalMax, _heightMapColors, _heightMax, _heightMapFactor);
                     break;
                 case LightType.Directional:
                 default:
-                    fillModule = new DirectionalLightFillModule(fillModule, _normalMapColors, _normalMax, _heightMapColors, _heightMax);
+                    fillModule = new DirectionalLightFillModule(fillModule, _normalMapColors, _normalMax, _heightMapColors, _heightMax, _heightMapFactor);
                     break;
             }
 

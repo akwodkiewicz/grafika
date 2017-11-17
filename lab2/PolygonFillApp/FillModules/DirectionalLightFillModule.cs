@@ -11,8 +11,9 @@ namespace PolygonApp.FillModules
     {
         private (double X, double Y, double Z) _lightVector;
 
-        public DirectionalLightFillModule(IFillModule baseModule, Color[][] normalMapColors, (int X, int Y) normalMax, Color[][] heightMapColors, (int X, int Y) heightMax)
-            : base(baseModule, normalMapColors, normalMax, heightMapColors, heightMax)
+        public DirectionalLightFillModule(IFillModule baseModule, Color[][] normalMapColors, (int X, int Y) normalMax, 
+            Color[][] heightMapColors, (int X, int Y) heightMax, int heightMapFactor)
+            : base(baseModule, normalMapColors, normalMax, heightMapColors, heightMax, heightMapFactor)
         {
             _lightVector = (0.0, 0.0, 1.0);         
         }

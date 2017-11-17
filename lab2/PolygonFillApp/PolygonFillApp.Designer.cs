@@ -30,6 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.helpButton = new System.Windows.Forms.Button();
             this.fillGroupBox = new System.Windows.Forms.GroupBox();
             this.fillSolidButton = new System.Windows.Forms.Button();
             this.fillTextureButton = new System.Windows.Forms.Button();
@@ -74,7 +75,8 @@
             this.addVertexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fillToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lightAnimationTimer = new System.Windows.Forms.Timer(this.components);
-            this.helpButton = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.heightMapFactorNumeric = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -95,6 +97,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.heightMapFactorNumeric)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -125,6 +128,16 @@
             this.splitContainer1.Size = new System.Drawing.Size(1026, 655);
             this.splitContainer1.SplitterDistance = 220;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // helpButton
+            // 
+            this.helpButton.Location = new System.Drawing.Point(12, 625);
+            this.helpButton.Name = "helpButton";
+            this.helpButton.Size = new System.Drawing.Size(194, 23);
+            this.helpButton.TabIndex = 32;
+            this.helpButton.Text = "Help";
+            this.helpButton.UseVisualStyleBackColor = true;
+            this.helpButton.Click += new System.EventHandler(this.HelpButton_Click);
             // 
             // fillGroupBox
             // 
@@ -384,7 +397,7 @@
             this.groupBox1.Controls.Add(this.presetButton2);
             this.groupBox1.Controls.Add(this.presetButton3);
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.groupBox1.Location = new System.Drawing.Point(5, 563);
+            this.groupBox1.Location = new System.Drawing.Point(5, 573);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(207, 56);
             this.groupBox1.TabIndex = 31;
@@ -487,6 +500,8 @@
             // 
             // heightMapGroupBox
             // 
+            this.heightMapGroupBox.Controls.Add(this.heightMapFactorNumeric);
+            this.heightMapGroupBox.Controls.Add(this.label2);
             this.heightMapGroupBox.Controls.Add(this.heightMapButton);
             this.heightMapGroupBox.Controls.Add(this.heightMapNoneRadio);
             this.heightMapGroupBox.Controls.Add(this.heightMapImageRadio);
@@ -494,7 +509,7 @@
             this.heightMapGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.heightMapGroupBox.Location = new System.Drawing.Point(5, 459);
             this.heightMapGroupBox.Name = "heightMapGroupBox";
-            this.heightMapGroupBox.Size = new System.Drawing.Size(207, 98);
+            this.heightMapGroupBox.Size = new System.Drawing.Size(207, 108);
             this.heightMapGroupBox.TabIndex = 27;
             this.heightMapGroupBox.TabStop = false;
             this.heightMapGroupBox.Text = "HeightMap";
@@ -502,7 +517,7 @@
             // heightMapButton
             // 
             this.heightMapButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.heightMapButton.Location = new System.Drawing.Point(148, 51);
+            this.heightMapButton.Location = new System.Drawing.Point(148, 41);
             this.heightMapButton.Margin = new System.Windows.Forms.Padding(0);
             this.heightMapButton.Name = "heightMapButton";
             this.heightMapButton.Size = new System.Drawing.Size(53, 30);
@@ -528,7 +543,7 @@
             // 
             this.heightMapImageRadio.AutoSize = true;
             this.heightMapImageRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.heightMapImageRadio.Location = new System.Drawing.Point(12, 58);
+            this.heightMapImageRadio.Location = new System.Drawing.Point(12, 48);
             this.heightMapImageRadio.Name = "heightMapImageRadio";
             this.heightMapImageRadio.Size = new System.Drawing.Size(54, 17);
             this.heightMapImageRadio.TabIndex = 20;
@@ -539,7 +554,7 @@
             // heightMapPic
             // 
             this.heightMapPic.BackColor = System.Drawing.SystemColors.Window;
-            this.heightMapPic.Location = new System.Drawing.Point(97, 49);
+            this.heightMapPic.Location = new System.Drawing.Point(97, 39);
             this.heightMapPic.Name = "heightMapPic";
             this.heightMapPic.Size = new System.Drawing.Size(44, 35);
             this.heightMapPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -627,15 +642,38 @@
             // 
             this.lightAnimationTimer.Tick += new System.EventHandler(this.LightAnimationTimer_Tick);
             // 
-            // helpButton
+            // label2
             // 
-            this.helpButton.Location = new System.Drawing.Point(11, 619);
-            this.helpButton.Name = "helpButton";
-            this.helpButton.Size = new System.Drawing.Size(194, 23);
-            this.helpButton.TabIndex = 32;
-            this.helpButton.Text = "Help";
-            this.helpButton.UseVisualStyleBackColor = true;
-            this.helpButton.Click += new System.EventHandler(this.HelpButton_Click);
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.label2.Location = new System.Drawing.Point(9, 84);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(48, 13);
+            this.label2.TabIndex = 27;
+            this.label2.Text = "Multiplier";
+            // 
+            // heightMapFactorNumeric
+            // 
+            this.heightMapFactorNumeric.Location = new System.Drawing.Point(106, 77);
+            this.heightMapFactorNumeric.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.heightMapFactorNumeric.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.heightMapFactorNumeric.Name = "heightMapFactorNumeric";
+            this.heightMapFactorNumeric.Size = new System.Drawing.Size(46, 26);
+            this.heightMapFactorNumeric.TabIndex = 36;
+            this.heightMapFactorNumeric.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.heightMapFactorNumeric.ValueChanged += new System.EventHandler(this.HeightMapFactorNumeric_ValueChanged);
             // 
             // PolygonFillApp
             // 
@@ -676,6 +714,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.contextMenuStrip2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.heightMapFactorNumeric)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -728,6 +767,8 @@
         private System.Windows.Forms.Button presetButton3;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button helpButton;
+        private System.Windows.Forms.NumericUpDown heightMapFactorNumeric;
+        private System.Windows.Forms.Label label2;
     }
 }
 
