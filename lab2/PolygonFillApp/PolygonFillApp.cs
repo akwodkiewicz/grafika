@@ -42,20 +42,32 @@ namespace PolygonApp
         {
             lightSphereRadiusNumeric.Value = Math.Min((decimal)(_lightPosition.Z), lightSphereRadiusNumeric.Maximum);
 
-            var list = new List<Vertex>
-            {
-                new Vertex(new Point(100, 100)),
-                new Vertex(new Point(550, 100)),
-                new Vertex(new Point(450, 275)),
-                new Vertex(new Point(480, 460)),
-                new Vertex(new Point(480, 460)),
-                new Vertex(new Point(100, 370)),
-            };
-            var poly = new Polygon(list)
+            var poly1 = new Polygon(new List<Vertex>
+                {
+                    new Vertex(new Point(100, 100)),
+                    new Vertex(new Point(550, 100)),
+                    new Vertex(new Point(450, 275)),
+                    new Vertex(new Point(480, 460)),
+                    new Vertex(new Point(480, 460)),
+                    new Vertex(new Point(100, 370)),
+                })
             {
                 Filled = true
             };
-            _polygonManager.AddPolygon(poly);
+
+            var poly2 = new Polygon(new List<Vertex>
+                {
+                    new Vertex(new Point(170, 50)),
+                    new Vertex(new Point(480, 145)),
+                    new Vertex(new Point(250, 450)),
+                    new Vertex(new Point(65, 230))
+                })
+            {
+                Filled = true
+            };
+
+            _polygonManager.AddPolygon(poly1);
+            _polygonManager.AddPolygon(poly2);
         }
 
         #region Properties
