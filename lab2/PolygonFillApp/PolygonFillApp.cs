@@ -30,6 +30,7 @@ namespace PolygonApp
             RecalculateLight(pictureBox.Width / 2, pictureBox.Height / 2, true);
             lightPosHeightNumeric.Value = (decimal)_lightPosition.Z;
             heightMapFactorNumeric.Value = 1;
+            lightSphereRadiusNumeric.Value = Math.Min((decimal)(_lightPosition.Z), lightSphereRadiusNumeric.Maximum/2);
             _polygonManager = new PolygonManager()
             {
                 SolidColor = fillSolidPic.BackColor,
@@ -46,42 +47,33 @@ namespace PolygonApp
 
         public void Init()
         {
-            lightSphereRadiusNumeric.Value = Math.Min((decimal)(_lightPosition.Z), lightSphereRadiusNumeric.Maximum);
-
-            //var poly1 = new Polygon(new List<Vertex>
-            //    {
-            //        new Vertex(new Point(100, 100)),
-            //        new Vertex(new Point(550, 100)),
-            //        new Vertex(new Point(450, 275)),
-            //        new Vertex(new Point(480, 460)),
-            //        new Vertex(new Point(480, 460)),
-            //        new Vertex(new Point(100, 370)),
-            //    })
-            //{
-            //    Filled = true
-            //};
-
-            //var poly2 = new Polygon(new List<Vertex>
-            //    {
-            //        new Vertex(new Point(170, 50)),
-            //        new Vertex(new Point(480, 145)),
-            //        new Vertex(new Point(250, 450)),
-            //        new Vertex(new Point(65, 230))
-            //    })
-            //{
-            //    Filled = true
-            //};
             var poly1 = new Polygon(new List<Vertex>
             {
 
                         new Vertex(new Point(2, 2)),
-                        new Vertex(new Point(600, 2)),
-                        new Vertex(new Point(600, 600)),
-                        new Vertex(new Point(2, 600))
-            });
-            poly1.Filled = true;
+                        new Vertex(new Point(700, 2)),
+                        new Vertex(new Point(700, 630)),
+                        new Vertex(new Point(2, 630))
+            })
+            {
+                Filled = true
+            };
+
+            var poly2 = new Polygon(new List<Vertex>
+                {
+                    new Vertex(new Point(100, 100)),
+                    new Vertex(new Point(550, 100)),
+                    new Vertex(new Point(450, 275)),
+                    new Vertex(new Point(480, 460)),
+                    new Vertex(new Point(480, 460)),
+                    new Vertex(new Point(100, 370)),
+                })
+            {
+                Filled = true
+            };
+
             _polygonManager.AddPolygon(poly1);
-            //_polygonManager.AddPolygon(poly2);
+            _polygonManager.AddPolygon(poly2);
         }
 
         #region Properties
@@ -231,9 +223,11 @@ namespace PolygonApp
                 SolidColor = fillSolidPic.BackColor,
                 LightColor = lightColorPic.BackColor,
                 LightPosition = _lightPosition,
-                NormalMap = _normalMap,
-                HeightMap = _heightMap,
-                HeightMapFactor = (int)heightMapFactorNumeric.Value
+                HeightMapFactor = (int)heightMapFactorNumeric.Value,
+                MainLight = mainLightCheckBox.Checked,
+                SpotlightRed = redSpotlightCheckBox.Checked,
+                SpotlightBlue = blueSpotlightCheckBox.Checked,
+                SpotlightGreen = greenSpotlightCheckBox.Checked
             };
             _polygonManager.StartCreating();
             if (_texture != null)
@@ -563,7 +557,8 @@ namespace PolygonApp
         {
             var caption = "Help";
             var text = "Press Right Mouse Button near the polygon edge to open the context menu\n\n" +
-                "C - Create new polygon\nA - Toggle Select All Mode\nL, LMB - Pick light source location\nV - Clip polygon";
+                "C - Create new polygon\nA - Toggle Select All Mode\nL, LMB - Pick light source location\nV - Clip polygon\n" +
+                "R - Reset Polygons";
             MessageBox.Show(text, caption, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 

@@ -10,7 +10,7 @@ namespace PolygonApp.FillModules
     class SpotlightFillModule : AbstractLightFillModule
     {
         private const int _lightHeight = 1000;
-        private const int _cosPow = 300;
+        private const int _cosPow = 250;
 
         private (double X, double Y, double Z) _lightPos;
         private (double X, double Y, double Z) _targetPos;
