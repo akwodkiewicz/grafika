@@ -531,5 +531,13 @@ namespace PolygonApp
             pictureBox.Invalidate();
         }
         #endregion
+
+        private void HelpButton_Click(object sender, EventArgs e)
+        {
+            var caption = "Help";
+            var text = "Press Right Mouse Button near the polygon edge to open the context menu\n\n" +
+                "C - Create new polygon\nA - Toggle Select All Mode\nL, LMB - Pick light source location\nV - Clip polygon";
+            MessageBox.Show(text, caption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
     }
 }

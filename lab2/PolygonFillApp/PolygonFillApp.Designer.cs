@@ -74,6 +74,7 @@
             this.addVertexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fillToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lightAnimationTimer = new System.Windows.Forms.Timer(this.components);
+            this.helpButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -108,6 +109,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.helpButton);
             this.splitContainer1.Panel1.Controls.Add(this.fillGroupBox);
             this.splitContainer1.Panel1.Controls.Add(this.lightGroupBox);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
@@ -625,6 +627,16 @@
             // 
             this.lightAnimationTimer.Tick += new System.EventHandler(this.LightAnimationTimer_Tick);
             // 
+            // helpButton
+            // 
+            this.helpButton.Location = new System.Drawing.Point(11, 619);
+            this.helpButton.Name = "helpButton";
+            this.helpButton.Size = new System.Drawing.Size(194, 23);
+            this.helpButton.TabIndex = 32;
+            this.helpButton.Text = "Help";
+            this.helpButton.UseVisualStyleBackColor = true;
+            this.helpButton.Click += new System.EventHandler(this.HelpButton_Click);
+            // 
             // PolygonFillApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -715,6 +727,7 @@
         private System.Windows.Forms.Button presetButton2;
         private System.Windows.Forms.Button presetButton3;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button helpButton;
     }
 }
 
