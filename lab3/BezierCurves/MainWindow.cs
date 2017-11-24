@@ -18,8 +18,10 @@ namespace BezierCurves
         private Point _end;
         private List<Point> _controlPoints;
         private PointF[] _bezierPoints;
+        private float[] _bezierTangents;
         private int _bezierPointsAmount;
         private Point _userImageUpperLeft;
+        //private float _userImageAngle;
         private State _state;
         private bool _isMouseDown;
         private int _draggedPoint;
@@ -28,6 +30,7 @@ namespace BezierCurves
         private Bitmap _userImage;
         private Graphics _pointsGraphics;
         private Graphics _bezierGraphics;
+        private Graphics _userImageGraphics;
         private int _animationParameter;
         private int _animationDelta;
         private System.Timers.Timer _timer;
@@ -124,19 +127,20 @@ namespace BezierCurves
             _bezierGraphics.DrawLines(Pens.Red, controlPointsArray);
             _bezierGraphics.DrawLine(Pens.Red, _controlPoints[_controlPoints.Count - 1], _end);
             // Draw Bezier curve
-            BezierAlgorithm(_bezierGraphics, _start, _end, controlPointsArray);
+            BezierAlgorithm(_start, _end, controlPointsArray);
+            _bezierGraphics.DrawLines(Pens.Black, _bezierPoints);
 
             _pictureBox.Refresh();
         }
 
-        ///<summary>Draws a Bezier curve using de Casteljau algorithm</summary>
-        ///<param name="g">Graphics object, on which the method will draw the curve</param>
+        ///<summary>Calculates a Bezier curve using de Casteljau algorithm</summary>
         ///<param name="controlPoints">Points defining the curve [start point, 1st control point, 2nd control point, ..., end point]</param>
-        private void BezierAlgorithm(Graphics g, Point start, Point end, Point[] controlPoints)
+        private void BezierAlgorithm(Point start, Point end, Point[] controlPoints)
         {
             const int segmentsNum = 300;
             int tParameter = 0;
             var pointsToDraw = new PointF[segmentsNum + 1];
+            var tangents = new float[segmentsNum + 1];
             var counter = 0;
 
             var pointsF = new PointF[controlPoints.Length + 2];
@@ -147,19 +151,25 @@ namespace BezierCurves
 
             // Find all the points defining the segments that approximate the curve
             for (; tParameter < segmentsNum + 1; tParameter += 1)
-                FindPoint((float)tParameter / segmentsNum, pointsF);
+                Casteljau((float)tParameter / segmentsNum, pointsF);
 
-            g.DrawLines(Pens.Black, pointsToDraw);
 
             _bezierPoints = pointsToDraw;
             _bezierPointsAmount = segmentsNum + 1;
+            _bezierTangents = tangents;
             // De Casteljau recursive algorithm
-            void FindPoint(float t, PointF[] pts)
+            void Casteljau(float t, PointF[] pts)
             {
                 if (pts.Length == 1)
                     pointsToDraw[counter++] = pts[0];
                 else
                 {
+                    if (pts.Length == 2)
+                    {
+                        var dx = pts[1].X - pts[0].X;
+                        var dy = pts[1].Y - pts[0].Y;
+                        tangents[counter] = dy / dx;
+                    }
                     var newpts = new PointF[pts.Length - 1];
                     for (int i = 0; i < newpts.Length; i++)
                     {
@@ -167,7 +177,7 @@ namespace BezierCurves
                         float y = (1 - t) * pts[i].Y + t * pts[i + 1].Y;
                         newpts[i] = new PointF(x, y);
                     }
-                    FindPoint(t, newpts);
+                    Casteljau(t, newpts);
                 }
             }
         }
@@ -267,6 +277,7 @@ namespace BezierCurves
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 _userImage = new Bitmap(dialog.OpenFile());
+                _userImageGraphics = Graphics.FromImage(_userImage);
                 _userImageUpperLeft = CalculateUserUpperLeft(_start);
             }
             _pictureBox.Refresh();
@@ -293,6 +304,11 @@ namespace BezierCurves
             var originalF = _bezierPoints[_animationParameter];
             var original = new Point((int)originalF.X, (int)originalF.Y);
             _userImageUpperLeft = CalculateUserUpperLeft(original);
+            //_userImageGraphics.TranslateTransform((float)_userImage.Width / 2, (float)_userImage.Height / 2);
+            //_userImageGraphics.RotateTransform(_bezierTangents[_animationParameter]);
+            //_userImageGraphics.TranslateTransform(-(float)_userImage.Width / 2, -(float)_userImage.Height / 2);
+            //_userImageGraphics.DrawImage(_userImage, 0, 0);
+            //_userImageGraphics.ResetTransform();
             _pictureBox.Refresh();
         }
         #endregion
