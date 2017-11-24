@@ -31,6 +31,7 @@
             this._pictureBox = new System.Windows.Forms.PictureBox();
             this._loadImageBtn = new System.Windows.Forms.Button();
             this._startMovementBtn = new System.Windows.Forms.Button();
+            this.rotateBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this._pictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -68,11 +69,22 @@
             this._startMovementBtn.UseVisualStyleBackColor = true;
             this._startMovementBtn.Click += new System.EventHandler(this.StartMovementBtn_Click);
             // 
+            // rotateBtn
+            // 
+            this.rotateBtn.Location = new System.Drawing.Point(0, 58);
+            this.rotateBtn.Name = "rotateBtn";
+            this.rotateBtn.Size = new System.Drawing.Size(75, 23);
+            this.rotateBtn.TabIndex = 3;
+            this.rotateBtn.Text = "Rotate";
+            this.rotateBtn.UseVisualStyleBackColor = true;
+            this.rotateBtn.Click += new System.EventHandler(this.RotateBtn_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 600);
+            this.Controls.Add(this.rotateBtn);
             this.Controls.Add(this._startMovementBtn);
             this.Controls.Add(this._loadImageBtn);
             this.Controls.Add(this._pictureBox);
@@ -91,6 +103,7 @@
         private System.Windows.Forms.PictureBox _pictureBox;
         private System.Windows.Forms.Button _loadImageBtn;
         private System.Windows.Forms.Button _startMovementBtn;
+        private System.Windows.Forms.Button rotateBtn;
     }
 }
 

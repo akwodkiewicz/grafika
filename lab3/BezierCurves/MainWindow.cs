@@ -18,7 +18,7 @@ namespace BezierCurves
         private Point _end;
         private List<Point> _controlPoints;
         private PointF[] _bezierPoints;
-        private float[] _bezierTangents;
+        private (float X, float Y)[] _bezierTangents;
         private int _bezierPointsAmount;
         private Point _userImageUpperLeft;
         //private float _userImageAngle;
@@ -28,12 +28,17 @@ namespace BezierCurves
         private Bitmap _pointsBmp;
         private Bitmap _bezierBmp;
         private Bitmap _userImage;
+        private Bitmap _userImageBox;
         private Graphics _pointsGraphics;
         private Graphics _bezierGraphics;
         private Graphics _userImageGraphics;
-        private int _animationParameter;
-        private int _animationDelta;
-        private System.Timers.Timer _timer;
+        private Graphics _userImageBoxGraphics;
+        private int _movementAnimationParameter;
+        private int _movementAnimationDelta;
+        private System.Timers.Timer _bezierTimer;
+        private int _rotationAnimationParameter;
+        private int _rotationAnimationDelta;
+        private System.Timers.Timer _rotationTimer;
 
         public MainWindow()
         {
@@ -51,12 +56,25 @@ namespace BezierCurves
             _bezierGraphics = Graphics.FromImage(_bezierBmp);
             _isMouseDown = false;
             _draggedPoint = -1;
-            _animationParameter = 0;
-            _animationDelta = 1;
+            _movementAnimationParameter = 0;
+            _movementAnimationDelta = 1;
+            _rotationAnimationParameter = 0;
+            _rotationAnimationDelta = 5;
 
-            _timer = new System.Timers.Timer();
-            _timer.Interval = 5;
-            _timer.Elapsed += Timer_Elapsed;
+            _bezierTimer = new System.Timers.Timer();
+            _bezierTimer.Interval = 5;
+            _bezierTimer.Elapsed += BezierTimer_Elapsed;
+            _rotationTimer = new System.Timers.Timer();
+            _rotationTimer.Interval = 25;
+            _rotationTimer.Elapsed += RotationTimer_Elapsed;
+        }
+
+        private void PictureBox_Paint(object sender, PaintEventArgs e)
+        {
+            if (_userImageBox != null)
+                e.Graphics.DrawImage(_userImageBox, _userImageUpperLeft);
+            e.Graphics.DrawImage(_pointsBmp, 0, 0);
+            e.Graphics.DrawImage(_bezierBmp, 0, 0);
         }
 
         #region Adding Points
@@ -94,15 +112,7 @@ namespace BezierCurves
         }
         #endregion
 
-        #region Drawing
-        private void PictureBox_Paint(object sender, PaintEventArgs e)
-        {
-            if (_userImage != null)
-                e.Graphics.DrawImage(_userImage, _userImageUpperLeft);
-            e.Graphics.DrawImage(_pointsBmp, 0, 0);
-            e.Graphics.DrawImage(_bezierBmp, 0, 0);
-        }
-
+        #region Bezier
         private void DrawPoints()
         {
             _pointsGraphics.Clear(Color.FromArgb(0));
@@ -140,7 +150,7 @@ namespace BezierCurves
             const int segmentsNum = 300;
             int tParameter = 0;
             var pointsToDraw = new PointF[segmentsNum + 1];
-            var tangents = new float[segmentsNum + 1];
+            var tangents = new(float X, float Y)[segmentsNum + 1];
             var counter = 0;
 
             var pointsF = new PointF[controlPoints.Length + 2];
@@ -168,7 +178,7 @@ namespace BezierCurves
                     {
                         var dx = pts[1].X - pts[0].X;
                         var dy = pts[1].Y - pts[0].Y;
-                        tangents[counter] = dy / dx;
+                        tangents[counter] = (dx, dy);
                     }
                     var newpts = new PointF[pts.Length - 1];
                     for (int i = 0; i < newpts.Length; i++)
@@ -181,9 +191,32 @@ namespace BezierCurves
                 }
             }
         }
+
+        private void StartMovementBtn_Click(object sender, EventArgs e)
+        {
+            if (!_bezierTimer.Enabled)
+                _bezierTimer.Start();
+            else
+                _bezierTimer.Stop();
+        }
+
+        private void BezierTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            _movementAnimationParameter = (_movementAnimationParameter + _movementAnimationDelta) % _bezierPointsAmount;
+            if (_movementAnimationParameter == 0 || _movementAnimationParameter == _bezierPointsAmount - 1)
+                _movementAnimationDelta *= -1;
+            var originalF = _bezierPoints[_movementAnimationParameter];
+            var original = new Point((int)originalF.X, (int)originalF.Y);
+            _userImageUpperLeft = CalculateUserUpperLeft(original);
+
+            var angleRad = Math.Atan2(_bezierTangents[_movementAnimationParameter].X, _bezierTangents[_movementAnimationParameter].Y);
+            var angleDeg = (angleRad * 180) / Math.PI;
+            RotateImage(-(float)angleDeg);
+            _pictureBox.Refresh();
+        }
         #endregion
 
-        #region Mouse Events
+        #region Mouse Interaction
         private void PictureBox_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -216,7 +249,7 @@ namespace BezierCurves
                     return;
                 case 0:
                     _start = new Point(e.X, e.Y);
-                    if(!_timer.Enabled)
+                    if (!_bezierTimer.Enabled)
                         _userImageUpperLeft = CalculateUserUpperLeft(_start);
                     break;
                 case 1:
@@ -242,7 +275,6 @@ namespace BezierCurves
             _isMouseDown = false;
             _draggedPoint = -1;
         }
-        #endregion
 
         private int SelectPoint(Point location)
         {
@@ -265,6 +297,7 @@ namespace BezierCurves
                     && loc.Y >= point.Y - POINT_SIZE / 2;
             }
         }
+        #endregion
 
         #region User Image
         private void LoadImageBtn_Click(object sender, EventArgs e)
@@ -278,38 +311,66 @@ namespace BezierCurves
             {
                 _userImage = new Bitmap(dialog.OpenFile());
                 _userImageGraphics = Graphics.FromImage(_userImage);
+
+                var cos45 = Math.Cos(Math.PI / 4);
+                var sin45 = Math.Sin(Math.PI / 4);
+                var boxWidth = (int)Math.Round(_userImage.Width * cos45 + _userImage.Height * sin45);
+                var boxHeight = (int)Math.Round(_userImage.Width * sin45 + _userImage.Height * cos45);
+                _userImageBox = new Bitmap(boxWidth, boxHeight);
+                _userImageBoxGraphics = Graphics.FromImage(_userImageBox);
+
                 _userImageUpperLeft = CalculateUserUpperLeft(_start);
+                DrawUserImage();
             }
             _pictureBox.Refresh();
         }
 
         private Point CalculateUserUpperLeft(Point source)
         {
-            return new Point(source.X - _userImage.Width / 2, source.Y - _userImage.Height / 2);
+            return new Point(source.X - _userImageBox.Width / 2,
+                source.Y - _userImageBox.Height/ 2);
         }
 
-        private void StartMovementBtn_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Draws user image on a prepared, larger bitmap 
+        /// </summary>
+        private void DrawUserImage()
         {
-            if (!_timer.Enabled)
-                _timer.Start();
+            _userImageBoxGraphics.Clear(Color.FromArgb(0));
+            var x = (_userImageBox.Width - _userImage.Width) / 2;
+            var y = (_userImageBox.Height - _userImage.Height) / 2;
+            _userImageBoxGraphics.DrawImage(_userImage, x, y);
+        }
+
+        private void RotateBtn_Click(object sender, EventArgs e)
+        {
+            _userImageUpperLeft = CalculateUserUpperLeft(new Point(_pictureBox.Width / 2, _pictureBox.Height / 2));
+
+            if (!_rotationTimer.Enabled)
+                _rotationTimer.Start();
             else
-                _timer.Stop();
+                _rotationTimer.Stop();
+            _pictureBox.Refresh();
         }
 
-        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void RotationTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            _animationParameter = (_animationParameter + _animationDelta) % _bezierPointsAmount;
-            if (_animationParameter == 0 || _animationParameter == _bezierPointsAmount - 1)
-                _animationDelta *= -1;
-            var originalF = _bezierPoints[_animationParameter];
-            var original = new Point((int)originalF.X, (int)originalF.Y);
-            _userImageUpperLeft = CalculateUserUpperLeft(original);
-            //_userImageGraphics.TranslateTransform((float)_userImage.Width / 2, (float)_userImage.Height / 2);
-            //_userImageGraphics.RotateTransform(_bezierTangents[_animationParameter]);
-            //_userImageGraphics.TranslateTransform(-(float)_userImage.Width / 2, -(float)_userImage.Height / 2);
-            //_userImageGraphics.DrawImage(_userImage, 0, 0);
-            //_userImageGraphics.ResetTransform();
+            _rotationAnimationParameter = (_rotationAnimationParameter + _rotationAnimationDelta) % 360;
+            RotateImage((float)_rotationAnimationParameter);
             _pictureBox.Refresh();
+        }
+
+        /// <summary>
+        /// Rotate user image using .NET's internal transformations and rotations
+        /// </summary>
+        /// <param name="angle">Angle in degrees</param>
+        private void RotateImage(float angle)
+        {
+            _userImageBoxGraphics.TranslateTransform((float)_userImageBox.Width / 2, (float)_userImageBox.Height / 2);
+            _userImageBoxGraphics.RotateTransform(angle);
+            _userImageBoxGraphics.TranslateTransform(-(float)_userImageBox.Width / 2, -(float)_userImageBox.Height / 2);
+            DrawUserImage();
+            _userImageBoxGraphics.ResetTransform();
         }
         #endregion
     }
