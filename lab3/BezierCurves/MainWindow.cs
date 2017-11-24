@@ -14,16 +14,23 @@ namespace BezierCurves
     {
         private const int MAX_POINTS = 10;
         private const int POINT_SIZE = 10;
-        private List<Point> _controlPoints;
         private Point _start;
         private Point _end;
+        private List<Point> _controlPoints;
+        private PointF[] _bezierPoints;
+        private int _bezierPointsAmount;
+        private Point _userImageUpperLeft;
         private State _state;
         private bool _isMouseDown;
         private int _draggedPoint;
         private Bitmap _pointsBmp;
         private Bitmap _bezierBmp;
+        private Bitmap _userImage;
         private Graphics _pointsGraphics;
         private Graphics _bezierGraphics;
+        private int _animationParameter;
+        private int _animationDelta;
+        private System.Timers.Timer _timer;
 
         public MainWindow()
         {
@@ -35,12 +42,18 @@ namespace BezierCurves
         {
             _controlPoints = new List<Point>(MAX_POINTS - 2);
             _state = State.AddingStart;
-            _pointsBmp = new Bitmap(pictureBox.Width, pictureBox.Height);
-            _bezierBmp = new Bitmap(pictureBox.Width, pictureBox.Height);
+            _pointsBmp = new Bitmap(_pictureBox.Width, _pictureBox.Height);
+            _bezierBmp = new Bitmap(_pictureBox.Width, _pictureBox.Height);
             _pointsGraphics = Graphics.FromImage(_pointsBmp);
             _bezierGraphics = Graphics.FromImage(_bezierBmp);
             _isMouseDown = false;
             _draggedPoint = -1;
+            _animationParameter = 0;
+            _animationDelta = 1;
+
+            _timer = new System.Timers.Timer();
+            _timer.Interval = 5;
+            _timer.Elapsed += Timer_Elapsed;
         }
 
         #region Adding Points
@@ -49,7 +62,7 @@ namespace BezierCurves
             _start = location;
 
             _pointsGraphics.FillEllipse(Brushes.Black, _start.X - POINT_SIZE / 2, _start.Y - POINT_SIZE / 2, POINT_SIZE, POINT_SIZE);
-            pictureBox.Refresh();
+            _pictureBox.Refresh();
 
             _state = State.AddingEnd;
         }
@@ -59,7 +72,7 @@ namespace BezierCurves
             _end = location;
 
             _pointsGraphics.FillEllipse(Brushes.Black, _end.X - POINT_SIZE / 2, _end.Y - POINT_SIZE / 2, POINT_SIZE, POINT_SIZE);
-            pictureBox.Refresh();
+            _pictureBox.Refresh();
 
             _state = State.AddingControl;
         }
@@ -81,6 +94,8 @@ namespace BezierCurves
         #region Drawing
         private void PictureBox_Paint(object sender, PaintEventArgs e)
         {
+            if (_userImage != null)
+                e.Graphics.DrawImage(_userImage, _userImageUpperLeft);
             e.Graphics.DrawImage(_pointsBmp, 0, 0);
             e.Graphics.DrawImage(_bezierBmp, 0, 0);
         }
@@ -92,7 +107,7 @@ namespace BezierCurves
             _pointsGraphics.FillEllipse(Brushes.Black, _end.X - POINT_SIZE / 2, _end.Y - POINT_SIZE / 2, POINT_SIZE, POINT_SIZE);
             foreach (var p in _controlPoints)
                 _pointsGraphics.FillEllipse(Brushes.Red, p.X - POINT_SIZE / 2, p.Y - POINT_SIZE / 2, POINT_SIZE, POINT_SIZE);
-            pictureBox.Refresh();
+            _pictureBox.Refresh();
 
         }
 
@@ -111,7 +126,7 @@ namespace BezierCurves
             // Draw Bezier curve
             BezierAlgorithm(_bezierGraphics, _start, _end, controlPointsArray);
 
-            pictureBox.Refresh();
+            _pictureBox.Refresh();
         }
 
         ///<summary>Draws a Bezier curve using de Casteljau algorithm</summary>
@@ -119,7 +134,7 @@ namespace BezierCurves
         ///<param name="controlPoints">Points defining the curve [start point, 1st control point, 2nd control point, ..., end point]</param>
         private void BezierAlgorithm(Graphics g, Point start, Point end, Point[] controlPoints)
         {
-            const int segmentsNum = 100;
+            const int segmentsNum = 300;
             int tParameter = 0;
             var pointsToDraw = new PointF[segmentsNum + 1];
             var counter = 0;
@@ -136,6 +151,8 @@ namespace BezierCurves
 
             g.DrawLines(Pens.Black, pointsToDraw);
 
+            _bezierPoints = pointsToDraw;
+            _bezierPointsAmount = segmentsNum + 1;
             // De Casteljau recursive algorithm
             void FindPoint(float t, PointF[] pts)
             {
@@ -189,6 +206,8 @@ namespace BezierCurves
                     return;
                 case 0:
                     _start = new Point(e.X, e.Y);
+                    if(!_timer.Enabled)
+                        _userImageUpperLeft = CalculateUserUpperLeft(_start);
                     break;
                 case 1:
                     _end = new Point(e.X, e.Y);
@@ -199,7 +218,7 @@ namespace BezierCurves
             }
             DrawPoints();
             DrawBezier();
-            pictureBox.Invalidate();
+            _pictureBox.Invalidate();
         }
 
         private void PictureBox_MouseDown(object sender, MouseEventArgs e)
@@ -236,6 +255,47 @@ namespace BezierCurves
                     && loc.Y >= point.Y - POINT_SIZE / 2;
             }
         }
+
+        #region User Image
+        private void LoadImageBtn_Click(object sender, EventArgs e)
+        {
+            var dialog = new OpenFileDialog()
+            {
+                Filter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG"
+            };
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                _userImage = new Bitmap(dialog.OpenFile());
+                _userImageUpperLeft = CalculateUserUpperLeft(_start);
+            }
+            _pictureBox.Refresh();
+        }
+
+        private Point CalculateUserUpperLeft(Point source)
+        {
+            return new Point(source.X - _userImage.Width / 2, source.Y - _userImage.Height / 2);
+        }
+
+        private void StartMovementBtn_Click(object sender, EventArgs e)
+        {
+            if (!_timer.Enabled)
+                _timer.Start();
+            else
+                _timer.Stop();
+        }
+
+        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            _animationParameter = (_animationParameter + _animationDelta) % _bezierPointsAmount;
+            if (_animationParameter == 0 || _animationParameter == _bezierPointsAmount - 1)
+                _animationDelta *= -1;
+            var originalF = _bezierPoints[_animationParameter];
+            var original = new Point((int)originalF.X, (int)originalF.Y);
+            _userImageUpperLeft = CalculateUserUpperLeft(original);
+            _pictureBox.Refresh();
+        }
+        #endregion
     }
 
     enum State

@@ -28,43 +28,69 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pictureBox = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
+            this._pictureBox = new System.Windows.Forms.PictureBox();
+            this._loadImageBtn = new System.Windows.Forms.Button();
+            this._startMovementBtn = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this._pictureBox)).BeginInit();
             this.SuspendLayout();
             // 
-            // pictureBox
+            // _pictureBox
             // 
-            this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(800, 600);
-            this.pictureBox.TabIndex = 0;
-            this.pictureBox.TabStop = false;
-            this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBox_Paint);
-            this.pictureBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseClick);
-            this.pictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseDown);
-            this.pictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseMove);
-            this.pictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseUp);
+            this._pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._pictureBox.Location = new System.Drawing.Point(0, 0);
+            this._pictureBox.Name = "_pictureBox";
+            this._pictureBox.Size = new System.Drawing.Size(800, 600);
+            this._pictureBox.TabIndex = 0;
+            this._pictureBox.TabStop = false;
+            this._pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBox_Paint);
+            this._pictureBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseClick);
+            this._pictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseDown);
+            this._pictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseMove);
+            this._pictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseUp);
+            // 
+            // _loadImageBtn
+            // 
+            this._loadImageBtn.Location = new System.Drawing.Point(0, 0);
+            this._loadImageBtn.Name = "_loadImageBtn";
+            this._loadImageBtn.Size = new System.Drawing.Size(75, 23);
+            this._loadImageBtn.TabIndex = 1;
+            this._loadImageBtn.Text = "Load Image";
+            this._loadImageBtn.UseVisualStyleBackColor = true;
+            this._loadImageBtn.Click += new System.EventHandler(this.LoadImageBtn_Click);
+            // 
+            // _startMovementBtn
+            // 
+            this._startMovementBtn.Location = new System.Drawing.Point(0, 29);
+            this._startMovementBtn.Name = "_startMovementBtn";
+            this._startMovementBtn.Size = new System.Drawing.Size(75, 23);
+            this._startMovementBtn.TabIndex = 2;
+            this._startMovementBtn.Text = "Go";
+            this._startMovementBtn.UseVisualStyleBackColor = true;
+            this._startMovementBtn.Click += new System.EventHandler(this.StartMovementBtn_Click);
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 600);
-            this.Controls.Add(this.pictureBox);
+            this.Controls.Add(this._startMovementBtn);
+            this.Controls.Add(this._loadImageBtn);
+            this.Controls.Add(this._pictureBox);
             this.MaximumSize = new System.Drawing.Size(816, 639);
             this.MinimumSize = new System.Drawing.Size(816, 639);
             this.Name = "MainWindow";
             this.ShowIcon = false;
             this.Text = "Bezier Curves";
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this._pictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.PictureBox pictureBox;
+        private System.Windows.Forms.PictureBox _pictureBox;
+        private System.Windows.Forms.Button _loadImageBtn;
+        private System.Windows.Forms.Button _startMovementBtn;
     }
 }
 
