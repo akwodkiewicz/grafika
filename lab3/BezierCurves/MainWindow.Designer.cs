@@ -40,6 +40,11 @@
             this.pictureBox.Size = new System.Drawing.Size(800, 600);
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
+            this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBox_Paint);
+            this.pictureBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseClick);
+            this.pictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseDown);
+            this.pictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseMove);
+            this.pictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseUp);
             // 
             // MainWindow
             // 
@@ -47,6 +52,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 600);
             this.Controls.Add(this.pictureBox);
+            this.MaximumSize = new System.Drawing.Size(816, 639);
+            this.MinimumSize = new System.Drawing.Size(816, 639);
             this.Name = "MainWindow";
             this.ShowIcon = false;
             this.Text = "Bezier Curves";
