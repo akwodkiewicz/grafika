@@ -60,36 +60,36 @@ namespace BezierCurves
         /// <summary>
         /// Rotate user image clockwise by a given angle, using rotation matrix calculations
         /// </summary>
-        /// <param name="sourceBitmap">Original image</param>
+        /// <param name="referenceImage">Image used for reference</param>
         /// <param name="angle">Angle in degrees</param>
         /// <returns>
         /// Rotated bitmap
         /// </returns>
-        public static Bitmap RotateImageUsingRotationMatrix(this Bitmap sourceBitmap, float angle)
+        public static void RotateFromReferenceUsingRotationMatrix(this Bitmap modified, Bitmap referenceImage, float angle)
         {
-            BitmapData sourceData = sourceBitmap.LockBits(
-                                        new Rectangle(0, 0, sourceBitmap.Width, sourceBitmap.Height),
+            BitmapData sourceData = referenceImage.LockBits(
+                                        new Rectangle(0, 0, referenceImage.Width, referenceImage.Height),
                                         ImageLockMode.ReadOnly,
                                         PixelFormat.Format32bppArgb);
 
             byte[] sourceBuffer = new byte[sourceData.Stride * sourceData.Height];
             byte[] resultBuffer = new byte[sourceData.Stride * sourceData.Height];
             Marshal.Copy(sourceData.Scan0, sourceBuffer, 0, sourceBuffer.Length);
-            sourceBitmap.UnlockBits(sourceData);
+            referenceImage.UnlockBits(sourceData);
 
-            var imageBounds = new Rectangle(0, 0, sourceBitmap.Width, sourceBitmap.Height);
+            var imageBounds = new Rectangle(0, 0, referenceImage.Width, referenceImage.Height);
             var rad = angle * Math.PI / 180;
             var cos = Math.Cos(rad);
             var sin = Math.Sin(rad);
 
-            for (int row = 0; row < sourceBitmap.Height; row++)
+            for (int row = 0; row < referenceImage.Height; row++)
             {
-                for (int col = 0; col < sourceBitmap.Height; col++)
+                for (int col = 0; col < referenceImage.Height; col++)
                 {
                     var resultIndex = row * sourceData.Stride + col * 4;
 
-                    var xc = sourceBitmap.Width / 2;
-                    var yc = sourceBitmap.Height / 2;
+                    var xc = referenceImage.Width / 2;
+                    var yc = referenceImage.Height / 2;
                     var xt = col - xc;
                     var yt = row - yc;
                     var xr = xt * cos + yt * sin;
@@ -113,15 +113,12 @@ namespace BezierCurves
                 }
             }
 
-            var resultBitmap = new Bitmap(sourceBitmap.Width, sourceBitmap.Height);
-            BitmapData resultData = resultBitmap.LockBits(
-                                        new Rectangle(0, 0, resultBitmap.Width, resultBitmap.Height),
+            BitmapData resultData = modified.LockBits(
+                                        new Rectangle(0, 0, modified.Width, modified.Height),
                                         ImageLockMode.WriteOnly,
                                         PixelFormat.Format32bppArgb);
             Marshal.Copy(resultBuffer, 0, resultData.Scan0, resultBuffer.Length);
-            resultBitmap.UnlockBits(resultData);
-
-            return resultBitmap;
+            modified.UnlockBits(resultData);
         }
 
         public static Bitmap RotateImageUsingShearing(this Bitmap original, float angle)

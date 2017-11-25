@@ -27,12 +27,13 @@ namespace BezierCurves
         private int _draggedPoint;
         private Bitmap _pointsBmp;
         private Bitmap _bezierBmp;
-        private Bitmap _userImage;
-        private Bitmap _userImageBoxed;
-        private Bitmap _userImageRotated;
+        private Bitmap _userImageBox;
+        private Bitmap _userImageOriginal;
+        private Bitmap _userImageOriginalInBox;
+        private Bitmap _userImageBoxRotated;
         private Graphics _pointsGraphics;
         private Graphics _bezierGraphics;
-        private Graphics _userImageRotatedGraphics;
+        private Graphics _userImageBoxGraphics;
         private int _movementAnimationParameter;
         private int _movementAnimationDelta;
         private System.Timers.Timer _bezierTimer;
@@ -62,18 +63,18 @@ namespace BezierCurves
             _rotationAnimationDelta = 5;
 
             _bezierTimer = new System.Timers.Timer();
-            _bezierTimer.Interval = 100;
+            _bezierTimer.Interval = 75;
             _bezierTimer.Elapsed += BezierTimer_Elapsed;
             _rotationTimer = new System.Timers.Timer();
-            _rotationTimer.Interval = 80;
+            _rotationTimer.Interval = 250;
             _rotationTimer.Elapsed += RotationTimer_Elapsed;
         }
 
         private void PictureBox_Paint(object sender, PaintEventArgs e)
         {
-            if (_userImageRotated != null)
+            if (_userImageBoxRotated != null)
             {
-                e.Graphics.DrawImage(_userImageRotated, _userImageUpperLeft);
+                e.Graphics.DrawImage(_userImageBox, _userImageUpperLeft);
             }
             e.Graphics.DrawImage(_pointsBmp, 0, 0);
             e.Graphics.DrawImage(_bezierBmp, 0, 0);
@@ -215,7 +216,7 @@ namespace BezierCurves
                     return;
                 case 0:
                     _start = new Point(e.X, e.Y);
-                    if (_userImage != null && !_bezierTimer.Enabled)
+                    if (_userImageOriginal != null && !_bezierTimer.Enabled)
                         _userImageUpperLeft = CalculateUserUpperLeft(_start);
                     break;
                 case 1:
@@ -275,31 +276,33 @@ namespace BezierCurves
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                _userImage = new Bitmap(dialog.OpenFile());
+                _userImageOriginal = new Bitmap(dialog.OpenFile());
 
                 var cos45 = Math.Cos(Math.PI / 4);
                 var sin45 = Math.Sin(Math.PI / 4);
-                var boxWidth = (int)Math.Round(_userImage.Width * cos45 + _userImage.Height * sin45);
-                var boxHeight = (int)Math.Round(_userImage.Width * sin45 + _userImage.Height * cos45);
+                var boxWidth = (int)Math.Round(_userImageOriginal.Width * cos45 + _userImageOriginal.Height * sin45);
+                var boxHeight = (int)Math.Round(_userImageOriginal.Width * sin45 + _userImageOriginal.Height * cos45);
 
-                _userImageBoxed = new Bitmap(boxWidth, boxHeight);
-                _userImageRotated = new Bitmap(boxWidth, boxHeight);
+                _userImageOriginalInBox = new Bitmap(boxWidth, boxHeight);
+                _userImageBoxRotated = new Bitmap(boxWidth, boxHeight);
 
                 if (!_start.IsEmpty)
                     _userImageUpperLeft = CalculateUserUpperLeft(_start);
                 else
                     _userImageUpperLeft = CalculateUserUpperLeft(new Point(_pictureBox.Width / 2, _pictureBox.Height / 2));
 
-                _userImageRotatedGraphics = Graphics.FromImage(_userImageRotated);
-                using (var g = Graphics.FromImage(_userImageBoxed))
+                _userImageBox = new Bitmap(boxWidth, boxHeight);
+                _userImageBoxGraphics = Graphics.FromImage(_userImageBox);
+                //_userImageRotatedGraphics = Graphics.FromImage(_userImageRotated);
+                using (var g = Graphics.FromImage(_userImageOriginalInBox))
                 {
-                    var x = (_userImageBoxed.Width - _userImage.Width) / 2;
-                    var y = (_userImageBoxed.Height - _userImage.Height) / 2;
-                    g.DrawImage(_userImage, x, y);
+                    var x = (_userImageOriginalInBox.Width - _userImageOriginal.Width) / 2;
+                    var y = (_userImageOriginalInBox.Height - _userImageOriginal.Height) / 2;
+                    g.DrawImage(_userImageOriginal, x, y);
                 }
-                using (var g = Graphics.FromImage(_userImageRotated))
+                using (var g = Graphics.FromImage(_userImageBoxRotated))
                 {
-                    g.DrawImage(_userImageBoxed, 0, 0);
+                    g.DrawImage(_userImageOriginalInBox, 0, 0);
                 }
 
                 DrawUserImage();
@@ -309,8 +312,8 @@ namespace BezierCurves
 
         private Point CalculateUserUpperLeft(Point source)
         {
-            return new Point(source.X - _userImageBoxed.Width / 2,
-                source.Y - _userImageBoxed.Height / 2);
+            return new Point(source.X - _userImageOriginalInBox.Width / 2,
+                source.Y - _userImageOriginalInBox.Height / 2);
         }
 
         /// <summary>
@@ -318,14 +321,17 @@ namespace BezierCurves
         /// </summary>
         private void DrawUserImage()
         {
-            _userImageRotatedGraphics.DrawImage(_userImageRotated, 0, 0);
+            _userImageBoxGraphics.Clear(Color.FromArgb(0));
+            _userImageBoxGraphics.DrawImage(_userImageBoxRotated, 0, 0);
         }
 
         private void RotateBtn_Click(object sender, EventArgs e)
         {
-            _userImageUpperLeft = CalculateUserUpperLeft(new Point(_pictureBox.Width / 2, _pictureBox.Height / 2));
             if (!_rotationTimer.Enabled)
+            {
+                _userImageUpperLeft = CalculateUserUpperLeft(new Point(_pictureBox.Width / 2, _pictureBox.Height / 2));
                 _rotationTimer.Start();
+            }
             else
                 _rotationTimer.Stop();
             _pictureBox.Refresh();
@@ -343,9 +349,9 @@ namespace BezierCurves
         private void RotateImage(float angle)
         {
             if (matrixRadio.Checked)
-                _userImageRotated = _userImageBoxed.RotateImageUsingRotationMatrix(angle);
+                _userImageBoxRotated.RotateFromReferenceUsingRotationMatrix(_userImageOriginalInBox, angle);
             else if (shearRadio.Checked)
-                _userImageRotated = _userImageBoxed.RotateImageUsingShearing(angle);
+                _userImageBoxRotated = _userImageOriginalInBox.RotateImageUsingShearing(angle);
         }
     }
 
