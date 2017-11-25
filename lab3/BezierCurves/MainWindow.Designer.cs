@@ -32,6 +32,7 @@
             this._loadImageBtn = new System.Windows.Forms.Button();
             this._startMovementBtn = new System.Windows.Forms.Button();
             this.rotateBtn = new System.Windows.Forms.Button();
+            this.rotateCheckbox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this._pictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -79,11 +80,22 @@
             this.rotateBtn.UseVisualStyleBackColor = true;
             this.rotateBtn.Click += new System.EventHandler(this.RotateBtn_Click);
             // 
+            // rotateCheckbox
+            // 
+            this.rotateCheckbox.AutoSize = true;
+            this.rotateCheckbox.Location = new System.Drawing.Point(13, 99);
+            this.rotateCheckbox.Name = "rotateCheckbox";
+            this.rotateCheckbox.Size = new System.Drawing.Size(111, 17);
+            this.rotateCheckbox.TabIndex = 4;
+            this.rotateCheckbox.Text = "Rotate along path";
+            this.rotateCheckbox.UseVisualStyleBackColor = true;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 600);
+            this.Controls.Add(this.rotateCheckbox);
             this.Controls.Add(this.rotateBtn);
             this.Controls.Add(this._startMovementBtn);
             this.Controls.Add(this._loadImageBtn);
@@ -95,6 +107,7 @@
             this.Text = "Bezier Curves";
             ((System.ComponentModel.ISupportInitialize)(this._pictureBox)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -104,6 +117,7 @@
         private System.Windows.Forms.Button _loadImageBtn;
         private System.Windows.Forms.Button _startMovementBtn;
         private System.Windows.Forms.Button rotateBtn;
+        private System.Windows.Forms.CheckBox rotateCheckbox;
     }
 }
 

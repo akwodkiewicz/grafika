@@ -17,9 +17,9 @@ namespace BezierCurves
         private const int POINT_SIZE = 10;
         private Point _start;
         private Point _end;
-        private List<Point> _controlPoints;
+        private List<PointF> _controlPoints;
         private PointF[] _bezierPoints;
-        private (float X, float Y)[] _bezierTangents;
+        private PointF[] _bezierTangentVectors;
         private int _bezierPointsAmount;
         private Point _userImageUpperLeft;
         private State _state;
@@ -28,14 +28,11 @@ namespace BezierCurves
         private Bitmap _pointsBmp;
         private Bitmap _bezierBmp;
         private Bitmap _userImage;
-        //private Bitmap _userImageBox;
         private Bitmap _userImageBoxed;
         private Bitmap _userImageRotated;
         private Graphics _pointsGraphics;
         private Graphics _bezierGraphics;
-        private Graphics _userImageGraphics;
         private Graphics _userImageRotatedGraphics;
-        //private Graphics _userImageBoxGraphics;
         private int _movementAnimationParameter;
         private int _movementAnimationDelta;
         private System.Timers.Timer _bezierTimer;
@@ -51,7 +48,7 @@ namespace BezierCurves
 
         private void Init()
         {
-            _controlPoints = new List<Point>(MAX_POINTS - 2);
+            _controlPoints = new List<PointF>(MAX_POINTS - 2);
             _state = State.AddingStart;
             _pointsBmp = new Bitmap(_pictureBox.Width, _pictureBox.Height);
             _bezierBmp = new Bitmap(_pictureBox.Width, _pictureBox.Height);
@@ -126,7 +123,6 @@ namespace BezierCurves
             foreach (var p in _controlPoints)
                 _pointsGraphics.FillEllipse(Brushes.Red, p.X - POINT_SIZE / 2, p.Y - POINT_SIZE / 2, POINT_SIZE, POINT_SIZE);
             _pictureBox.Refresh();
-
         }
 
         /// <summary>
@@ -135,66 +131,26 @@ namespace BezierCurves
         public void DrawBezier()
         {
             _bezierGraphics.Clear(Color.FromArgb(0));
-            var controlPointsArray = _controlPoints.ToArray();
+            _bezierPointsAmount = 301;
 
             // Draw bounding box
             _bezierGraphics.DrawLine(Pens.Red, _start, _controlPoints[0]);
-            _bezierGraphics.DrawLines(Pens.Red, controlPointsArray);
+            _bezierGraphics.DrawLines(Pens.Red, _controlPoints.ToArray());
             _bezierGraphics.DrawLine(Pens.Red, _controlPoints[_controlPoints.Count - 1], _end);
+
+            // Calculate Bezier curve
+            var points = new PointF[_controlPoints.Count + 2];
+            points[0] = _start;
+            points[_controlPoints.Count+1] = _end;
+            var curIndex = 1;
+            foreach (var p in _controlPoints)
+                points[curIndex++] = p;
+            
+            (_bezierPoints, _bezierTangentVectors) = points.BezierAlgorithm(_bezierPointsAmount-1);
+
             // Draw Bezier curve
-            BezierAlgorithm(_start, _end, controlPointsArray);
             _bezierGraphics.DrawLines(Pens.Black, _bezierPoints);
-
             _pictureBox.Refresh();
-        }
-
-        ///<summary>Calculates a Bezier curve using de Casteljau algorithm</summary>
-        ///<param name="controlPoints">Points defining the curve [start point, 1st control point, 2nd control point, ..., end point]</param>
-        private void BezierAlgorithm(Point start, Point end, Point[] controlPoints)
-        {
-            const int segmentsNum = 300;
-            int tParameter = 0;
-            var pointsToDraw = new PointF[segmentsNum + 1];
-            var tangents = new(float X, float Y)[segmentsNum + 1];
-            var counter = 0;
-
-            var pointsF = new PointF[controlPoints.Length + 2];
-            pointsF[0] = start;
-            pointsF[pointsF.Length - 1] = end;
-            for (int i = 0; i < controlPoints.Length; i++)
-                pointsF[i + 1] = controlPoints[i];
-
-            // Find all the points defining the segments that approximate the curve
-            for (; tParameter < segmentsNum + 1; tParameter += 1)
-                Casteljau((float)tParameter / segmentsNum, pointsF);
-
-
-            _bezierPoints = pointsToDraw;
-            _bezierPointsAmount = segmentsNum + 1;
-            _bezierTangents = tangents;
-            // De Casteljau recursive algorithm
-            void Casteljau(float t, PointF[] pts)
-            {
-                if (pts.Length == 1)
-                    pointsToDraw[counter++] = pts[0];
-                else
-                {
-                    if (pts.Length == 2)
-                    {
-                        var dx = pts[1].X - pts[0].X;
-                        var dy = pts[1].Y - pts[0].Y;
-                        tangents[counter] = (dx, dy);
-                    }
-                    var newpts = new PointF[pts.Length - 1];
-                    for (int i = 0; i < newpts.Length; i++)
-                    {
-                        float x = (1 - t) * pts[i].X + t * pts[i + 1].X;
-                        float y = (1 - t) * pts[i].Y + t * pts[i + 1].Y;
-                        newpts[i] = new PointF(x, y);
-                    }
-                    Casteljau(t, newpts);
-                }
-            }
         }
 
         private void StartMovementBtn_Click(object sender, EventArgs e)
@@ -214,10 +170,13 @@ namespace BezierCurves
             var original = new Point((int)originalF.X, (int)originalF.Y);
             _userImageUpperLeft = CalculateUserUpperLeft(original);
 
-            var angleRad = Math.Atan2(_bezierTangents[_movementAnimationParameter].X, _bezierTangents[_movementAnimationParameter].Y);
-            var angleDeg = (angleRad * 180) / Math.PI;
-            //RotateImage(-(float)angleDeg);
-            RotateImageUsingRotationMatrix(-(float)angleDeg);
+            if (rotateCheckbox.Checked)
+            {
+                var tangentVector = _bezierTangentVectors[_movementAnimationParameter];
+                var angleRad = Math.Atan2(tangentVector.X, tangentVector.Y);
+                var angleDeg = (angleRad * 180) / Math.PI;
+                _userImageRotated = _userImageBoxed.RotateImageUsingRotationMatrix(-(float)angleDeg);
+            }
             DrawUserImage();
             _pictureBox.Refresh();
         }
@@ -256,7 +215,7 @@ namespace BezierCurves
                     return;
                 case 0:
                     _start = new Point(e.X, e.Y);
-                    if (!_bezierTimer.Enabled)
+                    if (_userImage != null && !_bezierTimer.Enabled)
                         _userImageUpperLeft = CalculateUserUpperLeft(_start);
                     break;
                 case 1:
@@ -296,7 +255,7 @@ namespace BezierCurves
             }
             return -1;
 
-            bool IsContained(Point point, Point loc)
+            bool IsContained(PointF point, Point loc)
             {
                 return loc.X <= point.X + POINT_SIZE / 2
                     && loc.X >= point.X - POINT_SIZE / 2
@@ -317,14 +276,12 @@ namespace BezierCurves
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 _userImage = new Bitmap(dialog.OpenFile());
-                _userImageGraphics = Graphics.FromImage(_userImage);
 
                 var cos45 = Math.Cos(Math.PI / 4);
                 var sin45 = Math.Sin(Math.PI / 4);
                 var boxWidth = (int)Math.Round(_userImage.Width * cos45 + _userImage.Height * sin45);
                 var boxHeight = (int)Math.Round(_userImage.Width * sin45 + _userImage.Height * cos45);
 
-                //_userImageBox = new Bitmap(boxWidth, boxHeight);
                 _userImageBoxed = new Bitmap(boxWidth, boxHeight);
                 _userImageRotated = new Bitmap(boxWidth, boxHeight);
 
@@ -374,58 +331,11 @@ namespace BezierCurves
         private void RotationTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             _rotationAnimationParameter = (_rotationAnimationParameter + _rotationAnimationDelta) % 360;
-            //RotateImage((float)_rotationAnimationParameter);
-            RotateImageUsingRotationMatrix((float)_rotationAnimationParameter);
+            _userImageRotated = _userImageBoxed.RotateImageUsingRotationMatrix((float)_rotationAnimationParameter);
             DrawUserImage();
             _pictureBox.Refresh();
         }
-
-        ///// <summary>
-        ///// Rotate user image using .NET's internal transformations and rotations
-        ///// </summary>
-        ///// <param name="angle">Angle in degrees</param>
-        //private void RotateImage(float angle)
-        //{
-        //    _userImageBoxGraphics.TranslateTransform((float)_userImageBoxed.Width / 2, (float)_userImageBoxed.Height / 2);
-        //    _userImageBoxGraphics.RotateTransform(angle);
-        //    _userImageBoxGraphics.TranslateTransform(-(float)_userImageBoxed.Width / 2, -(float)_userImageBoxed.Height / 2);
-        //    DrawUserImage();
-        //    _userImageBoxGraphics.ResetTransform();
-        //}
-
-        /// <summary>
-        /// Rotate user image clockwise by a given angle, using rotation matrix calculations
-        /// </summary>
-        /// <param name="angle">Angle in degrees</param>
-        private void RotateImageUsingRotationMatrix(float angle)
-        {
-            var rad = angle * Math.PI / 180;
-            var cos = Math.Cos(rad);
-            var sin = Math.Sin(rad);
-            for (int y = 0; y < _userImageRotated.Height; y++)
-            {
-                for (int x = 0; x < _userImageRotated.Height; x++)
-                {
-                    var xc = _userImageBoxed.Width / 2;
-                    var yc = _userImageBoxed.Height / 2;
-                    var xt = x - xc;
-                    var yt = y - yc;
-                    var xr = xt * cos + yt * sin;
-                    var yr = -xt * sin + yt * cos;
-                    var x2 = xr + xc;
-                    var y2 = yr + yc;
-                    x2 = Math.Round(x2);
-                    y2 = Math.Round(y2);
-                    if (x2 < 0 || x2 >= _userImageBoxed.Width || y2 < 0 || y2 >= _userImageBoxed.Height)
-                        _userImageRotated.SetPixel(x, y, Color.Transparent);
-                    else
-                        _userImageRotated.SetPixel(x, y, _userImageBoxed.GetPixel((int)x2, (int)y2));
-                }
-            }
-        }
         #endregion
-
-
     }
 
     enum State
