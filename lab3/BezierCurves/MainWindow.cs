@@ -62,10 +62,10 @@ namespace BezierCurves
             _rotationAnimationDelta = 5;
 
             _bezierTimer = new System.Timers.Timer();
-            _bezierTimer.Interval = 500;
+            _bezierTimer.Interval = 100;
             _bezierTimer.Elapsed += BezierTimer_Elapsed;
             _rotationTimer = new System.Timers.Timer();
-            _rotationTimer.Interval = 500;
+            _rotationTimer.Interval = 80;
             _rotationTimer.Elapsed += RotationTimer_Elapsed;
         }
 

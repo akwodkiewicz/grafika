@@ -60,37 +60,67 @@ namespace BezierCurves
         /// <summary>
         /// Rotate user image clockwise by a given angle, using rotation matrix calculations
         /// </summary>
-        /// <param name="original">Original image</param>
+        /// <param name="sourceBitmap">Original image</param>
         /// <param name="angle">Angle in degrees</param>
         /// <returns>
         /// Rotated bitmap
         /// </returns>
-        public static Bitmap RotateImageUsingRotationMatrix(this Bitmap original, float angle)
+        public static Bitmap RotateImageUsingRotationMatrix(this Bitmap sourceBitmap, float angle)
         {
-            var resultBitmap = new Bitmap(original.Width, original.Height);
+            BitmapData sourceData = sourceBitmap.LockBits(
+                                        new Rectangle(0, 0, sourceBitmap.Width, sourceBitmap.Height),
+                                        ImageLockMode.ReadOnly,
+                                        PixelFormat.Format32bppArgb);
+
+            byte[] sourceBuffer = new byte[sourceData.Stride * sourceData.Height];
+            byte[] resultBuffer = new byte[sourceData.Stride * sourceData.Height];
+            Marshal.Copy(sourceData.Scan0, sourceBuffer, 0, sourceBuffer.Length);
+            sourceBitmap.UnlockBits(sourceData);
+
+            var imageBounds = new Rectangle(0, 0, sourceBitmap.Width, sourceBitmap.Height);
             var rad = angle * Math.PI / 180;
             var cos = Math.Cos(rad);
             var sin = Math.Sin(rad);
-            for (int y = 0; y < resultBitmap.Height; y++)
+
+            for (int row = 0; row < sourceBitmap.Height; row++)
             {
-                for (int x = 0; x < resultBitmap.Height; x++)
+                for (int col = 0; col < sourceBitmap.Height; col++)
                 {
-                    var xc = original.Width / 2;
-                    var yc = original.Height / 2;
-                    var xt = x - xc;
-                    var yt = y - yc;
+                    var resultIndex = row * sourceData.Stride + col * 4;
+
+                    var xc = sourceBitmap.Width / 2;
+                    var yc = sourceBitmap.Height / 2;
+                    var xt = col - xc;
+                    var yt = row - yc;
                     var xr = xt * cos + yt * sin;
                     var yr = -xt * sin + yt * cos;
-                    var x2 = xr + xc;
-                    var y2 = yr + yc;
-                    x2 = Math.Round(x2);
-                    y2 = Math.Round(y2);
-                    if (x2 < 0 || x2 >= original.Width || y2 < 0 || y2 >= original.Height)
-                        resultBitmap.SetPixel(x, y, Color.Transparent);
-                    else
-                        resultBitmap.SetPixel(x, y, original.GetPixel((int)x2, (int)y2));
+                    var x2 = (int)Math.Round(xr + xc);
+                    var y2 = (int)Math.Round(yr + yc);
+
+                    var sourceIndex = y2 * sourceData.Stride + x2 * 4;
+
+                    if (imageBounds.Contains(x2, y2))
+                    {
+                        // Blue
+                        resultBuffer[resultIndex] = sourceBuffer[sourceIndex];
+                        // Green
+                        resultBuffer[resultIndex + 1] = sourceBuffer[sourceIndex + 1];
+                        // Red
+                        resultBuffer[resultIndex + 2] = sourceBuffer[sourceIndex + 2];
+                        // Alpha
+                        resultBuffer[resultIndex + 3] = sourceBuffer[sourceIndex + 3];
+                    }
                 }
             }
+
+            var resultBitmap = new Bitmap(sourceBitmap.Width, sourceBitmap.Height);
+            BitmapData resultData = resultBitmap.LockBits(
+                                        new Rectangle(0, 0, resultBitmap.Width, resultBitmap.Height),
+                                        ImageLockMode.WriteOnly,
+                                        PixelFormat.Format32bppArgb);
+            Marshal.Copy(resultBuffer, 0, resultData.Scan0, resultBuffer.Length);
+            resultBitmap.UnlockBits(resultData);
+
             return resultBitmap;
         }
 
