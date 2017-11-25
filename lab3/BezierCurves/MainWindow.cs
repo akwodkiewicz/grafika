@@ -68,7 +68,7 @@ namespace BezierCurves
             _bezierTimer.Interval = 75;
             _bezierTimer.Elapsed += BezierTimer_Elapsed;
             _rotationTimer = new System.Timers.Timer();
-            _rotationTimer.Interval = 250;
+            _rotationTimer.Interval = 100;
             _rotationTimer.Elapsed += RotationTimer_Elapsed;
         }
 
@@ -159,9 +159,15 @@ namespace BezierCurves
         private void StartMovementBtn_Click(object sender, EventArgs e)
         {
             if (!_bezierTimer.Enabled)
+            {
+                rotateBtn.Enabled = false;
                 _bezierTimer.Start();
+            }
             else
+            {
                 _bezierTimer.Stop();
+                rotateBtn.Enabled = true;
+            }
         }
 
         private void BezierTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -349,10 +355,14 @@ namespace BezierCurves
             if (!_rotationTimer.Enabled)
             {
                 _userImageUpperLeft = CalculateUserUpperLeft(new Point(_pictureBox.Width / 2, _pictureBox.Height / 2));
+                _startMovementBtn.Enabled = false;
                 _rotationTimer.Start();
             }
             else
+            {
                 _rotationTimer.Stop();
+                _startMovementBtn.Enabled = true;
+            }            
             _pictureBox.Refresh();
         }
 
@@ -363,7 +373,6 @@ namespace BezierCurves
             DrawUserImage();
             _pictureBox.Refresh();
         }
-        #endregion
 
         private void RotateImage(float angle)
         {
@@ -372,6 +381,7 @@ namespace BezierCurves
             else if (shearRadio.Checked)
                 _userImageBoxRotated = _userImageOriginalInBox.RotateImageUsingShearing(angle);
         }
+        #endregion
     }
 
     enum State
