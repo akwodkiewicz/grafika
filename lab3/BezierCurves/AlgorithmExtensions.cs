@@ -112,7 +112,6 @@ namespace BezierCurves
                     }
                 }
             }
-
             BitmapData resultData = modified.LockBits(
                                         new Rectangle(0, 0, modified.Width, modified.Height),
                                         ImageLockMode.WriteOnly,
@@ -121,169 +120,102 @@ namespace BezierCurves
             modified.UnlockBits(resultData);
         }
 
-        public static Bitmap RotateImageUsingShearing(this Bitmap original, float angle)
+        public static void RotateFromReferenceUsingShearing(this Bitmap modified, Bitmap referenceImage, float angle)
         {
-            var rad = (angle * 180) / Math.PI;
-            var a = -Math.Tan(rad / 2);
+            var rad = angle * Math.PI / 180;
+            var a = 1-Math.Tan(rad / 2);
             var b = Math.Sin(rad);
-            return original.ShearImage(a, 0).ShearImage(0, b).ShearImage(a, 0);
+
+
+
+
+
+
+            modified.ShearImage(referenceImage, 0, a);
+            modified.ShearImage(referenceImage, b, 0);
+            modified.ShearImage(referenceImage, 0, a);
+
+
+
+            //BitmapData sourceData = referenceImage.LockBits(
+            //                new Rectangle(0, 0, referenceImage.Width, referenceImage.Height),
+            //                ImageLockMode.ReadOnly,
+            //                PixelFormat.Format32bppArgb);
+
+            //byte[] sourceBuffer = new byte[sourceData.Stride * sourceData.Height];
+            //byte[] resultBuffer = new byte[sourceData.Stride * sourceData.Height];
+            //Marshal.Copy(sourceData.Scan0, sourceBuffer, 0, sourceBuffer.Length);
+            //referenceImage.UnlockBits(sourceData);
+            //BitmapData resultData = modified.LockBits(
+            //                          new Rectangle(0, 0, modified.Width, modified.Height),
+            //                          ImageLockMode.WriteOnly,
+            //                          PixelFormat.Format32bppArgb);
+            //Marshal.Copy(resultBuffer, 0, resultData.Scan0, resultBuffer.Length);
+            //modified.UnlockBits(resultData);
+
         }
 
-        public static Bitmap ShearImage(this Bitmap sourceBitmap,
-                               double shearX,
-                               double shearY)
+        public static void ShearImage(this Bitmap modified, Bitmap referenceImage, double shearX, double shearY)
         {
-            BitmapData sourceData =
-                       sourceBitmap.LockBits(new Rectangle(0, 0,
-                       sourceBitmap.Width, sourceBitmap.Height),
-                       ImageLockMode.ReadOnly,
-                       PixelFormat.Format32bppArgb);
+            BitmapData sourceData = referenceImage.LockBits(
+                                        new Rectangle(0, 0, referenceImage.Width, referenceImage.Height),
+                                        ImageLockMode.ReadOnly,
+                                        PixelFormat.Format32bppArgb);
 
+            byte[] sourceBuffer = new byte[sourceData.Stride * sourceData.Height];
+            byte[] resultBuffer = new byte[sourceData.Stride * sourceData.Height];
+            Marshal.Copy(sourceData.Scan0, sourceBuffer, 0, sourceBuffer.Length);
+            referenceImage.UnlockBits(sourceData);
 
-            byte[] pixelBuffer = new byte[sourceData.Stride *
-                                          sourceData.Height];
+            var imageBounds = new Rectangle(0, 0, referenceImage.Width, referenceImage.Height);
 
-
-            byte[] resultBuffer = new byte[sourceData.Stride *
-                                           sourceData.Height];
-
-
-            Marshal.Copy(sourceData.Scan0, pixelBuffer, 0,
-                                       pixelBuffer.Length);
-
-
-            sourceBitmap.UnlockBits(sourceData);
-
-
-            int xOffset = (int)Math.Round(sourceBitmap.Width *
-                                                shearX / 2.0);
-
-
-            int yOffset = (int)Math.Round(sourceBitmap.Height *
-                                                  shearY / 2.0);
-
+            int xOffset = (int)Math.Round(modified.Width * shearX / 2.0);
+            int yOffset = (int)Math.Round(modified.Height * shearY / 2.0);
 
             int sourceXY = 0;
             int resultXY = 0;
-
-
             Point sourcePoint = new Point();
             Point resultPoint = new Point();
 
-
-            Rectangle imageBounds = new Rectangle(0, 0,
-                                    sourceBitmap.Width,
-                                   sourceBitmap.Height);
-
-
-            for (int row = 0; row < sourceBitmap.Height; row++)
+            for (int row = 0; row < modified.Height; row++)
             {
-                for (int col = 0; col < sourceBitmap.Width; col++)
+                for (int col = 0; col < modified.Width; col++)
                 {
                     sourceXY = row * sourceData.Stride + col * 4;
-
 
                     sourcePoint.X = col;
                     sourcePoint.Y = row;
 
-
-                    if (sourceXY >= 0 &&
-                        sourceXY + 3 < pixelBuffer.Length)
+                    if (sourceXY >= 0 && sourceXY + 3 < sourceBuffer.Length)
                     {
-                        resultPoint = sourcePoint.ShearXY(shearX,
-                                        shearY, xOffset, yOffset);
+                        resultPoint = sourcePoint.ShearXY(shearX, shearY, xOffset, yOffset);
+                        resultXY = resultPoint.Y * sourceData.Stride + resultPoint.X * 4;
 
-
-                        resultXY = resultPoint.Y * sourceData.Stride +
-                                   resultPoint.X * 4;
-
-
-                        if (imageBounds.Contains(resultPoint) &&
-                                              resultXY >= 0)
+                        if (imageBounds.Contains(resultPoint))
                         {
-                            if (resultXY + 6 <= resultBuffer.Length)
-                            {
-                                resultBuffer[resultXY + 4] =
-                                     pixelBuffer[sourceXY];
-
-
-                                resultBuffer[resultXY + 5] =
-                                     pixelBuffer[sourceXY + 1];
-
-
-                                resultBuffer[resultXY + 6] =
-                                     pixelBuffer[sourceXY + 2];
-
-
-                                resultBuffer[resultXY + 7] = 255;
-                            }
-
-
-                            if (resultXY - 3 >= 0)
-                            {
-                                resultBuffer[resultXY - 4] =
-                                     pixelBuffer[sourceXY];
-
-
-                                resultBuffer[resultXY - 3] =
-                                     pixelBuffer[sourceXY + 1];
-
-
-                                resultBuffer[resultXY - 2] =
-                                     pixelBuffer[sourceXY + 2];
-
-
-                                resultBuffer[resultXY - 1] = 255;
-                            }
-
-
-                            if (resultXY + 3 < resultBuffer.Length)
-                            {
-                                resultBuffer[resultXY] =
-                                 pixelBuffer[sourceXY];
-
-
-                                resultBuffer[resultXY + 1] =
-                                 pixelBuffer[sourceXY + 1];
-
-
-                                resultBuffer[resultXY + 2] =
-                                 pixelBuffer[sourceXY + 2];
-
-
-                                resultBuffer[resultXY + 3] = 255;
-                            }
+                            // Blue
+                            resultBuffer[resultXY] = sourceBuffer[sourceXY];
+                            // Green
+                            resultBuffer[resultXY + 1] = sourceBuffer[sourceXY + 1];
+                            // Red
+                            resultBuffer[resultXY + 2] = sourceBuffer[sourceXY + 2];
+                            // Alpha
+                            resultBuffer[resultXY + 3] = sourceBuffer[sourceXY + 3];
                         }
                     }
                 }
             }
 
 
-            Bitmap resultBitmap = new Bitmap(sourceBitmap.Width,
-                                             sourceBitmap.Height);
-
-
-            BitmapData resultData =
-                       resultBitmap.LockBits(new Rectangle(0, 0,
-                       resultBitmap.Width, resultBitmap.Height),
-                       ImageLockMode.WriteOnly,
-                       PixelFormat.Format32bppArgb);
-
-
-            Marshal.Copy(resultBuffer, 0, resultData.Scan0,
-                                       resultBuffer.Length);
-
-
-            resultBitmap.UnlockBits(resultData);
-
-
-            return resultBitmap;
+            BitmapData resultData = modified.LockBits(
+                                       new Rectangle(0, 0, modified.Width, modified.Height),
+                                       ImageLockMode.WriteOnly,
+                                       PixelFormat.Format32bppArgb);
+            Marshal.Copy(resultBuffer, 0, resultData.Scan0, resultBuffer.Length);
+            modified.UnlockBits(resultData);
         }
 
-        private static Point ShearXY(this Point source, double shearX,
-                                               double shearY,
-                                               int offsetX,
-                                               int offsetY)
+        private static Point ShearXY(this Point source, double shearX, double shearY, int offsetX, int offsetY)
         {
             Point result = new Point();
 

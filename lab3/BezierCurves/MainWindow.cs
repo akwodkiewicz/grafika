@@ -68,7 +68,7 @@ namespace BezierCurves
             _bezierTimer.Interval = 75;
             _bezierTimer.Elapsed += BezierTimer_Elapsed;
             _rotationTimer = new System.Timers.Timer();
-            _rotationTimer.Interval = 100;
+            _rotationTimer.Interval = 1000;
             _rotationTimer.Elapsed += RotationTimer_Elapsed;
         }
 
@@ -379,7 +379,7 @@ namespace BezierCurves
             if (matrixRadio.Checked)
                 _userImageBoxRotated.RotateFromReferenceUsingRotationMatrix(_userImageOriginalInBox, angle);
             else if (shearRadio.Checked)
-                _userImageBoxRotated = _userImageOriginalInBox.RotateImageUsingShearing(angle);
+                _userImageBoxRotated.RotateFromReferenceUsingShearing(_userImageOriginalInBox, angle);
         }
         #endregion
     }
