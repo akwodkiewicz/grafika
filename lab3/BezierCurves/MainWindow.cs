@@ -175,7 +175,7 @@ namespace BezierCurves
                 var tangentVector = _bezierTangentVectors[_movementAnimationParameter];
                 var angleRad = Math.Atan2(tangentVector.X, tangentVector.Y);
                 var angleDeg = (angleRad * 180) / Math.PI;
-                _userImageRotated = _userImageBoxed.RotateImageUsingRotationMatrix(-(float)angleDeg);
+                RotateImage(-(float)angleDeg);
             }
             DrawUserImage();
             _pictureBox.Refresh();
@@ -285,7 +285,10 @@ namespace BezierCurves
                 _userImageBoxed = new Bitmap(boxWidth, boxHeight);
                 _userImageRotated = new Bitmap(boxWidth, boxHeight);
 
-                _userImageUpperLeft = CalculateUserUpperLeft(_start);
+                if (!_start.IsEmpty)
+                    _userImageUpperLeft = CalculateUserUpperLeft(_start);
+                else
+                    _userImageUpperLeft = CalculateUserUpperLeft(new Point(_pictureBox.Width / 2, _pictureBox.Height / 2));
 
                 _userImageRotatedGraphics = Graphics.FromImage(_userImageRotated);
                 using (var g = Graphics.FromImage(_userImageBoxed))
@@ -331,11 +334,19 @@ namespace BezierCurves
         private void RotationTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             _rotationAnimationParameter = (_rotationAnimationParameter + _rotationAnimationDelta) % 360;
-            _userImageRotated = _userImageBoxed.RotateImageUsingRotationMatrix((float)_rotationAnimationParameter);
+            RotateImage((float)_rotationAnimationParameter);
             DrawUserImage();
             _pictureBox.Refresh();
         }
         #endregion
+
+        private void RotateImage(float angle)
+        {
+            if (matrixRadio.Checked)
+                _userImageRotated = _userImageBoxed.RotateImageUsingRotationMatrix(angle);
+            else if (shearRadio.Checked)
+                _userImageRotated = _userImageBoxed.RotateImageUsingShearing(angle);
+        }
     }
 
     enum State

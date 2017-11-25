@@ -33,6 +33,8 @@
             this._startMovementBtn = new System.Windows.Forms.Button();
             this.rotateBtn = new System.Windows.Forms.Button();
             this.rotateCheckbox = new System.Windows.Forms.CheckBox();
+            this.matrixRadio = new System.Windows.Forms.RadioButton();
+            this.shearRadio = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this._pictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -90,11 +92,35 @@
             this.rotateCheckbox.Text = "Rotate along path";
             this.rotateCheckbox.UseVisualStyleBackColor = true;
             // 
+            // matrixRadio
+            // 
+            this.matrixRadio.AutoSize = true;
+            this.matrixRadio.Checked = true;
+            this.matrixRadio.Location = new System.Drawing.Point(22, 173);
+            this.matrixRadio.Name = "matrixRadio";
+            this.matrixRadio.Size = new System.Drawing.Size(174, 17);
+            this.matrixRadio.TabIndex = 5;
+            this.matrixRadio.TabStop = true;
+            this.matrixRadio.Text = "Rotate using matrix calculations";
+            this.matrixRadio.UseVisualStyleBackColor = true;
+            // 
+            // shearRadio
+            // 
+            this.shearRadio.AutoSize = true;
+            this.shearRadio.Location = new System.Drawing.Point(22, 196);
+            this.shearRadio.Name = "shearRadio";
+            this.shearRadio.Size = new System.Drawing.Size(128, 17);
+            this.shearRadio.TabIndex = 6;
+            this.shearRadio.Text = "Rotate using shearing";
+            this.shearRadio.UseVisualStyleBackColor = true;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 600);
+            this.Controls.Add(this.shearRadio);
+            this.Controls.Add(this.matrixRadio);
             this.Controls.Add(this.rotateCheckbox);
             this.Controls.Add(this.rotateBtn);
             this.Controls.Add(this._startMovementBtn);
@@ -118,6 +144,8 @@
         private System.Windows.Forms.Button _startMovementBtn;
         private System.Windows.Forms.Button rotateBtn;
         private System.Windows.Forms.CheckBox rotateCheckbox;
+        private System.Windows.Forms.RadioButton matrixRadio;
+        private System.Windows.Forms.RadioButton shearRadio;
     }
 }
 
