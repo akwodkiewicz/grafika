@@ -15,6 +15,8 @@ namespace BezierCurves
     {
         private const int MAX_POINTS = 10;
         private const int POINT_SIZE = 10;
+        private const int MAX_WIDTH = 300;
+        private const int MAX_HEIGHT = 300;
         private Point _start;
         private Point _end;
         private List<PointF> _controlPoints;
@@ -276,12 +278,22 @@ namespace BezierCurves
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                _userImageOriginal = new Bitmap(dialog.OpenFile());
+                var image = new Bitmap(dialog.OpenFile());
+                if (image.Width > MAX_WIDTH || image.Height > MAX_HEIGHT)
+                {
+                    float scale = Math.Min((float)MAX_WIDTH / image.Width, (float) MAX_HEIGHT / image.Height);
+                    var scaledWidth = (int)(image.Width * scale);
+                    var scaledHeight = (int)(image.Height * scale);
+                    _userImageOriginal = new Bitmap(image, new Size(scaledWidth, scaledHeight));
+                }
+                else
+                    _userImageOriginal = image;
 
-                var cos45 = Math.Cos(Math.PI / 4);
-                var sin45 = Math.Sin(Math.PI / 4);
-                var boxWidth = (int)Math.Round(_userImageOriginal.Width * cos45 + _userImageOriginal.Height * sin45);
-                var boxHeight = (int)Math.Round(_userImageOriginal.Width * sin45 + _userImageOriginal.Height * cos45);
+                var width = _userImageOriginal.Width;
+                var height = _userImageOriginal.Height;
+                var d = Math.Sqrt(width * width + height * height);
+                var boxWidth = (int)Math.Round(d);
+                var boxHeight = (int)Math.Round(d);
 
                 _userImageOriginalInBox = new Bitmap(boxWidth, boxHeight);
                 _userImageBoxRotated = new Bitmap(boxWidth, boxHeight);
@@ -293,7 +305,6 @@ namespace BezierCurves
 
                 _userImageBox = new Bitmap(boxWidth, boxHeight);
                 _userImageBoxGraphics = Graphics.FromImage(_userImageBox);
-                //_userImageRotatedGraphics = Graphics.FromImage(_userImageRotated);
                 using (var g = Graphics.FromImage(_userImageOriginalInBox))
                 {
                     var x = (_userImageOriginalInBox.Width - _userImageOriginal.Width) / 2;
@@ -323,6 +334,14 @@ namespace BezierCurves
         {
             _userImageBoxGraphics.Clear(Color.FromArgb(0));
             _userImageBoxGraphics.DrawImage(_userImageBoxRotated, 0, 0);
+            //_userImageBoxGraphics.DrawLines(Pens.Red, new Point[5]
+            //{
+            //    new Point(0,0),
+            //    new Point(_userImageBox.Width-1, 0),
+            //    new Point(_userImageBox.Width-1, _userImageBox.Height-1),
+            //    new Point(0,_userImageBox.Height-1),
+            //    new Point(0,0)
+            //});
         }
 
         private void RotateBtn_Click(object sender, EventArgs e)
