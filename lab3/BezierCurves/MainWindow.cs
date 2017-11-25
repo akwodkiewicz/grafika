@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,18 +22,20 @@ namespace BezierCurves
         private (float X, float Y)[] _bezierTangents;
         private int _bezierPointsAmount;
         private Point _userImageUpperLeft;
-        //private float _userImageAngle;
         private State _state;
         private bool _isMouseDown;
         private int _draggedPoint;
         private Bitmap _pointsBmp;
         private Bitmap _bezierBmp;
         private Bitmap _userImage;
-        private Bitmap _userImageBox;
+        //private Bitmap _userImageBox;
+        private Bitmap _userImageBoxed;
+        private Bitmap _userImageRotated;
         private Graphics _pointsGraphics;
         private Graphics _bezierGraphics;
         private Graphics _userImageGraphics;
-        private Graphics _userImageBoxGraphics;
+        private Graphics _userImageRotatedGraphics;
+        //private Graphics _userImageBoxGraphics;
         private int _movementAnimationParameter;
         private int _movementAnimationDelta;
         private System.Timers.Timer _bezierTimer;
@@ -62,17 +65,19 @@ namespace BezierCurves
             _rotationAnimationDelta = 5;
 
             _bezierTimer = new System.Timers.Timer();
-            _bezierTimer.Interval = 5;
+            _bezierTimer.Interval = 500;
             _bezierTimer.Elapsed += BezierTimer_Elapsed;
             _rotationTimer = new System.Timers.Timer();
-            _rotationTimer.Interval = 25;
+            _rotationTimer.Interval = 500;
             _rotationTimer.Elapsed += RotationTimer_Elapsed;
         }
 
         private void PictureBox_Paint(object sender, PaintEventArgs e)
         {
-            if (_userImageBox != null)
-                e.Graphics.DrawImage(_userImageBox, _userImageUpperLeft);
+            if (_userImageRotated != null)
+            {
+                e.Graphics.DrawImage(_userImageRotated, _userImageUpperLeft);
+            }
             e.Graphics.DrawImage(_pointsBmp, 0, 0);
             e.Graphics.DrawImage(_bezierBmp, 0, 0);
         }
@@ -211,7 +216,9 @@ namespace BezierCurves
 
             var angleRad = Math.Atan2(_bezierTangents[_movementAnimationParameter].X, _bezierTangents[_movementAnimationParameter].Y);
             var angleDeg = (angleRad * 180) / Math.PI;
-            RotateImage(-(float)angleDeg);
+            //RotateImage(-(float)angleDeg);
+            RotateImageUsingRotationMatrix(-(float)angleDeg);
+            DrawUserImage();
             _pictureBox.Refresh();
         }
         #endregion
@@ -316,10 +323,25 @@ namespace BezierCurves
                 var sin45 = Math.Sin(Math.PI / 4);
                 var boxWidth = (int)Math.Round(_userImage.Width * cos45 + _userImage.Height * sin45);
                 var boxHeight = (int)Math.Round(_userImage.Width * sin45 + _userImage.Height * cos45);
-                _userImageBox = new Bitmap(boxWidth, boxHeight);
-                _userImageBoxGraphics = Graphics.FromImage(_userImageBox);
+
+                //_userImageBox = new Bitmap(boxWidth, boxHeight);
+                _userImageBoxed = new Bitmap(boxWidth, boxHeight);
+                _userImageRotated = new Bitmap(boxWidth, boxHeight);
 
                 _userImageUpperLeft = CalculateUserUpperLeft(_start);
+
+                _userImageRotatedGraphics = Graphics.FromImage(_userImageRotated);
+                using (var g = Graphics.FromImage(_userImageBoxed))
+                {
+                    var x = (_userImageBoxed.Width - _userImage.Width) / 2;
+                    var y = (_userImageBoxed.Height - _userImage.Height) / 2;
+                    g.DrawImage(_userImage, x, y);
+                }
+                using (var g = Graphics.FromImage(_userImageRotated))
+                {
+                    g.DrawImage(_userImageBoxed, 0, 0);
+                }
+
                 DrawUserImage();
             }
             _pictureBox.Refresh();
@@ -327,8 +349,8 @@ namespace BezierCurves
 
         private Point CalculateUserUpperLeft(Point source)
         {
-            return new Point(source.X - _userImageBox.Width / 2,
-                source.Y - _userImageBox.Height/ 2);
+            return new Point(source.X - _userImageBoxed.Width / 2,
+                source.Y - _userImageBoxed.Height / 2);
         }
 
         /// <summary>
@@ -336,16 +358,12 @@ namespace BezierCurves
         /// </summary>
         private void DrawUserImage()
         {
-            _userImageBoxGraphics.Clear(Color.FromArgb(0));
-            var x = (_userImageBox.Width - _userImage.Width) / 2;
-            var y = (_userImageBox.Height - _userImage.Height) / 2;
-            _userImageBoxGraphics.DrawImage(_userImage, x, y);
+            _userImageRotatedGraphics.DrawImage(_userImageRotated, 0, 0);
         }
 
         private void RotateBtn_Click(object sender, EventArgs e)
         {
             _userImageUpperLeft = CalculateUserUpperLeft(new Point(_pictureBox.Width / 2, _pictureBox.Height / 2));
-
             if (!_rotationTimer.Enabled)
                 _rotationTimer.Start();
             else
@@ -356,23 +374,58 @@ namespace BezierCurves
         private void RotationTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             _rotationAnimationParameter = (_rotationAnimationParameter + _rotationAnimationDelta) % 360;
-            RotateImage((float)_rotationAnimationParameter);
+            //RotateImage((float)_rotationAnimationParameter);
+            RotateImageUsingRotationMatrix((float)_rotationAnimationParameter);
+            DrawUserImage();
             _pictureBox.Refresh();
         }
 
+        ///// <summary>
+        ///// Rotate user image using .NET's internal transformations and rotations
+        ///// </summary>
+        ///// <param name="angle">Angle in degrees</param>
+        //private void RotateImage(float angle)
+        //{
+        //    _userImageBoxGraphics.TranslateTransform((float)_userImageBoxed.Width / 2, (float)_userImageBoxed.Height / 2);
+        //    _userImageBoxGraphics.RotateTransform(angle);
+        //    _userImageBoxGraphics.TranslateTransform(-(float)_userImageBoxed.Width / 2, -(float)_userImageBoxed.Height / 2);
+        //    DrawUserImage();
+        //    _userImageBoxGraphics.ResetTransform();
+        //}
+
         /// <summary>
-        /// Rotate user image using .NET's internal transformations and rotations
+        /// Rotate user image clockwise by a given angle, using rotation matrix calculations
         /// </summary>
         /// <param name="angle">Angle in degrees</param>
-        private void RotateImage(float angle)
+        private void RotateImageUsingRotationMatrix(float angle)
         {
-            _userImageBoxGraphics.TranslateTransform((float)_userImageBox.Width / 2, (float)_userImageBox.Height / 2);
-            _userImageBoxGraphics.RotateTransform(angle);
-            _userImageBoxGraphics.TranslateTransform(-(float)_userImageBox.Width / 2, -(float)_userImageBox.Height / 2);
-            DrawUserImage();
-            _userImageBoxGraphics.ResetTransform();
+            var rad = angle * Math.PI / 180;
+            var cos = Math.Cos(rad);
+            var sin = Math.Sin(rad);
+            for (int y = 0; y < _userImageRotated.Height; y++)
+            {
+                for (int x = 0; x < _userImageRotated.Height; x++)
+                {
+                    var xc = _userImageBoxed.Width / 2;
+                    var yc = _userImageBoxed.Height / 2;
+                    var xt = x - xc;
+                    var yt = y - yc;
+                    var xr = xt * cos + yt * sin;
+                    var yr = -xt * sin + yt * cos;
+                    var x2 = xr + xc;
+                    var y2 = yr + yc;
+                    x2 = Math.Round(x2);
+                    y2 = Math.Round(y2);
+                    if (x2 < 0 || x2 >= _userImageBoxed.Width || y2 < 0 || y2 >= _userImageBoxed.Height)
+                        _userImageRotated.SetPixel(x, y, Color.Transparent);
+                    else
+                        _userImageRotated.SetPixel(x, y, _userImageBoxed.GetPixel((int)x2, (int)y2));
+                }
+            }
         }
         #endregion
+
+
     }
 
     enum State
