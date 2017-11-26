@@ -35,15 +35,23 @@
             this.rotateCheckbox = new System.Windows.Forms.CheckBox();
             this.matrixRadio = new System.Windows.Forms.RadioButton();
             this.shearRadio = new System.Windows.Forms.RadioButton();
+            this.timerTrackBar = new System.Windows.Forms.TrackBar();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             ((System.ComponentModel.ISupportInitialize)(this._pictureBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.timerTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
             // _pictureBox
             // 
+            this._pictureBox.BackColor = System.Drawing.Color.White;
             this._pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this._pictureBox.Location = new System.Drawing.Point(0, 0);
             this._pictureBox.Name = "_pictureBox";
-            this._pictureBox.Size = new System.Drawing.Size(800, 600);
+            this._pictureBox.Size = new System.Drawing.Size(596, 600);
             this._pictureBox.TabIndex = 0;
             this._pictureBox.TabStop = false;
             this._pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBox_Paint);
@@ -114,26 +122,61 @@
             this.shearRadio.Text = "Rotate using shearing";
             this.shearRadio.UseVisualStyleBackColor = true;
             // 
+            // timerTrackBar
+            // 
+            this.timerTrackBar.Location = new System.Drawing.Point(13, 269);
+            this.timerTrackBar.Maximum = 200;
+            this.timerTrackBar.Minimum = 50;
+            this.timerTrackBar.Name = "timerTrackBar";
+            this.timerTrackBar.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.timerTrackBar.Size = new System.Drawing.Size(104, 45);
+            this.timerTrackBar.TabIndex = 7;
+            this.timerTrackBar.TickFrequency = 10;
+            this.timerTrackBar.Value = 80;
+            this.timerTrackBar.ValueChanged += new System.EventHandler(this.TimerTrackBar_ValueChanged);
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this._loadImageBtn);
+            this.splitContainer1.Panel1.Controls.Add(this._startMovementBtn);
+            this.splitContainer1.Panel1.Controls.Add(this.rotateBtn);
+            this.splitContainer1.Panel1.Controls.Add(this.rotateCheckbox);
+            this.splitContainer1.Panel1.Controls.Add(this.matrixRadio);
+            this.splitContainer1.Panel1.Controls.Add(this.shearRadio);
+            this.splitContainer1.Panel1.Controls.Add(this.timerTrackBar);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this._pictureBox);
+            this.splitContainer1.Size = new System.Drawing.Size(800, 600);
+            this.splitContainer1.SplitterDistance = 200;
+            this.splitContainer1.TabIndex = 8;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 600);
-            this.Controls.Add(this.shearRadio);
-            this.Controls.Add(this.matrixRadio);
-            this.Controls.Add(this.rotateCheckbox);
-            this.Controls.Add(this.rotateBtn);
-            this.Controls.Add(this._startMovementBtn);
-            this.Controls.Add(this._loadImageBtn);
-            this.Controls.Add(this._pictureBox);
+            this.Controls.Add(this.splitContainer1);
             this.MaximumSize = new System.Drawing.Size(816, 639);
             this.MinimumSize = new System.Drawing.Size(816, 639);
             this.Name = "MainWindow";
             this.ShowIcon = false;
             this.Text = "Bezier Curves";
             ((System.ComponentModel.ISupportInitialize)(this._pictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.timerTrackBar)).EndInit();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -146,6 +189,8 @@
         private System.Windows.Forms.CheckBox rotateCheckbox;
         private System.Windows.Forms.RadioButton matrixRadio;
         private System.Windows.Forms.RadioButton shearRadio;
+        private System.Windows.Forms.TrackBar timerTrackBar;
+        private System.Windows.Forms.SplitContainer splitContainer1;
     }
 }
 

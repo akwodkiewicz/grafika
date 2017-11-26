@@ -15,8 +15,8 @@ namespace BezierCurves
     {
         private const int MAX_POINTS = 10;
         private const int POINT_SIZE = 10;
-        private const int MAX_WIDTH = 300;
-        private const int MAX_HEIGHT = 300;
+        private const int MAX_WIDTH = 400;
+        private const int MAX_HEIGHT = 400;
         private Point _start;
         private Point _end;
         private List<PointF> _controlPoints;
@@ -65,10 +65,10 @@ namespace BezierCurves
             _rotationAnimationDelta = 5;
 
             _bezierTimer = new System.Timers.Timer();
-            _bezierTimer.Interval = 60;
+            _bezierTimer.Interval = timerTrackBar.Value;
             _bezierTimer.Elapsed += BezierTimer_Elapsed;
             _rotationTimer = new System.Timers.Timer();
-            _rotationTimer.Interval = 80;
+            _rotationTimer.Interval = timerTrackBar.Value;
             _rotationTimer.Elapsed += RotationTimer_Elapsed;
         }
 
@@ -384,6 +384,12 @@ namespace BezierCurves
                 _userImageBoxRotated.RotateFromReferenceUsingShearing(_userImageOriginalInBox, angle);
         }
         #endregion
+
+        private void TimerTrackBar_ValueChanged(object sender, EventArgs e)
+        {
+            _bezierTimer.Interval = timerTrackBar.Value;
+            _rotationTimer.Interval = timerTrackBar.Value;
+        }
     }
 
     enum State
