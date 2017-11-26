@@ -68,7 +68,7 @@ namespace BezierCurves
             _bezierTimer.Interval = 75;
             _bezierTimer.Elapsed += BezierTimer_Elapsed;
             _rotationTimer = new System.Timers.Timer();
-            _rotationTimer.Interval = 1000;
+            _rotationTimer.Interval = 100;
             _rotationTimer.Elapsed += RotationTimer_Elapsed;
         }
 
@@ -295,8 +295,8 @@ namespace BezierCurves
                 else
                     _userImageOriginal = image;
 
-                var width = _userImageOriginal.Width;
-                var height = _userImageOriginal.Height;
+                long width = _userImageOriginal.Width;
+                long height = _userImageOriginal.Height;
                 var d = Math.Sqrt(width * width + height * height);
                 var boxWidth = (int)Math.Round(d);
                 var boxHeight = (int)Math.Round(d);
@@ -340,14 +340,14 @@ namespace BezierCurves
         {
             _userImageBoxGraphics.Clear(Color.FromArgb(0));
             _userImageBoxGraphics.DrawImage(_userImageBoxRotated, 0, 0);
-            //_userImageBoxGraphics.DrawLines(Pens.Red, new Point[5]
-            //{
-            //    new Point(0,0),
-            //    new Point(_userImageBox.Width-1, 0),
-            //    new Point(_userImageBox.Width-1, _userImageBox.Height-1),
-            //    new Point(0,_userImageBox.Height-1),
-            //    new Point(0,0)
-            //});
+            _userImageBoxGraphics.DrawLines(Pens.Red, new Point[5]
+            {
+                new Point(0,0),
+                new Point(_userImageBox.Width-1, 0),
+                new Point(_userImageBox.Width-1, _userImageBox.Height-1),
+                new Point(0,_userImageBox.Height-1),
+                new Point(0,0)
+            });
         }
 
         private void RotateBtn_Click(object sender, EventArgs e)
@@ -357,6 +357,7 @@ namespace BezierCurves
                 _userImageUpperLeft = CalculateUserUpperLeft(new Point(_pictureBox.Width / 2, _pictureBox.Height / 2));
                 _startMovementBtn.Enabled = false;
                 _rotationTimer.Start();
+                //RotateImage(90);
             }
             else
             {
