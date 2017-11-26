@@ -140,7 +140,7 @@ namespace BezierCurves
                 buffer = rotate90(buffer);
                 angle = angle - 90;
             }
-            else if(angle>=135 && angle < 225)
+            else if (angle >= 135 && angle < 225)
             {
                 buffer = rotate180(buffer);
                 angle = angle - 180;
@@ -163,7 +163,7 @@ namespace BezierCurves
                 for (int y = 0; y < imageHeight; y++)
                 {
                     var yt = y - yc;
-                    var delta = (int)Math.Round(shear * yt);
+                    var delta = (int)Math.Floor(shear * yt);
                     if (delta < 0)
                     {
                         for (int x = 0; x < imageWidth; x++)
@@ -252,7 +252,7 @@ namespace BezierCurves
                     }
                 }
             }
-            byte[] rotate90(byte[] array, bool plus=true)
+            byte[] rotate90(byte[] array, bool plus = true)
             {
                 byte[] result = new byte[array.Length];
                 for (int y = 0; y < imageHeight; y++)
@@ -260,8 +260,8 @@ namespace BezierCurves
                         for (int i = 0; i < 4; i++)
                         {
                             var resultIndex = y * sourceData.Stride + x * 4 + i;
-                            var sourceIndex = (imageHeight-x-1)*sourceData.Stride + y*4 + i;
-                            if(!plus)
+                            var sourceIndex = (imageHeight - x - 1) * sourceData.Stride + y * 4 + i;
+                            if (!plus)
                                 sourceIndex = x * sourceData.Stride + (imageHeight - y - 1) * 4 + i;
                             result[resultIndex] = array[sourceIndex];
                         }
@@ -275,7 +275,7 @@ namespace BezierCurves
                         for (int i = 0; i < 4; i++)
                         {
                             var resultIndex = y * sourceData.Stride + x * 4 + i;
-                            var sourceIndex = (imageHeight - y - 1) * sourceData.Stride + (imageHeight - x - 1)* 4 + i;
+                            var sourceIndex = (imageHeight - y - 1) * sourceData.Stride + (imageHeight - x - 1) * 4 + i;
                             result[resultIndex] = array[sourceIndex];
                         }
                 return result;
@@ -292,6 +292,321 @@ namespace BezierCurves
             Marshal.Copy(buffer, 0, resultData.Scan0, buffer.Length);
             modifiedImage.UnlockBits(resultData);
         }
+
+        public static void RotateFromReferenceUsingApproximatedShearing(this Bitmap modifiedImage, Bitmap referenceImage, float angle)
+        {
+            BitmapData sourceData = referenceImage.LockBits(
+                                       new Rectangle(0, 0, referenceImage.Width, referenceImage.Height),
+                                       ImageLockMode.ReadOnly,
+                                       PixelFormat.Format32bppArgb);
+            byte[] buffer = new byte[sourceData.Stride * sourceData.Height];
+            Marshal.Copy(sourceData.Scan0, buffer, 0, buffer.Length);
+            referenceImage.UnlockBits(sourceData);
+
+            var imageWidth = referenceImage.Width;
+            var imageHeight = referenceImage.Height;
+
+            angle = angle % 360;
+            if (angle < 0) angle += 360;
+            if (angle >= 45 && angle < 135)
+            {
+                buffer = rotate90(buffer);
+                angle = angle - 90;
+            }
+            else if (angle >= 135 && angle < 225)
+            {
+                buffer = rotate180(buffer);
+                angle = angle - 180;
+            }
+            else if (angle >= 225 && angle < 315)
+            {
+                buffer = rotate90(buffer, false);
+                angle = angle - 270;
+            }
+
+            double rad = angle * Math.PI / 180;
+            var a = -Math.Tan(rad / 2);
+            var b = Math.Sin(rad);
+
+
+            byte[] xshear(byte[] array, double shear)
+            {
+                var result = new byte[array.Length];
+                var xc = imageWidth / 2;
+                var yc = imageHeight / 2;
+                for (int y = 0; y < imageHeight; y++)
+                {
+                    var yt = y - yc;
+                    var delta = (int)Math.Floor(shear * yt);
+                    var frac = (shear * yt) - delta;
+                    var oleft = 0.0;
+
+                    for (int x = 0; x < imageWidth; x++)
+                    {
+                        var resultIndex = y * sourceData.Stride + x * 4;
+                        var sourceIndex = y * sourceData.Stride + (x - delta) * 4;
+                        if (sourceIndex >= 0 && sourceIndex < array.Length)
+                        {
+                            var left = (array[sourceIndex] * frac);
+                            var resultColor = (byte)(array[sourceIndex] - left + oleft);
+                            result[resultIndex] = resultColor;
+                            result[resultIndex + 1] = resultColor;
+                            result[resultIndex + 2] = resultColor;
+                            result[resultIndex + 3] = array[sourceIndex + 3];
+                            oleft = left;
+                        }
+                        else
+                        {
+                            result[resultIndex + 3] = 0;
+                            oleft = 0.0;
+                        }
+                    }
+
+                }
+                return result;
+            }
+            byte[] yshear(byte[] array, double shear)
+            {
+                var result = new byte[array.Length];
+                var xc = imageWidth / 2;
+                var yc = imageHeight / 2;
+                for (int x = 0; x < imageWidth; x++)
+                {
+                    var xt = x - xc;
+                    var delta = (int)Math.Floor(shear * xt);
+                    var frac = (shear * xt) - delta;
+                    var oleft = 0.0;
+
+                    for (int y = 0; y < imageHeight; y++)
+                    {
+                        var resultIndex = y * sourceData.Stride + x * 4;
+                        var sourceIndex = (y - delta) * sourceData.Stride + x * 4;
+                        if (sourceIndex >= 0 && sourceIndex < array.Length)
+                        {
+                            var left = (array[sourceIndex] * frac);
+                            var resultColor = (byte)(array[sourceIndex] - left + oleft);
+                            result[resultIndex] = resultColor;
+                            result[resultIndex + 1] = resultColor;
+                            result[resultIndex + 2] = resultColor;
+                            result[resultIndex + 3] = array[sourceIndex + 3];
+                            oleft = left;
+                        }
+                        else
+                        {
+                            result[resultIndex + 3] = 0;
+                            oleft = 0.0;
+                        }
+                    }
+                }
+                return result;
+            }
+            byte[] rotate90(byte[] array, bool plus = true)
+            {
+                byte[] result = new byte[array.Length];
+                for (int y = 0; y < imageHeight; y++)
+                    for (int x = 0; x < imageWidth; x++)
+                        for (int i = 0; i < 4; i++)
+                        {
+                            var resultIndex = y * sourceData.Stride + x * 4 + i;
+                            var sourceIndex = (imageHeight - x - 1) * sourceData.Stride + y * 4 + i;
+                            if (!plus)
+                                sourceIndex = x * sourceData.Stride + (imageHeight - y - 1) * 4 + i;
+                            result[resultIndex] = array[sourceIndex];
+                        }
+                return result;
+            }
+            byte[] rotate180(byte[] array)
+            {
+                byte[] result = new byte[array.Length];
+                for (int y = 0; y < imageHeight; y++)
+                    for (int x = 0; x < imageWidth; x++)
+                        for (int i = 0; i < 4; i++)
+                        {
+                            var resultIndex = y * sourceData.Stride + x * 4 + i;
+                            var sourceIndex = (imageHeight - y - 1) * sourceData.Stride + (imageHeight - x - 1) * 4 + i;
+                            result[resultIndex] = array[sourceIndex];
+                        }
+                return result;
+            }
+
+
+            buffer = xshear(yshear(xshear(buffer, a), b), a);
+
+            BitmapData resultData = modifiedImage.LockBits(
+                               new Rectangle(0, 0, modifiedImage.Width, modifiedImage.Height),
+                               ImageLockMode.WriteOnly,
+                               PixelFormat.Format32bppArgb);
+            Marshal.Copy(buffer, 0, resultData.Scan0, buffer.Length);
+            modifiedImage.UnlockBits(resultData);
+        }
+
+        public static void RotateFromReferenceUsingApproximatedShearingInColor(this Bitmap modifiedImage, Bitmap referenceImage, float angle)
+        {
+            BitmapData sourceData = referenceImage.LockBits(
+                           new Rectangle(0, 0, referenceImage.Width, referenceImage.Height),
+                           ImageLockMode.ReadOnly,
+                           PixelFormat.Format32bppArgb);
+            byte[] buffer = new byte[sourceData.Stride * sourceData.Height];
+            Marshal.Copy(sourceData.Scan0, buffer, 0, buffer.Length);
+            referenceImage.UnlockBits(sourceData);
+
+            var imageWidth = referenceImage.Width;
+            var imageHeight = referenceImage.Height;
+
+            angle = angle % 360;
+            if (angle < 0) angle += 360;
+            if (angle >= 45 && angle < 135)
+            {
+                buffer = rotate90(buffer);
+                angle = angle - 90;
+            }
+            else if (angle >= 135 && angle < 225)
+            {
+                buffer = rotate180(buffer);
+                angle = angle - 180;
+            }
+            else if (angle >= 225 && angle < 315)
+            {
+                buffer = rotate90(buffer, false);
+                angle = angle - 270;
+            }
+
+            double rad = angle * Math.PI / 180;
+            var a = -Math.Tan(rad / 2);
+            var b = Math.Sin(rad);
+
+            byte[] rotate90(byte[] array, bool plus = true)
+            {
+                byte[] result = new byte[array.Length];
+                for (int y = 0; y < imageHeight; y++)
+                    for (int x = 0; x < imageWidth; x++)
+                        for (int i = 0; i < 4; i++)
+                        {
+                            var resultIndex = y * sourceData.Stride + x * 4 + i;
+                            var sourceIndex = (imageHeight - x - 1) * sourceData.Stride + y * 4 + i;
+                            if (!plus)
+                                sourceIndex = x * sourceData.Stride + (imageHeight - y - 1) * 4 + i;
+                            result[resultIndex] = array[sourceIndex];
+                        }
+                return result;
+            }
+            byte[] rotate180(byte[] array)
+            {
+                byte[] result = new byte[array.Length];
+                for (int y = 0; y < imageHeight; y++)
+                    for (int x = 0; x < imageWidth; x++)
+                        for (int i = 0; i < 4; i++)
+                        {
+                            var resultIndex = y * sourceData.Stride + x * 4 + i;
+                            var sourceIndex = (imageHeight - y - 1) * sourceData.Stride + (imageHeight - x - 1) * 4 + i;
+                            result[resultIndex] = array[sourceIndex];
+                        }
+                return result;
+            }
+
+
+            byte[] xshear(byte[] array, double shear)
+            {
+                var result = new byte[array.Length];
+                var xc = imageWidth / 2;
+                var yc = imageHeight / 2;
+                for (int y = 0; y < imageHeight; y++)
+                {
+                    var yt = y - yc;
+                    var delta = (int)Math.Floor(shear * yt);
+                    var frac = (shear * yt) - delta;
+                    var oleftB = 0.0;
+                    var oleftG = 0.0;
+                    var oleftR = 0.0;
+
+                    for (int x = 0; x < imageWidth; x++)
+                    {
+                        var resultIndex = y * sourceData.Stride + x * 4;
+                        var sourceIndex = y * sourceData.Stride + (x - delta) * 4;
+                        if (sourceIndex >= 0 && sourceIndex < array.Length)
+                        {
+                            var leftB = (array[sourceIndex] * frac);
+                            var leftG = (array[sourceIndex + 1] * frac);
+                            var leftR = (array[sourceIndex + 2] * frac);
+                            var resultB = (byte)(array[sourceIndex] - leftB + oleftB);
+                            var resultG = (byte)(array[sourceIndex + 1] - leftG + oleftG);
+                            var resultR = (byte)(array[sourceIndex + 2] - leftR + oleftR);
+                            result[resultIndex] = resultB;
+                            result[resultIndex + 1] = resultG;
+                            result[resultIndex + 2] = resultR;
+                            result[resultIndex + 3] = array[sourceIndex + 3];
+                            oleftB = leftB;
+                            oleftG = leftB;
+                            oleftR = leftR;
+                        }
+                        else
+                        {
+                            result[resultIndex + 3] = 0;
+                            oleftB = 0.0;
+                            oleftG = 0.0;
+                            oleftR = 0.0;
+                        }
+                    }
+                }
+                return result;
+            }
+
+            byte[] yshear(byte[] array, double shear)
+            {
+                var result = new byte[array.Length];
+                var xc = imageWidth / 2;
+                var yc = imageHeight / 2;
+                for (int x = 0; x < imageWidth; x++)
+                {
+                    var xt = x - xc;
+                    var delta = (int)Math.Floor(shear * xt);
+                    var frac = (shear * xt) - delta;
+                    var oleftB = 0.0;
+                    var oleftG = 0.0;
+                    var oleftR = 0.0;
+
+                    for (int y = 0; y < imageHeight; y++)
+                    {
+                        var resultIndex = y * sourceData.Stride + x * 4;
+                        var sourceIndex = (y - delta) * sourceData.Stride + x * 4;
+                        if (sourceIndex >= 0 && sourceIndex < array.Length)
+                        {
+                            var leftB = (array[sourceIndex] * frac);
+                            var leftG = (array[sourceIndex + 1] * frac);
+                            var leftR = (array[sourceIndex + 2] * frac);
+                            var resultB = (byte)(array[sourceIndex] - leftB + oleftB);
+                            var resultG = (byte)(array[sourceIndex + 1] - leftG + oleftG);
+                            var resultR = (byte)(array[sourceIndex + 2] - leftR + oleftR);
+                            result[resultIndex] = resultB;
+                            result[resultIndex + 1] = resultG;
+                            result[resultIndex + 2] = resultR;
+                            result[resultIndex + 3] = array[sourceIndex + 3];
+                            oleftB = leftB;
+                            oleftG = leftB;
+                            oleftR = leftR;
+                        }
+                        else
+                        {
+                            result[resultIndex + 3] = 0;
+                            oleftB = 0.0;
+                            oleftG = 0.0;
+                            oleftR = 0.0;
+                        }
+                    }
+                }
+                return result;
+            }
+
+
+            buffer = xshear(yshear(xshear(buffer, a), b), a);
+
+            BitmapData resultData = modifiedImage.LockBits(
+                               new Rectangle(0, 0, modifiedImage.Width, modifiedImage.Height),
+                               ImageLockMode.WriteOnly,
+                               PixelFormat.Format32bppArgb);
+            Marshal.Copy(buffer, 0, resultData.Scan0, buffer.Length);
+            modifiedImage.UnlockBits(resultData);
+        }        
     }
 
 }

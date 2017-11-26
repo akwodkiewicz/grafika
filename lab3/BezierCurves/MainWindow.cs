@@ -106,10 +106,8 @@ namespace BezierCurves
         private void AddControlPoint(Point location)
         {
             if (_controlPoints.Count == MAX_POINTS)
-            {
-                _state = State.Moving;
                 return;
-            }
+
             _controlPoints.Add(location);
             DrawPoints();
             if (_controlPoints.Count >= 2)
@@ -144,12 +142,12 @@ namespace BezierCurves
             // Calculate Bezier curve
             var points = new PointF[_controlPoints.Count + 2];
             points[0] = _start;
-            points[_controlPoints.Count+1] = _end;
+            points[_controlPoints.Count + 1] = _end;
             var curIndex = 1;
             foreach (var p in _controlPoints)
                 points[curIndex++] = p;
-            
-            (_bezierPoints, _bezierTangentVectors) = points.BezierAlgorithm(_bezierPointsAmount-1);
+
+            (_bezierPoints, _bezierTangentVectors) = points.BezierAlgorithm(_bezierPointsAmount - 1);
 
             // Draw Bezier curve
             _bezierGraphics.DrawLines(Pens.Black, _bezierPoints);
@@ -204,19 +202,15 @@ namespace BezierCurves
                         AddEndPoint(e.Location);
                         break;
                     case State.AddingControl:
-                        AddControlPoint(e.Location);
                         break;
                 }
-            else
-            {
+            else if (_state == State.AddingControl)
                 AddControlPoint(e.Location);
-                _state = State.Moving;
-            }
         }
 
         private void PictureBox_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!_isMouseDown || _state != State.Moving)
+            if (!_isMouseDown || _state != State.AddingControl)
                 return;
             switch (_draggedPoint)
             {
@@ -287,7 +281,7 @@ namespace BezierCurves
                 var image = new Bitmap(dialog.OpenFile());
                 if (image.Width > MAX_WIDTH || image.Height > MAX_HEIGHT)
                 {
-                    float scale = Math.Min((float)MAX_WIDTH / image.Width, (float) MAX_HEIGHT / image.Height);
+                    float scale = Math.Min((float)MAX_WIDTH / image.Width, (float)MAX_HEIGHT / image.Height);
                     var scaledWidth = (int)(image.Width * scale);
                     var scaledHeight = (int)(image.Height * scale);
                     _userImageOriginal = new Bitmap(image, new Size(scaledWidth, scaledHeight));
@@ -323,6 +317,8 @@ namespace BezierCurves
                 }
 
                 DrawUserImage();
+
+                EnableAll();
             }
             _pictureBox.Refresh();
         }
@@ -333,9 +329,6 @@ namespace BezierCurves
                 source.Y - _userImageOriginalInBox.Height / 2);
         }
 
-        /// <summary>
-        /// Draws user image on a prepared, larger bitmap 
-        /// </summary>
         private void DrawUserImage()
         {
             _userImageBoxGraphics.Clear(Color.FromArgb(0));
@@ -357,14 +350,12 @@ namespace BezierCurves
                 _userImageUpperLeft = CalculateUserUpperLeft(new Point(_pictureBox.Width / 2, _pictureBox.Height / 2));
                 _startMovementBtn.Enabled = false;
                 _rotationTimer.Start();
-                //RotateImage(179);
-                //DrawUserImage();
             }
             else
             {
                 _rotationTimer.Stop();
                 _startMovementBtn.Enabled = true;
-            }            
+            }
             _pictureBox.Refresh();
         }
 
@@ -382,6 +373,10 @@ namespace BezierCurves
                 _userImageBoxRotated.RotateFromReferenceUsingRotationMatrix(_userImageOriginalInBox, angle);
             else if (shearRadio.Checked)
                 _userImageBoxRotated.RotateFromReferenceUsingShearing(_userImageOriginalInBox, angle);
+            else if (radioButton1.Checked)
+                _userImageBoxRotated.RotateFromReferenceUsingApproximatedShearing(_userImageOriginalInBox, angle);
+            else if (radioButton2.Checked)
+                _userImageBoxRotated.RotateFromReferenceUsingApproximatedShearingInColor(_userImageOriginalInBox, angle);
         }
         #endregion
 
@@ -390,13 +385,30 @@ namespace BezierCurves
             _bezierTimer.Interval = timerTrackBar.Value;
             _rotationTimer.Interval = timerTrackBar.Value;
         }
+
+        private void RotationAlgorithm_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!_rotationTimer.Enabled)
+            {
+                RotateImage(_rotationAnimationParameter);
+                DrawUserImage();
+                _pictureBox.Refresh();
+            }
+        }
+        private void EnableAll()
+        {
+            rotateBtn.Enabled = true;
+            _startMovementBtn.Enabled = true;
+            rotateCheckbox.Enabled = true;
+            groupBox1.Enabled = true;
+            groupBox2.Enabled = true;
+        }
     }
 
     enum State
     {
         AddingStart,
         AddingEnd,
-        AddingControl,
-        Moving
+        AddingControl
     }
 }
