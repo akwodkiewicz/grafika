@@ -65,10 +65,10 @@ namespace BezierCurves
             _rotationAnimationDelta = 5;
 
             _bezierTimer = new System.Timers.Timer();
-            _bezierTimer.Interval = 75;
+            _bezierTimer.Interval = 60;
             _bezierTimer.Elapsed += BezierTimer_Elapsed;
             _rotationTimer = new System.Timers.Timer();
-            _rotationTimer.Interval = 100;
+            _rotationTimer.Interval = 80;
             _rotationTimer.Elapsed += RotationTimer_Elapsed;
         }
 
@@ -357,7 +357,8 @@ namespace BezierCurves
                 _userImageUpperLeft = CalculateUserUpperLeft(new Point(_pictureBox.Width / 2, _pictureBox.Height / 2));
                 _startMovementBtn.Enabled = false;
                 _rotationTimer.Start();
-                //RotateImage(90);
+                //RotateImage(179);
+                //DrawUserImage();
             }
             else
             {

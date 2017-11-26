@@ -78,5 +78,7 @@ if __name__ == '__main__':
 
     pprint(img)
     print(25*'-')
-    shear_rotate(img, rows_count, cols_count, 75)
+    shear_rotate(img, rows_count, cols_count, 90)
+    shear_rotate(img, rows_count, cols_count, 90)
+
     pprint(img)
