@@ -15,13 +15,14 @@ namespace BezierCurves
     {
         private const int MAX_POINTS = 10;
         private const int POINT_SIZE = 10;
-        private const int MAX_WIDTH = 400;
-        private const int MAX_HEIGHT = 400;
+        private const int MAX_WIDTH = 450;
+        private const int MAX_HEIGHT = 450;
         private Point _start;
         private Point _end;
         private List<PointF> _controlPoints;
         private PointF[] _bezierPoints;
         private PointF[] _bezierTangentVectors;
+        private (PointF a, PointF b)[] _tangentLines;
         private int _bezierPointsAmount;
         private Point _userImageUpperLeft;
         private State _state;
@@ -71,6 +72,8 @@ namespace BezierCurves
             _rotationTimer = new System.Timers.Timer();
             _rotationTimer.Interval = timerTrackBar.Value;
             _rotationTimer.Elapsed += RotationTimer_Elapsed;
+
+            segmentsLabel.Text = segmentsTrackBar.Value.ToString();
         }
 
         private void PictureBox_Paint(object sender, PaintEventArgs e)
@@ -114,8 +117,7 @@ namespace BezierCurves
             if (_controlPoints.Count >= 2)
             {
                 _state = State.Ready;
-                if (_userImageOriginal != null)
-                    bezierGroupBox.Enabled = true;
+                bezierGroupBox.Enabled = true;
                 DrawBezier();
             }
         }
@@ -138,7 +140,7 @@ namespace BezierCurves
         public void DrawBezier()
         {
             _bezierGraphics.Clear(Color.FromArgb(0));
-            _bezierPointsAmount = 301;
+            _bezierPointsAmount = segmentsTrackBar.Value+1;
 
             // Draw bounding box
             _bezierGraphics.DrawLine(Pens.Red, _start, _controlPoints[0]);
@@ -153,7 +155,7 @@ namespace BezierCurves
             foreach (var p in _controlPoints)
                 points[curIndex++] = p;
 
-            (_bezierPoints, _bezierTangentVectors) = points.BezierAlgorithm(_bezierPointsAmount - 1);
+            (_bezierPoints, _bezierTangentVectors, _tangentLines) = points.BezierAlgorithm(_bezierPointsAmount-1);
 
             // Draw Bezier curve
             _bezierGraphics.DrawLines(Pens.Black, _bezierPoints);
@@ -287,45 +289,7 @@ namespace BezierCurves
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 var image = new Bitmap(dialog.OpenFile());
-                if (image.Width > MAX_WIDTH || image.Height > MAX_HEIGHT)
-                {
-                    float scale = Math.Min((float)MAX_WIDTH / image.Width, (float)MAX_HEIGHT / image.Height);
-                    var scaledWidth = (int)(image.Width * scale);
-                    var scaledHeight = (int)(image.Height * scale);
-                    _userImageOriginal = new Bitmap(image, new Size(scaledWidth, scaledHeight));
-                }
-                else
-                    _userImageOriginal = image;
-
-                long width = _userImageOriginal.Width+25;
-                long height = _userImageOriginal.Height+25;
-                var d = Math.Sqrt(width * width + height * height);
-                var boxWidth = (int)Math.Round(d);
-                var boxHeight = (int)Math.Round(d);
-
-                _userImageOriginalInBox = new Bitmap(boxWidth, boxHeight);
-                _userImageBoxRotated = new Bitmap(boxWidth, boxHeight);
-
-                if (!_start.IsEmpty)
-                    _userImageUpperLeft = CalculateUserUpperLeft(_start);
-                else
-                    _userImageUpperLeft = CalculateUserUpperLeft(new Point(_pictureBox.Width / 2, _pictureBox.Height / 2));
-
-                _userImageBox = new Bitmap(boxWidth, boxHeight);
-                _userImageBoxGraphics = Graphics.FromImage(_userImageBox);
-                using (var g = Graphics.FromImage(_userImageOriginalInBox))
-                {
-                    var x = (_userImageOriginalInBox.Width - _userImageOriginal.Width) / 2;
-                    var y = (_userImageOriginalInBox.Height - _userImageOriginal.Height) / 2;
-                    g.DrawImage(_userImageOriginal, x, y);
-                }
-                using (var g = Graphics.FromImage(_userImageBoxRotated))
-                {
-                    g.DrawImage(_userImageOriginalInBox, 0, 0);
-                }
-
-                DrawUserImage();
-                EnableAll();
+                LoadImage(image);
             }
             _pictureBox.Refresh();
         }
@@ -340,14 +304,26 @@ namespace BezierCurves
         {
             _userImageBoxGraphics.Clear(Color.FromArgb(0));
             _userImageBoxGraphics.DrawImage(_userImageBoxRotated, 0, 0);
-            _userImageBoxGraphics.DrawLines(Pens.Red, new Point[5]
+            //_userImageBoxGraphics.DrawLines(Pens.Blue, new Point[5]
+            //{
+            //    new Point(0,0),
+            //    new Point(_userImageBox.Width-1, 0),
+            //    new Point(_userImageBox.Width-1, _userImageBox.Height-1),
+            //    new Point(0,_userImageBox.Height-1),
+            //    new Point(0,0)
+            //});
+            _userImageBoxGraphics.FillEllipse(Brushes.Blue, 
+                (_userImageBox.Width - POINT_SIZE) / 2, (_userImageBox.Height - POINT_SIZE) / 2, 
+                POINT_SIZE, POINT_SIZE);
+
+            if (_bezierTimer.Enabled && drawTangentCheckBox.Checked)
             {
-                new Point(0,0),
-                new Point(_userImageBox.Width-1, 0),
-                new Point(_userImageBox.Width-1, _userImageBox.Height-1),
-                new Point(0,_userImageBox.Height-1),
-                new Point(0,0)
-            });
+                var a = _tangentLines[_bezierAnimationParameter].a;
+                var b = _tangentLines[_bezierAnimationParameter].b;
+                _userImageBoxGraphics.DrawLine(Pens.Blue,
+                    a.X-_userImageUpperLeft.X, a.Y- _userImageUpperLeft.Y,
+                     b.X - _userImageUpperLeft.X, b.Y - _userImageUpperLeft.Y);
+            }
         }
 
         private void RotateBtn_Click(object sender, EventArgs e)
@@ -415,13 +391,80 @@ namespace BezierCurves
             }
         }
 
-        private void EnableAll()
+        private void EnableWithImage()
         {
             rotationGroupBox.Enabled = true;
             algoGroupBox.Enabled = true;
             animationGroupBox.Enabled = true;
+            bezierMovementGroupBox.Enabled = true;
+        }
+
+        private void SegmentsTrackBar_ValueChanged(object sender, EventArgs e)
+        {
+            segmentsLabel.Text = segmentsTrackBar.Value.ToString();
             if (_state == State.Ready)
-                bezierGroupBox.Enabled = true;
+                DrawBezier();
+        }
+
+        private void LoadImage(Bitmap image)
+        {
+            if (image.Width > MAX_WIDTH || image.Height > MAX_HEIGHT)
+            {
+                float scale = Math.Min((float)MAX_WIDTH / image.Width, (float)MAX_HEIGHT / image.Height);
+                var scaledWidth = (int)(image.Width * scale);
+                var scaledHeight = (int)(image.Height * scale);
+                _userImageOriginal = new Bitmap(image, new Size(scaledWidth, scaledHeight));
+            }
+            else
+                _userImageOriginal = image;
+
+            long width = _userImageOriginal.Width + 25;
+            long height = _userImageOriginal.Height + 25;
+            var d = Math.Sqrt(width * width + height * height);
+            var boxWidth = (int)Math.Round(d);
+            var boxHeight = (int)Math.Round(d);
+
+            _userImageOriginalInBox = new Bitmap(boxWidth, boxHeight);
+            _userImageBoxRotated = new Bitmap(boxWidth, boxHeight);
+
+            if (!_start.IsEmpty)
+                _userImageUpperLeft = CalculateUserUpperLeft(_start);
+            else
+                _userImageUpperLeft = CalculateUserUpperLeft(new Point(_pictureBox.Width / 2, _pictureBox.Height / 2));
+
+            _userImageBox = new Bitmap(boxWidth, boxHeight);
+            _userImageBoxGraphics = Graphics.FromImage(_userImageBox);
+            using (var g = Graphics.FromImage(_userImageOriginalInBox))
+            {
+                var x = (_userImageOriginalInBox.Width - _userImageOriginal.Width) / 2;
+                var y = (_userImageOriginalInBox.Height - _userImageOriginal.Height) / 2;
+                g.DrawImage(_userImageOriginal, x, y);
+            }
+            using (var g = Graphics.FromImage(_userImageBoxRotated))
+            {
+                g.DrawImage(_userImageOriginalInBox, 0, 0);
+            }
+
+            DrawUserImage();
+            EnableWithImage();
+        }
+
+        private void Image1Btn_Click(object sender, EventArgs e)
+        {
+            LoadImage(Properties.Resources.checkerboard);
+            _pictureBox.Refresh();
+        }
+
+        private void Image2Btn_Click(object sender, EventArgs e)
+        {
+            LoadImage(Properties.Resources.lenna);
+            _pictureBox.Refresh();
+        }
+
+        private void Image3Btn_Click(object sender, EventArgs e)
+        {
+            LoadImage(Properties.Resources.gray21);
+            _pictureBox.Refresh();
         }
     }
 

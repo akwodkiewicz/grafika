@@ -19,18 +19,19 @@ namespace BezierCurves
         ///- points approximating the Bezier curve 
         ///- vectors tangent to those points 
         ///</returns>
-        public static (PointF[] pointsToDraw, PointF[] tangentVectors) BezierAlgorithm(this PointF[] points, int numberOfSegments)
+        public static (PointF[] pointsToDraw, PointF[] tangentVectors, (PointF a, PointF b)[] tangentLines)
+            BezierAlgorithm(this PointF[] points, int numberOfSegments)
         {
             var curIndex = 0;
             var pointsToDraw = new PointF[numberOfSegments + 1];
             var tangentVectors = new PointF[numberOfSegments + 1];
-
+            var tangentLines = new(PointF a, PointF b)[numberOfSegments + 1];
             // Find all the points defining the segments that approximate the curve
             for (int tParameter = 0; tParameter < numberOfSegments + 1; tParameter += 1)
                 Casteljau((float)tParameter / numberOfSegments, points);
 
             // Result
-            return (pointsToDraw, tangentVectors);
+            return (pointsToDraw, tangentVectors, tangentLines);
 
             /// De Casteljau recursive algorithm
             void Casteljau(float t, PointF[] pts)
@@ -44,6 +45,7 @@ namespace BezierCurves
                         var dx = pts[1].X - pts[0].X;
                         var dy = pts[1].Y - pts[0].Y;
                         tangentVectors[curIndex] = new PointF(dx, dy);
+                        tangentLines[curIndex] = (pts[0], pts[1]);
                     }
                     var newpts = new PointF[pts.Length - 1];
                     for (int i = 0; i < newpts.Length; i++)
