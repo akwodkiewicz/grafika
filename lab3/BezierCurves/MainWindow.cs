@@ -36,11 +36,12 @@ namespace BezierCurves
         private Graphics _pointsGraphics;
         private Graphics _bezierGraphics;
         private Graphics _userImageBoxGraphics;
-        private int _movementAnimationParameter;
-        private int _movementAnimationDelta;
+        private float _angle;
+        private int _bezierAnimationParameter;
+        private int _bezierAnimationDelta;
         private System.Timers.Timer _bezierTimer;
-        private int _rotationAnimationParameter;
-        private int _rotationAnimationDelta;
+        private float _rotationAnimationParameter;
+        private float _rotationAnimationDelta;
         private System.Timers.Timer _rotationTimer;
 
         public MainWindow()
@@ -59,10 +60,10 @@ namespace BezierCurves
             _bezierGraphics = Graphics.FromImage(_bezierBmp);
             _isMouseDown = false;
             _draggedPoint = -1;
-            _movementAnimationParameter = 0;
-            _movementAnimationDelta = 1;
-            _rotationAnimationParameter = 0;
-            _rotationAnimationDelta = 5;
+            _bezierAnimationParameter = 0;
+            _bezierAnimationDelta = 1;
+            _rotationAnimationParameter = 0f;
+            _rotationAnimationDelta = 0.5f;
 
             _bezierTimer = new System.Timers.Timer();
             _bezierTimer.Interval = timerTrackBar.Value;
@@ -111,7 +112,12 @@ namespace BezierCurves
             _controlPoints.Add(location);
             DrawPoints();
             if (_controlPoints.Count >= 2)
+            {
+                _state = State.Ready;
+                if (_userImageOriginal != null)
+                    bezierGroupBox.Enabled = true;
                 DrawBezier();
+            }
         }
         #endregion
 
@@ -158,6 +164,7 @@ namespace BezierCurves
         {
             if (!_bezierTimer.Enabled)
             {
+                algoGroupBox.Enabled = false;
                 rotateBtn.Enabled = false;
                 _bezierTimer.Start();
             }
@@ -165,24 +172,25 @@ namespace BezierCurves
             {
                 _bezierTimer.Stop();
                 rotateBtn.Enabled = true;
+                algoGroupBox.Enabled = true;
             }
         }
 
         private void BezierTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            _movementAnimationParameter = (_movementAnimationParameter + _movementAnimationDelta) % _bezierPointsAmount;
-            if (_movementAnimationParameter == 0 || _movementAnimationParameter == _bezierPointsAmount - 1)
-                _movementAnimationDelta *= -1;
-            var originalF = _bezierPoints[_movementAnimationParameter];
+            _bezierAnimationParameter = (_bezierAnimationParameter + _bezierAnimationDelta) % _bezierPointsAmount;
+            if (_bezierAnimationParameter == 0 || _bezierAnimationParameter == _bezierPointsAmount - 1)
+                _bezierAnimationDelta *= -1;
+            var originalF = _bezierPoints[_bezierAnimationParameter];
             var original = new Point((int)originalF.X, (int)originalF.Y);
             _userImageUpperLeft = CalculateUserUpperLeft(original);
 
             if (rotateCheckbox.Checked)
             {
-                var tangentVector = _bezierTangentVectors[_movementAnimationParameter];
+                var tangentVector = _bezierTangentVectors[_bezierAnimationParameter];
                 var angleRad = Math.Atan2(tangentVector.X, tangentVector.Y);
-                var angleDeg = (angleRad * 180) / Math.PI;
-                RotateImage(-(float)angleDeg);
+                _angle = (float)(-(angleRad * 180) / Math.PI);
+                RotateImage(_angle);
             }
             DrawUserImage();
             _pictureBox.Refresh();
@@ -192,7 +200,7 @@ namespace BezierCurves
         #region Mouse Interaction
         private void PictureBox_MouseClick(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Right)
                 switch (_state)
                 {
                     case State.AddingStart:
@@ -201,16 +209,16 @@ namespace BezierCurves
                     case State.AddingEnd:
                         AddEndPoint(e.Location);
                         break;
-                    case State.AddingControl:
+                    default:
+                        AddControlPoint(e.Location);
                         break;
+
                 }
-            else if (_state == State.AddingControl)
-                AddControlPoint(e.Location);
         }
 
         private void PictureBox_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!_isMouseDown || _state != State.AddingControl)
+            if (!_isMouseDown || (_state != State.AddingControl &&_state!= State.Ready))
                 return;
             switch (_draggedPoint)
             {
@@ -289,8 +297,8 @@ namespace BezierCurves
                 else
                     _userImageOriginal = image;
 
-                long width = _userImageOriginal.Width;
-                long height = _userImageOriginal.Height;
+                long width = _userImageOriginal.Width+25;
+                long height = _userImageOriginal.Height+25;
                 var d = Math.Sqrt(width * width + height * height);
                 var boxWidth = (int)Math.Round(d);
                 var boxHeight = (int)Math.Round(d);
@@ -317,7 +325,6 @@ namespace BezierCurves
                 }
 
                 DrawUserImage();
-
                 EnableAll();
             }
             _pictureBox.Refresh();
@@ -362,7 +369,8 @@ namespace BezierCurves
         private void RotationTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             _rotationAnimationParameter = (_rotationAnimationParameter + _rotationAnimationDelta) % 360;
-            RotateImage((float)_rotationAnimationParameter);
+            _angle = _rotationAnimationParameter;
+            RotateImage(_angle);
             DrawUserImage();
             _pictureBox.Refresh();
         }
@@ -374,9 +382,12 @@ namespace BezierCurves
             else if (shearRadio.Checked)
                 _userImageBoxRotated.RotateFromReferenceUsingShearing(_userImageOriginalInBox, angle);
             else if (radioButton1.Checked)
-                _userImageBoxRotated.RotateFromReferenceUsingApproximatedShearing(_userImageOriginalInBox, angle);
-            else if (radioButton2.Checked)
-                _userImageBoxRotated.RotateFromReferenceUsingApproximatedShearingInColor(_userImageOriginalInBox, angle);
+            {
+                if (monoCheckbox.Checked)
+                    _userImageBoxRotated.RotateFromReferenceUsingApproximatedShearingMono(_userImageOriginalInBox, angle);
+                else
+                    _userImageBoxRotated.RotateFromReferenceUsingApproximatedShearingColor(_userImageOriginalInBox, angle);
+            }
         }
         #endregion
 
@@ -388,20 +399,29 @@ namespace BezierCurves
 
         private void RotationAlgorithm_CheckedChanged(object sender, EventArgs e)
         {
-            if (!_rotationTimer.Enabled)
+            if(!_rotationTimer.Enabled)
             {
-                RotateImage(_rotationAnimationParameter);
+                RotateImage(_angle);
                 DrawUserImage();
                 _pictureBox.Refresh();
             }
+            if(radioButton1.Checked)
+            {
+                monoCheckbox.Enabled = true;
+            }
+            else
+            {
+                monoCheckbox.Enabled = false;
+            }
         }
+
         private void EnableAll()
         {
-            rotateBtn.Enabled = true;
-            _startMovementBtn.Enabled = true;
-            rotateCheckbox.Enabled = true;
-            groupBox1.Enabled = true;
-            groupBox2.Enabled = true;
+            rotationGroupBox.Enabled = true;
+            algoGroupBox.Enabled = true;
+            animationGroupBox.Enabled = true;
+            if (_state == State.Ready)
+                bezierGroupBox.Enabled = true;
         }
     }
 
@@ -409,6 +429,7 @@ namespace BezierCurves
     {
         AddingStart,
         AddingEnd,
-        AddingControl
+        AddingControl,
+        Ready
     }
 }

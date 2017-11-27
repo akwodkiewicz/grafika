@@ -77,14 +77,16 @@ namespace BezierCurves
             Marshal.Copy(sourceData.Scan0, sourceBuffer, 0, sourceBuffer.Length);
             referenceImage.UnlockBits(sourceData);
 
-            var imageBounds = new Rectangle(0, 0, referenceImage.Width, referenceImage.Height);
+            var width = sourceData.Stride / 4;
+            var height = sourceData.Height;
+            var imageBounds = new Rectangle(0, 0, width, height);
             var rad = angle * Math.PI / 180;
             var cos = Math.Cos(rad);
             var sin = Math.Sin(rad);
 
-            for (int row = 0; row < referenceImage.Height; row++)
+            for (int row = 0; row < height; row++)
             {
-                for (int col = 0; col < referenceImage.Height; col++)
+                for (int col = 0; col < width; col++)
                 {
                     var resultIndex = row * sourceData.Stride + col * 4;
 
@@ -130,8 +132,8 @@ namespace BezierCurves
             Marshal.Copy(sourceData.Scan0, buffer, 0, buffer.Length);
             referenceImage.UnlockBits(sourceData);
 
-            var imageWidth = referenceImage.Width;
-            var imageHeight = referenceImage.Height;
+            var imageWidth = sourceData.Stride / 4;
+            var imageHeight = sourceData.Height;
 
             angle = angle % 360;
             if (angle < 0) angle += 360;
@@ -293,7 +295,7 @@ namespace BezierCurves
             modifiedImage.UnlockBits(resultData);
         }
 
-        public static void RotateFromReferenceUsingApproximatedShearing(this Bitmap modifiedImage, Bitmap referenceImage, float angle)
+        public static void RotateFromReferenceUsingApproximatedShearingMono(this Bitmap modifiedImage, Bitmap referenceImage, float angle)
         {
             BitmapData sourceData = referenceImage.LockBits(
                                        new Rectangle(0, 0, referenceImage.Width, referenceImage.Height),
@@ -303,8 +305,8 @@ namespace BezierCurves
             Marshal.Copy(sourceData.Scan0, buffer, 0, buffer.Length);
             referenceImage.UnlockBits(sourceData);
 
-            var imageWidth = referenceImage.Width;
-            var imageHeight = referenceImage.Height;
+            var imageWidth = sourceData.Stride / 4;
+            var imageHeight = sourceData.Height;
 
             angle = angle % 360;
             if (angle < 0) angle += 360;
@@ -361,7 +363,6 @@ namespace BezierCurves
                             oleft = 0.0;
                         }
                     }
-
                 }
                 return result;
             }
@@ -440,7 +441,7 @@ namespace BezierCurves
             modifiedImage.UnlockBits(resultData);
         }
 
-        public static void RotateFromReferenceUsingApproximatedShearingInColor(this Bitmap modifiedImage, Bitmap referenceImage, float angle)
+        public static void RotateFromReferenceUsingApproximatedShearingColor(this Bitmap modifiedImage, Bitmap referenceImage, float angle)
         {
             BitmapData sourceData = referenceImage.LockBits(
                            new Rectangle(0, 0, referenceImage.Width, referenceImage.Height),
@@ -450,8 +451,8 @@ namespace BezierCurves
             Marshal.Copy(sourceData.Scan0, buffer, 0, buffer.Length);
             referenceImage.UnlockBits(sourceData);
 
-            var imageWidth = referenceImage.Width;
-            var imageHeight = referenceImage.Height;
+            var imageWidth = sourceData.Stride / 4;
+            var imageHeight = sourceData.Height;
 
             angle = angle % 360;
             if (angle < 0) angle += 360;
@@ -536,7 +537,7 @@ namespace BezierCurves
                             result[resultIndex + 2] = resultR;
                             result[resultIndex + 3] = array[sourceIndex + 3];
                             oleftB = leftB;
-                            oleftG = leftB;
+                            oleftG = leftG;
                             oleftR = leftR;
                         }
                         else
@@ -582,7 +583,7 @@ namespace BezierCurves
                             result[resultIndex + 2] = resultR;
                             result[resultIndex + 3] = array[sourceIndex + 3];
                             oleftB = leftB;
-                            oleftG = leftB;
+                            oleftG = leftG;
                             oleftR = leftR;
                         }
                         else
@@ -606,7 +607,7 @@ namespace BezierCurves
                                PixelFormat.Format32bppArgb);
             Marshal.Copy(buffer, 0, resultData.Scan0, buffer.Length);
             modifiedImage.UnlockBits(resultData);
-        }        
+        }
     }
 
 }

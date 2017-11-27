@@ -37,18 +37,22 @@
             this.shearRadio = new System.Windows.Forms.RadioButton();
             this.timerTrackBar = new System.Windows.Forms.TrackBar();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.rotationGroupBox = new System.Windows.Forms.GroupBox();
+            this.bezierGroupBox = new System.Windows.Forms.GroupBox();
+            this.animationGroupBox = new System.Windows.Forms.GroupBox();
+            this.algoGroupBox = new System.Windows.Forms.GroupBox();
+            this.monoCheckbox = new System.Windows.Forms.CheckBox();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this._pictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.timerTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.rotationGroupBox.SuspendLayout();
+            this.bezierGroupBox.SuspendLayout();
+            this.animationGroupBox.SuspendLayout();
+            this.algoGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // _pictureBox
@@ -57,7 +61,7 @@
             this._pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this._pictureBox.Location = new System.Drawing.Point(0, 0);
             this._pictureBox.Name = "_pictureBox";
-            this._pictureBox.Size = new System.Drawing.Size(594, 598);
+            this._pictureBox.Size = new System.Drawing.Size(798, 659);
             this._pictureBox.TabIndex = 0;
             this._pictureBox.TabStop = false;
             this._pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBox_Paint);
@@ -68,9 +72,9 @@
             // 
             // _loadImageBtn
             // 
-            this._loadImageBtn.Location = new System.Drawing.Point(22, 12);
+            this._loadImageBtn.Location = new System.Drawing.Point(13, 11);
             this._loadImageBtn.Name = "_loadImageBtn";
-            this._loadImageBtn.Size = new System.Drawing.Size(149, 75);
+            this._loadImageBtn.Size = new System.Drawing.Size(148, 75);
             this._loadImageBtn.TabIndex = 1;
             this._loadImageBtn.Text = "Load Image";
             this._loadImageBtn.UseVisualStyleBackColor = true;
@@ -78,35 +82,35 @@
             // 
             // _startMovementBtn
             // 
-            this._startMovementBtn.Enabled = false;
-            this._startMovementBtn.Location = new System.Drawing.Point(22, 180);
+            this._startMovementBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this._startMovementBtn.Location = new System.Drawing.Point(10, 19);
             this._startMovementBtn.Name = "_startMovementBtn";
-            this._startMovementBtn.Size = new System.Drawing.Size(150, 50);
+            this._startMovementBtn.Size = new System.Drawing.Size(148, 50);
             this._startMovementBtn.TabIndex = 2;
-            this._startMovementBtn.Text = "Start / Stop Movement";
+            this._startMovementBtn.Text = "Start / Stop";
             this._startMovementBtn.UseVisualStyleBackColor = true;
             this._startMovementBtn.Click += new System.EventHandler(this.StartMovementBtn_Click);
             // 
             // rotateBtn
             // 
-            this.rotateBtn.Enabled = false;
-            this.rotateBtn.Location = new System.Drawing.Point(22, 115);
+            this.rotateBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.rotateBtn.Location = new System.Drawing.Point(8, 19);
             this.rotateBtn.Name = "rotateBtn";
-            this.rotateBtn.Size = new System.Drawing.Size(150, 50);
+            this.rotateBtn.Size = new System.Drawing.Size(148, 50);
             this.rotateBtn.TabIndex = 3;
-            this.rotateBtn.Text = "Animated Rotation";
+            this.rotateBtn.Text = "Start / Stop";
             this.rotateBtn.UseVisualStyleBackColor = true;
             this.rotateBtn.Click += new System.EventHandler(this.RotateBtn_Click);
             // 
             // rotateCheckbox
             // 
             this.rotateCheckbox.AutoSize = true;
-            this.rotateCheckbox.Enabled = false;
-            this.rotateCheckbox.Location = new System.Drawing.Point(22, 236);
+            this.rotateCheckbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.rotateCheckbox.Location = new System.Drawing.Point(10, 75);
             this.rotateCheckbox.Name = "rotateCheckbox";
-            this.rotateCheckbox.Size = new System.Drawing.Size(111, 17);
+            this.rotateCheckbox.Size = new System.Drawing.Size(123, 17);
             this.rotateCheckbox.TabIndex = 4;
-            this.rotateCheckbox.Text = "Rotate along path";
+            this.rotateCheckbox.Text = "Keep tangent vector";
             this.rotateCheckbox.UseVisualStyleBackColor = true;
             // 
             // matrixRadio
@@ -116,10 +120,10 @@
             this.matrixRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.matrixRadio.Location = new System.Drawing.Point(10, 25);
             this.matrixRadio.Name = "matrixRadio";
-            this.matrixRadio.Size = new System.Drawing.Size(112, 17);
+            this.matrixRadio.Size = new System.Drawing.Size(153, 17);
             this.matrixRadio.TabIndex = 5;
             this.matrixRadio.TabStop = true;
-            this.matrixRadio.Text = "Matrix calculations";
+            this.matrixRadio.Text = "Matrix calculations (SLOW)";
             this.matrixRadio.UseVisualStyleBackColor = true;
             this.matrixRadio.CheckedChanged += new System.EventHandler(this.RotationAlgorithm_CheckedChanged);
             // 
@@ -137,12 +141,12 @@
             // 
             // timerTrackBar
             // 
-            this.timerTrackBar.Location = new System.Drawing.Point(6, 19);
+            this.timerTrackBar.Location = new System.Drawing.Point(10, 18);
             this.timerTrackBar.Maximum = 200;
-            this.timerTrackBar.Minimum = 50;
+            this.timerTrackBar.Minimum = 25;
             this.timerTrackBar.Name = "timerTrackBar";
             this.timerTrackBar.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.timerTrackBar.Size = new System.Drawing.Size(138, 45);
+            this.timerTrackBar.Size = new System.Drawing.Size(148, 45);
             this.timerTrackBar.TabIndex = 7;
             this.timerTrackBar.TickFrequency = 10;
             this.timerTrackBar.Value = 80;
@@ -158,46 +162,82 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
-            this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
+            this.splitContainer1.Panel1.Controls.Add(this.rotationGroupBox);
+            this.splitContainer1.Panel1.Controls.Add(this.bezierGroupBox);
+            this.splitContainer1.Panel1.Controls.Add(this.animationGroupBox);
+            this.splitContainer1.Panel1.Controls.Add(this.algoGroupBox);
             this.splitContainer1.Panel1.Controls.Add(this._loadImageBtn);
-            this.splitContainer1.Panel1.Controls.Add(this._startMovementBtn);
-            this.splitContainer1.Panel1.Controls.Add(this.rotateBtn);
-            this.splitContainer1.Panel1.Controls.Add(this.rotateCheckbox);
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this._pictureBox);
-            this.splitContainer1.Size = new System.Drawing.Size(800, 600);
-            this.splitContainer1.SplitterDistance = 200;
+            this.splitContainer1.Size = new System.Drawing.Size(984, 661);
+            this.splitContainer1.SplitterDistance = 180;
             this.splitContainer1.TabIndex = 8;
             // 
-            // groupBox2
+            // rotationGroupBox
             // 
-            this.groupBox2.Controls.Add(this.timerTrackBar);
-            this.groupBox2.Enabled = false;
-            this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.groupBox2.Location = new System.Drawing.Point(21, 401);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(150, 69);
-            this.groupBox2.TabIndex = 9;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Animation speed";
+            this.rotationGroupBox.Controls.Add(this.rotateBtn);
+            this.rotationGroupBox.Enabled = false;
+            this.rotationGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.rotationGroupBox.Location = new System.Drawing.Point(5, 96);
+            this.rotationGroupBox.Name = "rotationGroupBox";
+            this.rotationGroupBox.Size = new System.Drawing.Size(162, 81);
+            this.rotationGroupBox.TabIndex = 4;
+            this.rotationGroupBox.TabStop = false;
+            this.rotationGroupBox.Text = "Rotation";
             // 
-            // groupBox1
+            // bezierGroupBox
             // 
-            this.groupBox1.Controls.Add(this.radioButton2);
-            this.groupBox1.Controls.Add(this.radioButton1);
-            this.groupBox1.Controls.Add(this.shearRadio);
-            this.groupBox1.Controls.Add(this.matrixRadio);
-            this.groupBox1.Enabled = false;
-            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.groupBox1.Location = new System.Drawing.Point(22, 277);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(150, 118);
-            this.groupBox1.TabIndex = 8;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Rotation algorithm";
+            this.bezierGroupBox.Controls.Add(this._startMovementBtn);
+            this.bezierGroupBox.Controls.Add(this.rotateCheckbox);
+            this.bezierGroupBox.Enabled = false;
+            this.bezierGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.bezierGroupBox.Location = new System.Drawing.Point(3, 183);
+            this.bezierGroupBox.Name = "bezierGroupBox";
+            this.bezierGroupBox.Size = new System.Drawing.Size(164, 100);
+            this.bezierGroupBox.TabIndex = 10;
+            this.bezierGroupBox.TabStop = false;
+            this.bezierGroupBox.Text = "Bezier movement";
+            // 
+            // animationGroupBox
+            // 
+            this.animationGroupBox.Controls.Add(this.timerTrackBar);
+            this.animationGroupBox.Enabled = false;
+            this.animationGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.animationGroupBox.Location = new System.Drawing.Point(3, 413);
+            this.animationGroupBox.Name = "animationGroupBox";
+            this.animationGroupBox.Size = new System.Drawing.Size(164, 69);
+            this.animationGroupBox.TabIndex = 9;
+            this.animationGroupBox.TabStop = false;
+            this.animationGroupBox.Text = "Animation speed";
+            // 
+            // algoGroupBox
+            // 
+            this.algoGroupBox.Controls.Add(this.monoCheckbox);
+            this.algoGroupBox.Controls.Add(this.radioButton1);
+            this.algoGroupBox.Controls.Add(this.shearRadio);
+            this.algoGroupBox.Controls.Add(this.matrixRadio);
+            this.algoGroupBox.Enabled = false;
+            this.algoGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.algoGroupBox.Location = new System.Drawing.Point(3, 289);
+            this.algoGroupBox.Name = "algoGroupBox";
+            this.algoGroupBox.Size = new System.Drawing.Size(164, 118);
+            this.algoGroupBox.TabIndex = 8;
+            this.algoGroupBox.TabStop = false;
+            this.algoGroupBox.Text = "Rotation algorithm";
+            // 
+            // monoCheckbox
+            // 
+            this.monoCheckbox.AutoSize = true;
+            this.monoCheckbox.Enabled = false;
+            this.monoCheckbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.monoCheckbox.Location = new System.Drawing.Point(30, 93);
+            this.monoCheckbox.Name = "monoCheckbox";
+            this.monoCheckbox.Size = new System.Drawing.Size(53, 17);
+            this.monoCheckbox.TabIndex = 10;
+            this.monoCheckbox.Text = "Mono";
+            this.monoCheckbox.UseVisualStyleBackColor = true;
             // 
             // radioButton1
             // 
@@ -210,39 +250,30 @@
             this.radioButton1.Text = "Shearing with antialiasing";
             this.radioButton1.UseVisualStyleBackColor = true;
             // 
-            // radioButton2
-            // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.radioButton2.Location = new System.Drawing.Point(10, 94);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(175, 17);
-            this.radioButton2.TabIndex = 8;
-            this.radioButton2.Text = "Shearing w/ antialiasing in color";
-            this.radioButton2.UseVisualStyleBackColor = true;
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 600);
+            this.ClientSize = new System.Drawing.Size(984, 661);
             this.Controls.Add(this.splitContainer1);
-            this.MaximumSize = new System.Drawing.Size(816, 639);
-            this.MinimumSize = new System.Drawing.Size(816, 639);
+            this.MaximumSize = new System.Drawing.Size(1000, 700);
+            this.MinimumSize = new System.Drawing.Size(800, 639);
             this.Name = "MainWindow";
             this.ShowIcon = false;
             this.Text = "Bezier Curves";
             ((System.ComponentModel.ISupportInitialize)(this._pictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.timerTrackBar)).EndInit();
             this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.rotationGroupBox.ResumeLayout(false);
+            this.bezierGroupBox.ResumeLayout(false);
+            this.bezierGroupBox.PerformLayout();
+            this.animationGroupBox.ResumeLayout(false);
+            this.animationGroupBox.PerformLayout();
+            this.algoGroupBox.ResumeLayout(false);
+            this.algoGroupBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -258,10 +289,12 @@
         private System.Windows.Forms.RadioButton shearRadio;
         private System.Windows.Forms.TrackBar timerTrackBar;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox animationGroupBox;
+        private System.Windows.Forms.GroupBox algoGroupBox;
         private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.CheckBox monoCheckbox;
+        private System.Windows.Forms.GroupBox rotationGroupBox;
+        private System.Windows.Forms.GroupBox bezierGroupBox;
     }
 }
 
