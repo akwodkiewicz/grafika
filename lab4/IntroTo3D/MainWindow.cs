@@ -18,26 +18,22 @@ namespace IntroTo3D
         MyMatrix _viewMatrix;
         MyMatrix _projectionMatrix;
         List<Edge> _listToDraw;
+        MyPoint3D _cameraPosition = new MyPoint3D(3, 0.2, 0.7);
+        MyPoint3D _cameraTarget = new MyPoint3D(0, 0.5, 0.5);
+        MyPoint3D _upVector = new MyPoint3D(0, 0, 1);
+
+
 
         public MainWindow()
         {
             InitializeComponent();
-
 
             CreateCube();
             CreateModelMatrix();
             CreateViewMatrix();
             CreateProjectionMatrix();
 
-            TestMatrix();
-
-
             DrawOnScene(_cube, _modelMatrix, _viewMatrix, _projectionMatrix);
-        }
-
-        private void TestMatrix()
-        {
-            _viewMatrix.Multiply(new MyPoint3D(0, 0, 0));
         }
 
         public void CreateCube()
@@ -85,6 +81,45 @@ namespace IntroTo3D
             res[2, 2] = 0.06619;
             res[2, 3] = -3.005;
             res[3, 3] = 1;
+
+            //var zAxis = new double[3]
+            //{
+            //    _cameraPosition.X - _cameraTarget.X,
+            //    _cameraPosition.Y - _cameraTarget.Y,
+            //    _cameraPosition.Z - _cameraTarget.Z
+            //};
+            //zAxis = Normalize(zAxis);
+
+            //var xAxis = new double[3]
+            //{
+            //    _upVector.X * zAxis[0],
+            //    _upVector.Y * zAxis[1],
+            //    _upVector.Z * zAxis[2]
+            //};
+            //xAxis = Normalize(xAxis);
+
+            //var yAxis = new double[3]
+            //{
+            //    zAxis[0]*xAxis[0],
+            //    zAxis[1]*xAxis[1],
+            //    zAxis[2]*xAxis[2]
+            //};
+            //yAxis = Normalize(yAxis);
+
+            //var data = new double[4, 4];
+            //for (int i = 0; i < 3; i++)
+            //{
+            //    data[0, i] = xAxis[i];
+            //    data[1, i] = yAxis[i];
+            //    data[2, i] = zAxis[i];
+            //}
+            //data[3, 3] = 1;
+
+            //var inversedMatrix = new MyMatrix(data);
+
+            //// odwrócić macierz z `inversedMatrix` do `_viewMatrix`
+
+
             _viewMatrix = new MyMatrix(res);
         }
 
@@ -141,6 +176,17 @@ namespace IntroTo3D
                 }
                 _listToDraw = null;
             }
+        }
+
+        private double[] Normalize(double[] vector)
+        {
+            var distance = Math.Sqrt(vector[0] * vector[0] + vector[1] * vector[1] + vector[2]*vector[2]);
+            return new double[3]
+            {
+                vector[0]/distance,
+                vector[1]/distance,
+                vector[2]/distance
+            };
         }
     }
 }
