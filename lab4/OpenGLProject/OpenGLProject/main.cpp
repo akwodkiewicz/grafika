@@ -5,58 +5,36 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
+GLFWwindow* lotsOfInitialization();
 unsigned int* buildAndCompileShaders();
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 const char *vertexShaderSource = "#version 330 core\n"
-	"layout (location = 0) in vec3 aPos;\n"
-	"void main()\n"
-	"{\n"
-	"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-	"}\0";
+								"layout (location = 0) in vec3 aPos;\n"
+								"void main()\n"
+								"{\n"
+								"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+								"}\0";
 const char *fragmentShaderSource = "#version 330 core\n"
-	"out vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-	"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-	"}\n\0";
+									"out vec4 FragColor;\n"
+									"void main()\n"
+									"{\n"
+									"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+									"}\n\0";
 const char *fragmentShaderSource2 = "#version 330 core\n"
-	"out vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-	"   FragColor = vec4(0.08f, 0.1f, 1.0f, 1.0f);\n"
-	"}\n\0";
+									"out vec4 FragColor;\n"
+									"uniform vec4 ourColor;\n"
+									"void main()\n"
+									"{\n"
+									"	FragColor = ourColor;\n"
+									"}\n\0";
 
 int main()
 {
-	// glfw: initialize and configure
-	// ------------------------------
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    
-	// glfw window creation
-	// --------------------
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", nullptr, nullptr);
-	if (window == nullptr)
-	{
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-	// glad: load all OpenGL function pointers
-	// ---------------------------------------
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
-		return -1;
-	}
+	GLFWwindow* window = lotsOfInitialization();
+	if (!window) { return -1; }
 
 	unsigned int* shaders = buildAndCompileShaders();
 
@@ -102,6 +80,9 @@ int main()
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 
+
+
+
 	// render loop
 	// -----------
 	while (!glfwWindowShouldClose(window))
@@ -122,7 +103,11 @@ int main()
 		glDrawArrays(GL_TRIANGLES, 0, 3);	// this call should output an orange triangle
 		// then we draw the second triangle using the data from the second VAO
 		// when we draw the second triangle we want to use a different shader program so we switch to the shader program with our yellow fragment shader.
+		float timeValue = glfwGetTime();
+		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+		int vertexColorLocation = glGetUniformLocation(shaders[1], "ourColor");
 		glUseProgram(shaders[1]);
+		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 		glBindVertexArray(VAOs[1]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -155,6 +140,38 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	// make sure the viewport matches the new window dimensions; note that width and 
 	// height will be significantly larger than specified on retina displays.
 	glViewport(0, 0, width, height);
+}
+
+
+GLFWwindow* lotsOfInitialization()
+{
+	// glfw: initialize and configure
+	// ------------------------------
+	glfwInit();
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	// glfw window creation
+	// --------------------
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", nullptr, nullptr);
+	if (window == nullptr)
+	{
+		std::cout << "Failed to create GLFW window" << std::endl;
+		glfwTerminate();
+		return nullptr;
+	}
+	glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+	// glad: load all OpenGL function pointers
+	// ---------------------------------------
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		std::cout << "Failed to initialize GLAD" << std::endl;
+		return nullptr;
+	}
+	return window;
 }
 
 // build and compile our shader programs
