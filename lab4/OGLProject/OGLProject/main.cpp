@@ -212,7 +212,7 @@ int main()
 
 	// Set background color
 	//-------------------------------------------------
-	glClearColor(0.2f, 0.2f, 0.4f, 0.0f);
+	glClearColor(0.5f, 0.5f, 0.55f, 0.0f);
 
 
 	// Set light color and position
@@ -253,7 +253,7 @@ int main()
 		float radius = 10.0f;
 		float orbitX = sin(currentTime) * radius;
 		float orbitZ = cos(currentTime) * radius;
-		float camY = (sin(currentTime / 4)) * 3;
+		float camY = 0.0f;//(sin(currentTime / 4)) * 3;
 
 		glUseProgram(programID);
 
@@ -292,7 +292,11 @@ int main()
 		//-------------------------------------------------
 		glBindVertexArray(VAOs[0]);
 
-		glm::mat4 modelPlane = glm::translate(glm::mat4(),/*glm::lookAt(glm::vec3(yawAngle, -3.0f, orbitZ), glm::vec3(0.0f, 0.0f, 0.0f), up)*/glm::vec3(orbitX, 3.0f, orbitZ));
+		//glm::mat4 modelPlane = glm::translate(glm::mat4(),/*glm::lookAt(glm::vec3(yawAngle, -3.0f, orbitZ), glm::vec3(0.0f, 0.0f, 0.0f), up)*/glm::vec3(orbitX, 3.0f, orbitZ));
+		glm::mat4 rotation = glm::rotate(glm::mat4(), currentTime+45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 translation = glm::translate(glm::mat4(), glm::vec3(orbitX, 3.0f, orbitZ));
+		glm::mat4 modelPlane = translation * rotation;
+
 		glUniform3fv(objectColorLoc, 1, glm::value_ptr(PLANE_COLOR));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelPlane[0][0]); // Send model matrix to shader
 		glDrawArrays(GL_TRIANGLES, 0, 54);
@@ -377,7 +381,7 @@ glm::vec3 getCameraPosition(int cameraId)
 	case 1:
 		return glm::vec3(15.0f, 10.0f, 20.0f);
 	case 2:
-		return glm::vec3(0.0f, 30.0f, 20.0f);
+		return glm::vec3(0.0f, 2.0f, 20.0f);
 	case 3:
 		return glm::vec3(3.0f, 4.5f, -0.5f);
 	}
