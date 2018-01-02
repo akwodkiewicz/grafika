@@ -88,7 +88,7 @@ static const GLfloat vertices2[] = {
 };
 
 
-int cameraId = 3;
+int cameraId = 1;
 int aspectRatioChanged = 1;
 int currentWidth;
 int currentHeight;
@@ -145,8 +145,8 @@ int main()
 
 	// Prepare all buffers
 	//-------------------------------------------------
-	GLuint VBOs[2], VAOs[2], EBO;
-	glGenVertexArrays(2, VAOs); // Buffer array object
+	GLuint VAOs[3], VBOs[2], EBO;
+	glGenVertexArrays(3, VAOs); // Vertex array object
 	glGenBuffers(2, VBOs);	// Vertex buffer object
 	glGenBuffers(1, &EBO); // Element buffer object - keeps data about indices
 
@@ -154,10 +154,10 @@ int main()
 	// Plane model
 	glBindVertexArray(VAOs[0]); // Set active
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]); // Set active
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]); // Bind VBO to VAO
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // Copy data
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); // Set active
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); // Bind EBO to VAO
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); // Copy data
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); // Set the interpretation of Vertex Buffer data
@@ -168,17 +168,26 @@ int main()
 	// Cube model
 	glBindVertexArray(VAOs[1]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]); // Set active
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]); // Bind VBO to VAO
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW); // Copy data
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
 
-	// Complie and use shader
+	// Light model
+	glBindVertexArray(VAOs[2]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]); // Bind VBO to VAO
+	// Data is already copied
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // Set the interpretation of Vertex Buffer data
+	glEnableVertexAttribArray(0);
+
+	// Complie and use shaders
 	//-------------------------------------------------
 	GLuint programID = LoadShaders("vertex.shader", "fragment.shader");
 	glUseProgram(programID);
+
+	GLuint program2ID = LoadShaders("vertex.shader", "fragment_onecolor.shader");
 
 
 	// Get shader variable handles
@@ -186,16 +195,28 @@ int main()
 	unsigned int modelLoc = glGetUniformLocation(programID, "model");
 	unsigned int viewLoc = glGetUniformLocation(programID, "view");
 	unsigned int projLoc = glGetUniformLocation(programID, "projection");
-
+	unsigned int objectColorLoc = glGetUniformLocation(programID, "objectColor");
+	unsigned int lightColorLoc = glGetUniformLocation(programID, "lightColor");
+	unsigned int modelLoc2 = glGetUniformLocation(program2ID, "model");
+	unsigned int viewLoc2 = glGetUniformLocation(program2ID, "view");
+	unsigned int projLoc2 = glGetUniformLocation(program2ID, "projection");
 
 	// Set background color
 	//-------------------------------------------------
 	glClearColor(0.2f, 0.2f, 0.4f, 0.0f);
 
 
+	// Set light and object colors
+	//-------------------------------------------------
+	glm::vec3 lightColor(1.0f);
+	glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
+	glm::vec3 objectColor(1.0f, 0.5f, 0.31f);
+	glUniform3fv(objectColorLoc, 1, glm::value_ptr(objectColor));
+
+
 	// Set wireframe mode
 	//-------------------------------------------------
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 
 	// Enable depth testing
@@ -226,6 +247,7 @@ int main()
 		float orbitZ = cos(currentTime) * radius;
 		//float camY = (sin(currentTime / 4) + 2) * 3;
 
+		glUseProgram(programID);
 
 		// Calculate new projection matrix has the aspect ratio changed
 		//-------------------------------------------------
@@ -246,6 +268,7 @@ int main()
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
 
 
+
 		// Draw plane
 		//-------------------------------------------------
 		glm::mat4 modelPlane = glm::translate(glm::mat4()/*glm::lookAt(glm::vec3(yawAngle, -3.0f, orbitZ), glm::vec3(0.0f, 0.0f, 0.0f), up)*/, glm::vec3(orbitX, 3.0f, orbitZ));
@@ -256,7 +279,7 @@ int main()
 
 		// Draw cubes
 		//-------------------------------------------------
-		glBindVertexArray(VAOs[1]);
+		//glBindVertexArray(VAOs[1]);
 		//int amount = 50;
 		//for (int x = -amount; x <= amount; x++)
 		//	for (int z = -amount; z <= amount; z++)
@@ -265,22 +288,34 @@ int main()
 		//		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
 		//		glDrawArrays(GL_TRIANGLES, 0, 108);
 		//	}
+		//glm::mat4 modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, 0.5f, (float)0));
+		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
+		//glDrawArrays(GL_TRIANGLES, 0, 108);
+		//modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, -0.5f, (float)0));
+		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
+		//glDrawArrays(GL_TRIANGLES, 0, 108);
+		//modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, 1.5f, (float)0));
+		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
+		//glDrawArrays(GL_TRIANGLES, 0, 108);
+		//modelCube = glm::translate(glm::mat4(), glm::vec3((float)1, 0.5f, (float)0));
+		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
+		//glDrawArrays(GL_TRIANGLES, 0, 108);
+		// modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, 0.5f, (float)1));
+		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
+		//glDrawArrays(GL_TRIANGLES, 0, 108);
+		
 
+		// Draw light cube
+		//--------------------------------------------------
+		glBindVertexArray(VAOs[2]);
+		glUseProgram(program2ID);
+
+		glUniformMatrix4fv(projLoc2, 1, GL_FALSE, &projection[0][0]);
+		glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, &view[0][0]);
 		glm::mat4 modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, 0.5f, (float)0));
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
+		glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
 		glDrawArrays(GL_TRIANGLES, 0, 108);
-		modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, -0.5f, (float)0));
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
-		glDrawArrays(GL_TRIANGLES, 0, 108);
-		modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, 1.5f, (float)0));
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
-		glDrawArrays(GL_TRIANGLES, 0, 108);
-		modelCube = glm::translate(glm::mat4(), glm::vec3((float)1, 0.5f, (float)0));
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
-		glDrawArrays(GL_TRIANGLES, 0, 108);
-		 modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, 0.5f, (float)1));
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
-		glDrawArrays(GL_TRIANGLES, 0, 108);
+
 
 
 		glfwSwapBuffers(window);
@@ -290,7 +325,7 @@ int main()
 
 	// Destructors
 	//--------------------------------------------------
-	glDeleteVertexArrays(2, VAOs);
+	glDeleteVertexArrays(3, VAOs);
 	glDeleteBuffers(2, VBOs);
 	glDeleteBuffers(1, &EBO);
 	glfwDestroyWindow(window);
@@ -323,7 +358,7 @@ glm::vec3 getCameraPosition(int cameraId)
 	case 1:
 		return glm::vec3(15.0f, 10.0f, 20.0f);
 	case 2:
-		return glm::vec3(0.0f, 10.0f, 20.0f);
+		return glm::vec3(0.0f, 80.0f, 20.0f);
 	case 3:
 		return glm::vec3(3.0f, 0.5f, -0.5f);
 	}

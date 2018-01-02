@@ -26,6 +26,7 @@
     <None Include="packages.config" />
     <None Include="vertex.shader" />
     <None Include="fragment.shader" />
+    <None Include="fragment_onecolor.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shdloader.hpp">

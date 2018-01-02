@@ -121,6 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.shader" />
+    <None Include="fragment_onecolor.shader" />
     <None Include="packages.config" />
     <None Include="vertex.shader" />
   </ItemGroup>
