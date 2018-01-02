@@ -18,27 +18,29 @@ glm::mat4 createProjectionMatrix(float near, float far, float fov_rad, float asp
 // PLANE
 //---------------------------------
 static const GLfloat vertices[] = {
-	-1.0f,  0.0f, -1.0f,		1.0f, 0.0f, 0.0f,
-	 1.0f,  0.0f, -1.0f,		1.0f, 1.0f, 0.0f,
-	 0.0f,  0.0f,  1.0f,		1.0f, 1.0f, 0.0f,
+	-1.0f,  0.0f, -1.0f,		0.0f, 1.0f, 0.0f,
+	 1.0f,  0.0f, -1.0f,		0.0f, 1.0f, 0.0f,
+	 0.0f,  0.0f,  1.0f,		0.0f, 1.0f, 0.0f,
 
-	 //0.0f,  0.0f,   1.0f, 	
-	  0.0f,  -0.33f, -1.0f,		1.0f, 0.5f, 0.5f,
-	 -0.33f,  0.0f,  -1.0f,		1.0f, 0.5f, 0.5f,
+	 -1.0f,  0.0f, -1.0f,		0.0f, -1.0f, 0.0f,
+	 -0.33f, -0.02f, -1.0f,		0.0f, -1.0f, 0.0f,
+	 0.0f,  0.0f,  1.0f,		0.0f, -1.0f, 0.0f,
 
-	 //0.0f,  0.0f, 1.0f,  
-	 0.0f, -0.33f, -1.0f,		1.0f, 0.5f, 0.5f,
-	 0.33f, 0.0f, -1.0f,			1.0f, 0.5f, 0.5f,
+	 1.0f,  0.0f, -1.0f,		0.0f, -1.0f, 0.0f,
+	 0.33f, -0.02f, -1.0f,		0.0f, -1.0f, 0.0f,
+	 0.0f,  0.0f,  1.0f,		0.0f, -1.0f, 0.0f,
 
-	 0.0f, -0.33f, -1.0f,		1.0f, 0.5f, 0.5f
-	 //-0.33f, -1.0f,  0.0f,
-	 //0.33f, -1.0f,  0.0f
-};
-static GLuint indices[] = {
-	0, 1, 2,
-	2, 3, 4,
-	2, 5, 6,
-	7, 4, 6
+	 0.0f,  0.0f,  1.0f, 		-1.0f, 0.0f, 0.0f,
+	 0.0f,  -0.33f, -1.0f,		-1.0f, 0.0f, 0.0f,
+	-0.33f,  0.0f,  -1.0f,		-1.0f, 0.0f, 0.0f,
+
+	 0.0f,  0.0f, 1.0f,			1.0f, 0.0f, 0.0f,
+	 0.0f, -0.33f, -1.0f,		1.0f, 0.0f, 0.0f,
+	 0.33f, 0.0f, -1.0f,		1.0f, 0.0f, 0.0f,
+
+	 0.0f, -0.33f, -1.0f,		0.0f, 0.0f, -1.0f,
+	-0.33f, 0.0f,  -1.0f,		0.0f, 0.0f, -1.0f,
+	 0.33f, 0.0f,  -1.0f,		0.0f, 0.0f, -1.0f
 };
 
 // CUBE
@@ -148,7 +150,6 @@ int main()
 	GLuint VAOs[3], VBOs[2], EBO;
 	glGenVertexArrays(3, VAOs); // Vertex array object
 	glGenBuffers(2, VBOs);	// Vertex buffer object
-	glGenBuffers(1, &EBO); // Element buffer object - keeps data about indices
 
 
 	// Plane model
@@ -156,9 +157,6 @@ int main()
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]); // Bind VBO to VAO
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // Copy data
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); // Bind EBO to VAO
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); // Copy data
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); // Set the interpretation of Vertex Buffer data
 	glEnableVertexAttribArray(0);
@@ -197,6 +195,8 @@ int main()
 	unsigned int projLoc = glGetUniformLocation(programID, "projection");
 	unsigned int objectColorLoc = glGetUniformLocation(programID, "objectColor");
 	unsigned int lightColorLoc = glGetUniformLocation(programID, "lightColor");
+	unsigned int lightPosLoc = glGetUniformLocation(programID, "lightPos");
+
 	unsigned int modelLoc2 = glGetUniformLocation(program2ID, "model");
 	unsigned int viewLoc2 = glGetUniformLocation(program2ID, "view");
 	unsigned int projLoc2 = glGetUniformLocation(program2ID, "projection");
@@ -206,12 +206,15 @@ int main()
 	glClearColor(0.2f, 0.2f, 0.4f, 0.0f);
 
 
-	// Set light and object colors
+	// Set light and object colors and light position
 	//-------------------------------------------------
 	glm::vec3 lightColor(1.0f);
 	glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
 	glm::vec3 objectColor(1.0f, 0.5f, 0.31f);
 	glUniform3fv(objectColorLoc, 1, glm::value_ptr(objectColor));
+	glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
+	glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
+
 
 
 	// Set wireframe mode
@@ -242,7 +245,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		float currentTime = glfwGetTime();
 
-		float radius = 15.0f;
+		float radius = 10.0f;
 		float orbitX = sin(currentTime) * radius;
 		float orbitZ = cos(currentTime) * radius;
 		//float camY = (sin(currentTime / 4) + 2) * 3;
@@ -271,10 +274,10 @@ int main()
 
 		// Draw plane
 		//-------------------------------------------------
-		glm::mat4 modelPlane = glm::translate(glm::mat4()/*glm::lookAt(glm::vec3(yawAngle, -3.0f, orbitZ), glm::vec3(0.0f, 0.0f, 0.0f), up)*/, glm::vec3(orbitX, 3.0f, orbitZ));
+		glm::mat4 modelPlane = glm::translate(glm::mat4(),/*glm::lookAt(glm::vec3(yawAngle, -3.0f, orbitZ), glm::vec3(0.0f, 0.0f, 0.0f), up)*/glm::vec3(orbitX, 3.0f, orbitZ));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelPlane[0][0]); // Send model matrix to shader
 		glBindVertexArray(VAOs[0]);
-		glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 54);
 
 
 		// Draw cubes
@@ -327,7 +330,6 @@ int main()
 	//--------------------------------------------------
 	glDeleteVertexArrays(3, VAOs);
 	glDeleteBuffers(2, VBOs);
-	glDeleteBuffers(1, &EBO);
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	return 0;
@@ -358,7 +360,7 @@ glm::vec3 getCameraPosition(int cameraId)
 	case 1:
 		return glm::vec3(15.0f, 10.0f, 20.0f);
 	case 2:
-		return glm::vec3(0.0f, 80.0f, 20.0f);
+		return glm::vec3(0.0f, -40.0f, 20.0f);
 	case 3:
 		return glm::vec3(3.0f, 0.5f, -0.5f);
 	}
