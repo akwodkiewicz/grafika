@@ -89,6 +89,9 @@ static const GLfloat vertices2[] = {
 
 
 int cameraId = 3;
+int aspectRatioChanged = 1;
+int currentWidth;
+int currentHeight;
 
 int main()
 {
@@ -115,12 +118,17 @@ int main()
 		return -1;
 	}
 	glfwMakeContextCurrent(window); // Needed for GLEW initializer
+	currentHeight = mode->height;
+	currentWidth = mode->width;
 
 
 	// Resize content on window resize
 	//-------------------------------------------------
 	glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height) {
 		glViewport(0, 0, width, height);
+		currentWidth = width;
+		currentHeight = height;
+		aspectRatioChanged = 1;
 	});
 
 
@@ -167,11 +175,17 @@ int main()
 	glEnableVertexAttribArray(0);
 
 
-
 	// Complie and use shader
 	//-------------------------------------------------
 	GLuint programID = LoadShaders("vertex.shader", "fragment.shader");
 	glUseProgram(programID);
+
+
+	// Get shader variable handles
+	//-------------------------------------------------
+	unsigned int modelLoc = glGetUniformLocation(programID, "model");
+	unsigned int viewLoc = glGetUniformLocation(programID, "view");
+	unsigned int projLoc = glGetUniformLocation(programID, "projection");
 
 
 	// Set background color
@@ -192,12 +206,13 @@ int main()
 	// Calculate projection matrix and send it to shader
 	//-------------------------------------------------
 	glm::mat4 projection = createProjectionMatrix(1.0f, 100.0f, glm::radians(45.0f), (float)mode->height/(float)mode->width);
-	unsigned int projLoc = glGetUniformLocation(programID, "projection");
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
+
 
 	// Register callbacks for keypresses
 	//-------------------------------------------------
 	glfwSetKeyCallback(window, keyPressCallback);
+
 
 	// Event loop
 	//-------------------------------------------------
@@ -212,13 +227,17 @@ int main()
 		//float camY = (sin(currentTime / 4) + 2) * 3;
 
 
-		// Get shader variable handles
+		// Calculate new projection matrix has the aspect ratio changed
 		//-------------------------------------------------
-		unsigned int viewLoc = glGetUniformLocation(programID, "view");
-		unsigned int modelLoc = glGetUniformLocation(programID, "model");
+		if (aspectRatioChanged)
+		{
+			projection = createProjectionMatrix(1.0f, 100.0f, glm::radians(45.0f), (float)currentHeight / (float)currentWidth);
+			glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
+			aspectRatioChanged = 0;
+		}
 
 
-		// Set camera
+		// Set camera (calculate `view` matrix)
 		//-------------------------------------------------
 		glm::vec3 cameraPos = getCameraPosition(cameraId);
 		glm::vec3 cameraTarget = glm::vec3(0.0f, 0.5f, 0.5f);
@@ -262,6 +281,8 @@ int main()
 		 modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, 0.5f, (float)1));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
 		glDrawArrays(GL_TRIANGLES, 0, 108);
+
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
