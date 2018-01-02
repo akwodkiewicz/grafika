@@ -202,6 +202,8 @@ int main()
 	unsigned int objectColorLoc = glGetUniformLocation(programID, "objectColor");
 	unsigned int lightColorLoc = glGetUniformLocation(programID, "lightColor");
 	unsigned int lightPosLoc = glGetUniformLocation(programID, "lightPos");
+	unsigned int viewPosLoc = glGetUniformLocation(programID, "viewPos");
+
 
 	unsigned int modelLoc2 = glGetUniformLocation(program2ID, "model");
 	unsigned int viewLoc2 = glGetUniformLocation(program2ID, "view");
@@ -250,7 +252,7 @@ int main()
 		float radius = 10.0f;
 		float orbitX = sin(currentTime) * radius;
 		float orbitZ = cos(currentTime) * radius;
-		//float camY = (sin(currentTime / 4) + 2) * 3;
+		float camY = (sin(currentTime / 4)) * 3;
 
 		glUseProgram(programID);
 
@@ -267,6 +269,9 @@ int main()
 		// Set camera (calculate `view` matrix)
 		//-------------------------------------------------
 		glm::vec3 cameraPos = getCameraPosition(cameraId);
+		cameraPos.y += camY;
+		glUniform3fv(viewPosLoc, 1, glm::value_ptr(cameraPos));
+
 		glm::vec3 cameraTarget;
 		if (cameraId == 3)
 			cameraTarget = glm::vec3(orbitX, 3.0f, orbitZ);
@@ -288,36 +293,17 @@ int main()
 		glDrawArrays(GL_TRIANGLES, 0, 54);
 
 
-		// Draw cubes
+		// Draw ground
 		//-------------------------------------------------
 		glBindVertexArray(VAOs[1]);
 
 		glm::mat4 modelCube;
 		glUniform3fv(objectColorLoc, 1, glm::value_ptr(GROUND_COLOR));	
-		int amount = 30;
-		for (int x = -amount; x <= amount; x++)
-			for (int z = -amount; z <= amount; z++)
-			{
-			    modelCube = glm::translate(glm::mat4(), glm::vec3((float)x, 0.5f, (float)z));
-				glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
-				glDrawArrays(GL_TRIANGLES, 0, 36);
-			}
-		//glm::mat4 modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, 5.5f, (float)0));
-		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
-		//glDrawArrays(GL_TRIANGLES, 0, 108);
-		//modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, -0.5f, (float)0));
-		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
-		//glDrawArrays(GL_TRIANGLES, 0, 108);
-		//modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, 1.5f, (float)0));
-		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
-		//glDrawArrays(GL_TRIANGLES, 0, 108);
-		//modelCube = glm::translate(glm::mat4(), glm::vec3((float)1, 0.5f, (float)0));
-		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
-		//glDrawArrays(GL_TRIANGLES, 0, 108);
-		// modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, 0.5f, (float)1));
-		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
-		//glDrawArrays(GL_TRIANGLES, 0, 108);
-		//
+
+		modelCube = glm::translate(glm::scale(glm::mat4(), glm::vec3(50.0f, 0.5f, 50.0f)), glm::vec3(0.0f, -0.5f, 0.0f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
 
 		// Draw light cube
 		//--------------------------------------------------
