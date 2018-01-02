@@ -98,7 +98,7 @@ int cameraId = 1;
 int aspectRatioChanged = 1;
 int currentWidth;
 int currentHeight;
-
+int specularPower = 32;
 int main()
 {
 	// Initialize GLFW
@@ -203,6 +203,7 @@ int main()
 	unsigned int lightColorLoc = glGetUniformLocation(programID, "lightColor");
 	unsigned int lightPosLoc = glGetUniformLocation(programID, "lightPos");
 	unsigned int viewPosLoc = glGetUniformLocation(programID, "viewPos");
+	unsigned int specularPowerLoc = glGetUniformLocation(programID, "specularPower");
 
 
 	unsigned int modelLoc2 = glGetUniformLocation(program2ID, "model");
@@ -264,6 +265,10 @@ int main()
 			glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 			aspectRatioChanged = 0;
 		}
+
+		// Set specular light power
+		//-------------------------------------------------
+		glUniform1i(specularPowerLoc, specularPower);
 
 
 		// Set camera (calculate `view` matrix)
@@ -334,16 +339,31 @@ int main()
 
 void keyPressCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	if (action != GLFW_PRESS)
+		return;
 	switch (key)
 	{
 	case GLFW_KEY_1:
 		cameraId = 1;
+		std::cout << "Camera 1" << std::endl;
 		break;
 	case GLFW_KEY_2:
 		cameraId = 2;
+		std::cout << "Camera 2" << std::endl;
 		break;
 	case GLFW_KEY_3:
 		cameraId = 3;
+		std::cout << "Camera 3 (tracking)" << std::endl;
+		break;
+	case GLFW_KEY_EQUAL:
+		if (specularPower != INT_MAX)
+			specularPower <<= 1;
+		std::cout << "Phong specular power = " << specularPower << std::endl;
+		break;
+	case GLFW_KEY_MINUS:
+		if (specularPower != 2)
+			specularPower >>= 1;
+		std::cout << "Phong specular power = " << specularPower << std::endl;
 		break;
 	default:
 		break;
