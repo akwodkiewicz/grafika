@@ -9,6 +9,8 @@
 
 #include "shdloader.hpp"
 
+void keyPressCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+glm::vec3 getCameraPosition(int cameraId);
 
 // PLANE
 //---------------------------------
@@ -17,17 +19,17 @@ static const GLfloat vertices[] = {
 	 1.0f,  0.0f, -1.0f,		1.0f, 1.0f, 0.0f,
 	 0.0f,  0.0f,  1.0f,		1.0f, 1.0f, 0.0f,
 
-	//0.0f,  0.0f,   1.0f, 	
-	 0.0f,  -0.33f, -1.0f,		1.0f, 0.5f, 0.5f,
-	-0.33f,  0.0f,  -1.0f,		1.0f, 0.5f, 0.5f,
+	 //0.0f,  0.0f,   1.0f, 	
+	  0.0f,  -0.33f, -1.0f,		1.0f, 0.5f, 0.5f,
+	 -0.33f,  0.0f,  -1.0f,		1.0f, 0.5f, 0.5f,
 
-	//0.0f,  0.0f, 1.0f,  
-	0.0f, -0.33f, -1.0f,		1.0f, 0.5f, 0.5f,
-	0.33f, 0.0f, -1.0f,			1.0f, 0.5f, 0.5f,
+	 //0.0f,  0.0f, 1.0f,  
+	 0.0f, -0.33f, -1.0f,		1.0f, 0.5f, 0.5f,
+	 0.33f, 0.0f, -1.0f,			1.0f, 0.5f, 0.5f,
 
-	0.0f, -0.33f, -1.0f,		1.0f, 0.5f, 0.5f
-	//-0.33f, -1.0f,  0.0f,
-	//0.33f, -1.0f,  0.0f
+	 0.0f, -0.33f, -1.0f,		1.0f, 0.5f, 0.5f
+	 //-0.33f, -1.0f,  0.0f,
+	 //0.33f, -1.0f,  0.0f
 };
 static GLuint indices[] = {
 	0, 1, 2,
@@ -35,7 +37,7 @@ static GLuint indices[] = {
 	2, 5, 6,
 	7, 4, 6
 };
- 
+
 // CUBE
 //-----------------------------------
 static const GLfloat vertices2[] = {
@@ -47,8 +49,8 @@ static const GLfloat vertices2[] = {
 	-0.5f, -0.5f, -0.5f,
 
 	-0.5f, -0.5f,  0.5f,
- 	 0.5f, -0.5f,  0.5f,
-     0.5f,  0.5f,  0.5f,
+	 0.5f, -0.5f,  0.5f,
+	 0.5f,  0.5f,  0.5f,
 	 0.5f,  0.5f,  0.5f,
 	-0.5f,  0.5f,  0.5f,
 	-0.5f, -0.5f,  0.5f,
@@ -82,6 +84,8 @@ static const GLfloat vertices2[] = {
 	-0.5f,  0.5f, -0.5f
 };
 
+
+int cameraId = 1;
 
 int main()
 {
@@ -169,7 +173,7 @@ int main()
 
 	// Set background color
 	//-------------------------------------------------
-	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
+	glClearColor(0.2f, 0.2f, 0.4f, 0.0f);
 
 
 	// Set wireframe mode
@@ -189,34 +193,40 @@ int main()
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 
 
+	// Register callbacks for keypresses
+	//-------------------------------------------------
+	glfwSetKeyCallback(window, keyPressCallback);
+
 	// Event loop
 	//-------------------------------------------------
 	while (!glfwWindowShouldClose(window))
 	{
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		float currentTime = glfwGetTime();
 
 		float radius = 15.0f;
 		float orbitX = sin(currentTime) * radius;
 		float orbitZ = cos(currentTime) * radius;
-		float camY = (sin(currentTime/4) + 2) * 3;
-		
-		
+		float camY = (sin(currentTime / 4) + 2) * 3;
+
+
 		// Get shader variable handles
 		//-------------------------------------------------
 		unsigned int viewLoc = glGetUniformLocation(programID, "view");
 		unsigned int modelLoc = glGetUniformLocation(programID, "model");
-		
-		
+
+
 		// Set camera
 		//-------------------------------------------------
-		glm::vec3 cameraPos = glm::vec3(5.0f, camY, 20.0f); // positive Z-values go towards the user
+		glm::vec3 cameraPos = getCameraPosition(cameraId);
 		glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
 		glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget); // camera's Z-axis
 		glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection)); // camera's X-axis 
 		glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight); // camera's Y-axis
+
 
 		glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, cameraUp);
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
@@ -257,4 +267,35 @@ int main()
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	return 0;
+}
+
+void keyPressCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	switch (key)
+	{
+	case GLFW_KEY_1:
+		cameraId = 1;
+		break;
+	case GLFW_KEY_2:
+		cameraId = 2;
+		break;
+	case GLFW_KEY_3:
+		cameraId = 3;
+		break;
+	default:
+		break;
+	}
+}
+
+glm::vec3 getCameraPosition(int cameraId)
+{
+	switch (cameraId)
+	{
+	case 1:
+		return glm::vec3(20.0f, 10.0f, 20.0f);
+	case 2:
+		return glm::vec3(0.0f, 10.0f, 20.0f);
+	case 3:
+		return glm::vec3(-3.0f, 10.0f, -20.0f);
+	}
 }
