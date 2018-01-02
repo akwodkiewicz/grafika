@@ -46,49 +46,53 @@ static const GLfloat vertices[] = {
 // CUBE
 //-----------------------------------
 static const GLfloat vertices2[] = {
-	-0.5f, -0.5f, -0.5f,
-	 0.5f, -0.5f, -0.5f,
-	 0.5f,  0.5f, -0.5f,
-	 0.5f,  0.5f, -0.5f,
-	-0.5f,  0.5f, -0.5f,
-	-0.5f, -0.5f, -0.5f,
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-	-0.5f, -0.5f,  0.5f,
-	 0.5f, -0.5f,  0.5f,
-	 0.5f,  0.5f,  0.5f,
-	 0.5f,  0.5f,  0.5f,
-	-0.5f,  0.5f,  0.5f,
-	-0.5f, -0.5f,  0.5f,
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+	0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
 
-	-0.5f,  0.5f,  0.5f,
-	-0.5f,  0.5f, -0.5f,
-	-0.5f, -0.5f, -0.5f,
-	-0.5f, -0.5f, -0.5f,
-	-0.5f, -0.5f,  0.5f,
-	-0.5f,  0.5f,  0.5f,
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-	 0.5f,  0.5f,  0.5f,
-	 0.5f,  0.5f, -0.5f,
-	 0.5f, -0.5f, -0.5f,
-	 0.5f, -0.5f, -0.5f,
-	 0.5f, -0.5f,  0.5f,
-	 0.5f,  0.5f,  0.5f,
+	0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-	-0.5f, -0.5f, -0.5f,
-	 0.5f, -0.5f, -0.5f,
-	 0.5f, -0.5f,  0.5f,
-	 0.5f, -0.5f,  0.5f,
-	-0.5f, -0.5f,  0.5f,
-	-0.5f, -0.5f, -0.5f,
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-	-0.5f,  0.5f, -0.5f,
-	 0.5f,  0.5f, -0.5f,
-	 0.5f,  0.5f,  0.5f,
-	 0.5f,  0.5f,  0.5f,
-	-0.5f,  0.5f,  0.5f,
-	-0.5f,  0.5f, -0.5f
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 };
 
+static const glm::vec3 LIGHT_POSITION(0.0f, 7.0f, 0.0f);
+static const glm::vec3 LIGHT_COLOR(1.0f, 1.0f, 1.0f);
+static const glm::vec3 PLANE_COLOR(0.04f, 0.3f, 0.5f);
+static const glm::vec3 GROUND_COLOR(0.34f, 0.31f, 0.34f);
 
 int cameraId = 1;
 int aspectRatioChanged = 1;
@@ -169,15 +173,17 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]); // Bind VBO to VAO
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW); // Copy data
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); // Set the interpretation of Vertex Buffer data
 	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float))); // Set the interpretation of Vertex Buffer data
+	glEnableVertexAttribArray(1);
 
 
 	// Light model
 	glBindVertexArray(VAOs[2]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]); // Bind VBO to VAO
 	// Data is already copied
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // Set the interpretation of Vertex Buffer data
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); // Set the interpretation of Vertex Buffer data
 	glEnableVertexAttribArray(0);
 
 	// Complie and use shaders
@@ -206,14 +212,10 @@ int main()
 	glClearColor(0.2f, 0.2f, 0.4f, 0.0f);
 
 
-	// Set light and object colors and light position
+	// Set light color and position
 	//-------------------------------------------------
-	glm::vec3 lightColor(1.0f);
-	glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
-	glm::vec3 objectColor(1.0f, 0.5f, 0.31f);
-	glUniform3fv(objectColorLoc, 1, glm::value_ptr(objectColor));
-	glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
-	glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
+	glUniform3fv(lightColorLoc, 1, glm::value_ptr(LIGHT_COLOR));
+	glUniform3fv(lightPosLoc, 1, glm::value_ptr(LIGHT_POSITION));
 
 
 
@@ -256,7 +258,7 @@ int main()
 		//-------------------------------------------------
 		if (aspectRatioChanged)
 		{
-			projection = createProjectionMatrix(1.0f, 100.0f, glm::radians(45.0f), (float)currentHeight / (float)currentWidth);
+			projection = createProjectionMatrix(1.0f, 100.0f, glm::radians(95.0f), (float)currentHeight / (float)currentWidth);
 			glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 			aspectRatioChanged = 0;
 		}
@@ -265,7 +267,11 @@ int main()
 		// Set camera (calculate `view` matrix)
 		//-------------------------------------------------
 		glm::vec3 cameraPos = getCameraPosition(cameraId);
-		glm::vec3 cameraTarget = glm::vec3(0.0f, 0.5f, 0.5f);
+		glm::vec3 cameraTarget;
+		if (cameraId == 3)
+			cameraTarget = glm::vec3(orbitX, 3.0f, orbitZ);
+		else
+			cameraTarget = glm::vec3(0.0f, 0.5f, 0.5f);
 		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 		glm::mat4 view = createViewMatrix(cameraPos, cameraTarget, up);
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
@@ -274,24 +280,29 @@ int main()
 
 		// Draw plane
 		//-------------------------------------------------
-		glm::mat4 modelPlane = glm::translate(glm::mat4(),/*glm::lookAt(glm::vec3(yawAngle, -3.0f, orbitZ), glm::vec3(0.0f, 0.0f, 0.0f), up)*/glm::vec3(orbitX, 3.0f, orbitZ));
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelPlane[0][0]); // Send model matrix to shader
 		glBindVertexArray(VAOs[0]);
+
+		glm::mat4 modelPlane = glm::translate(glm::mat4(),/*glm::lookAt(glm::vec3(yawAngle, -3.0f, orbitZ), glm::vec3(0.0f, 0.0f, 0.0f), up)*/glm::vec3(orbitX, 3.0f, orbitZ));
+		glUniform3fv(objectColorLoc, 1, glm::value_ptr(PLANE_COLOR));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelPlane[0][0]); // Send model matrix to shader
 		glDrawArrays(GL_TRIANGLES, 0, 54);
 
 
 		// Draw cubes
 		//-------------------------------------------------
-		//glBindVertexArray(VAOs[1]);
-		//int amount = 50;
-		//for (int x = -amount; x <= amount; x++)
-		//	for (int z = -amount; z <= amount; z++)
-		//	{
-		//		glm::mat4 modelCube = glm::translate(glm::mat4(), glm::vec3((float)x, 0.5f, (float)z));
-		//		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
-		//		glDrawArrays(GL_TRIANGLES, 0, 108);
-		//	}
-		//glm::mat4 modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, 0.5f, (float)0));
+		glBindVertexArray(VAOs[1]);
+
+		glm::mat4 modelCube;
+		glUniform3fv(objectColorLoc, 1, glm::value_ptr(GROUND_COLOR));	
+		int amount = 30;
+		for (int x = -amount; x <= amount; x++)
+			for (int z = -amount; z <= amount; z++)
+			{
+			    modelCube = glm::translate(glm::mat4(), glm::vec3((float)x, 0.5f, (float)z));
+				glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+			}
+		//glm::mat4 modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, 5.5f, (float)0));
 		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
 		//glDrawArrays(GL_TRIANGLES, 0, 108);
 		//modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, -0.5f, (float)0));
@@ -306,19 +317,19 @@ int main()
 		// modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, 0.5f, (float)1));
 		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
 		//glDrawArrays(GL_TRIANGLES, 0, 108);
-		
+		//
 
 		// Draw light cube
 		//--------------------------------------------------
-		glBindVertexArray(VAOs[2]);
 		glUseProgram(program2ID);
+		glBindVertexArray(VAOs[2]);
+
+		modelCube =  glm::translate(glm::mat4(), LIGHT_POSITION);
 
 		glUniformMatrix4fv(projLoc2, 1, GL_FALSE, &projection[0][0]);
 		glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, &view[0][0]);
-		glm::mat4 modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, 0.5f, (float)0));
-		glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
-		glDrawArrays(GL_TRIANGLES, 0, 108);
-
+		glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, &modelCube[0][0]);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
 		glfwSwapBuffers(window);
@@ -360,11 +371,12 @@ glm::vec3 getCameraPosition(int cameraId)
 	case 1:
 		return glm::vec3(15.0f, 10.0f, 20.0f);
 	case 2:
-		return glm::vec3(0.0f, -40.0f, 20.0f);
+		return glm::vec3(0.0f, 30.0f, 20.0f);
 	case 3:
-		return glm::vec3(3.0f, 0.5f, -0.5f);
+		return glm::vec3(3.0f, 4.5f, -0.5f);
 	}
 }
+
 
 glm::mat4 createViewMatrix(glm::vec3 cameraPos, glm::vec3 cameraTarget, glm::vec3 up)
 {
