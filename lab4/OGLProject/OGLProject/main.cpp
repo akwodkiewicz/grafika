@@ -6,11 +6,14 @@
 
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
+#include <glm\ext.hpp>
 
 #include "shdloader.hpp"
 
 void keyPressCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 glm::vec3 getCameraPosition(int cameraId);
+glm::mat4 createViewMatrix(glm::vec3 cameraPos, glm::vec3 cameraTarget, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f));
+glm::mat4 createProjectionMatrix(float near, float far, float fov_rad, float aspect_ratio);
 
 // PLANE
 //---------------------------------
@@ -85,7 +88,7 @@ static const GLfloat vertices2[] = {
 };
 
 
-int cameraId = 1;
+int cameraId = 3;
 
 int main()
 {
@@ -188,10 +191,9 @@ int main()
 
 	// Calculate projection matrix and send it to shader
 	//-------------------------------------------------
-	glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)mode->width / (float)mode->height, 0.1f, 100.0f);
+	glm::mat4 projection = createProjectionMatrix(1.0f, 100.0f, glm::radians(45.0f), (float)mode->height/(float)mode->width);
 	unsigned int projLoc = glGetUniformLocation(programID, "projection");
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
-
 
 	// Register callbacks for keypresses
 	//-------------------------------------------------
@@ -201,14 +203,13 @@ int main()
 	//-------------------------------------------------
 	while (!glfwWindowShouldClose(window))
 	{
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		float currentTime = glfwGetTime();
 
 		float radius = 15.0f;
 		float orbitX = sin(currentTime) * radius;
 		float orbitZ = cos(currentTime) * radius;
-		float camY = (sin(currentTime / 4) + 2) * 3;
+		//float camY = (sin(currentTime / 4) + 2) * 3;
 
 
 		// Get shader variable handles
@@ -220,18 +221,11 @@ int main()
 		// Set camera
 		//-------------------------------------------------
 		glm::vec3 cameraPos = getCameraPosition(cameraId);
-		glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+		glm::vec3 cameraTarget = glm::vec3(0.0f, 0.5f, 0.5f);
 		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-
-		glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget); // camera's Z-axis
-		glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection)); // camera's X-axis 
-		glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight); // camera's Y-axis
-
-
-		glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, cameraUp);
+		glm::mat4 view = createViewMatrix(cameraPos, cameraTarget, up);
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
 
-		//fprintf(stderr, "(%f, %f, %f)\n", cameraUp.x, cameraUp.y, cameraUp.z);
 
 		// Draw plane
 		//-------------------------------------------------
@@ -244,16 +238,30 @@ int main()
 		// Draw cubes
 		//-------------------------------------------------
 		glBindVertexArray(VAOs[1]);
-		int amount = 50;
-		for (int x = -amount; x <= amount; x++)
-			for (int z = -amount; z <= amount; z++)
-			{
-				glm::mat4 modelCube = glm::translate(glm::mat4(), glm::vec3((float)x, 0.5f, (float)z));
-				glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
-				glDrawArrays(GL_TRIANGLES, 0, 108);
-			}
+		//int amount = 50;
+		//for (int x = -amount; x <= amount; x++)
+		//	for (int z = -amount; z <= amount; z++)
+		//	{
+		//		glm::mat4 modelCube = glm::translate(glm::mat4(), glm::vec3((float)x, 0.5f, (float)z));
+		//		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
+		//		glDrawArrays(GL_TRIANGLES, 0, 108);
+		//	}
 
-
+		glm::mat4 modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, 0.5f, (float)0));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
+		glDrawArrays(GL_TRIANGLES, 0, 108);
+		modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, -0.5f, (float)0));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
+		glDrawArrays(GL_TRIANGLES, 0, 108);
+		modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, 1.5f, (float)0));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
+		glDrawArrays(GL_TRIANGLES, 0, 108);
+		modelCube = glm::translate(glm::mat4(), glm::vec3((float)1, 0.5f, (float)0));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
+		glDrawArrays(GL_TRIANGLES, 0, 108);
+		 modelCube = glm::translate(glm::mat4(), glm::vec3((float)0, 0.5f, (float)1));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
+		glDrawArrays(GL_TRIANGLES, 0, 108);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
@@ -292,10 +300,50 @@ glm::vec3 getCameraPosition(int cameraId)
 	switch (cameraId)
 	{
 	case 1:
-		return glm::vec3(20.0f, 10.0f, 20.0f);
+		return glm::vec3(15.0f, 10.0f, 20.0f);
 	case 2:
 		return glm::vec3(0.0f, 10.0f, 20.0f);
 	case 3:
-		return glm::vec3(-3.0f, 10.0f, -20.0f);
+		return glm::vec3(3.0f, 0.5f, -0.5f);
 	}
+}
+
+glm::mat4 createViewMatrix(glm::vec3 cameraPos, glm::vec3 cameraTarget, glm::vec3 up)
+{
+	//glm::vec3 leftHandedCameraPos = glm::vec3(cameraPos.x, cameraPos.y, cameraPos.z);
+	glm::vec3 zAxis = glm::normalize(cameraPos - cameraTarget);
+	glm::vec3 xAxis = glm::normalize(glm::cross(up, zAxis));
+	glm::vec3 yAxis = glm::cross(zAxis, xAxis);
+
+	//glm::mat4 view_inverse = glm::mat4(
+	//	xAxis.x, yAxis.x, zAxis.x, cameraPos.x,
+	//	xAxis.y, yAxis.y, zAxis.y, cameraPos.y,
+	//	xAxis.z, yAxis.z, zAxis.z, cameraPos.z,
+	//		  0,       0,		0,			 1
+	//);
+	glm::mat3 t_1 = glm::mat3(
+		xAxis.x, yAxis.x, zAxis.x, // first column
+		xAxis.y, yAxis.y, zAxis.y, // second column
+		xAxis.z, yAxis.z, zAxis.z //third column
+	);
+	glm::vec3 v = -t_1*cameraPos;
+
+	glm::mat4 view = glm::mat4(t_1);
+	view[3].x = v.x;
+	view[3].y = v.y;
+	view[3].z = v.z;
+
+	return view;
+}
+
+glm::mat4 createProjectionMatrix(float near, float far, float fov_rad, float aspect_ratio)
+{
+	float e = 1 / (tan(fov_rad / 2));
+	glm::mat4 projection;
+	projection[0][0] = e;
+	projection[1][1] = e / aspect_ratio;
+	projection[2][2] = -((far + near) / (far - near));
+	projection[2][3] = -1;
+	projection[3][2] = -((2 * far*near) / (far - near));
+	return projection;
 }
