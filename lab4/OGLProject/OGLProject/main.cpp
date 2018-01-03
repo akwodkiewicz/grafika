@@ -11,30 +11,30 @@
 #include "shdloader.hpp"
 
 void keyPressCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-glm::vec3 getCameraPosition(int cameraId);
 glm::mat4 createViewMatrix(glm::vec3 cameraPos, glm::vec3 cameraTarget, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f));
 glm::mat4 createProjectionMatrix(float near, float far, float fov_rad, float aspect_ratio);
+glm::mat2x3 getCamera(int cameraId, glm::vec3 planePos, float currentTime);
 
 // PLANE
 //---------------------------------
 static const GLfloat vertices[] = {
 	-1.0f,  0.0f, -1.0f,		0.0f, 1.0f, 0.0f,
 	 1.0f,  0.0f, -1.0f,		0.0f, 1.0f, 0.0f,
-	 0.0f,  0.0f,  1.0f,		0.0f, 1.0f, 0.0f,
+	 0.0f,  0.0f,  2.0f,		0.0f, 1.0f, 0.0f,
 
 	 -1.0f,  0.0f, -1.0f,		0.0f, -1.0f, 0.0f,
 	 -0.33f, -0.02f, -1.0f,		0.0f, -1.0f, 0.0f,
-	 0.0f,  0.0f,  1.0f,		0.0f, -1.0f, 0.0f,
+	 0.0f,  0.0f,  2.0f,		0.0f, -1.0f, 0.0f,
 
 	 1.0f,  0.0f, -1.0f,		0.0f, -1.0f, 0.0f,
 	 0.33f, -0.02f, -1.0f,		0.0f, -1.0f, 0.0f,
-	 0.0f,  0.0f,  1.0f,		0.0f, -1.0f, 0.0f,
+	 0.0f,  0.0f,  2.0f,		0.0f, -1.0f, 0.0f,
 
-	 0.0f,  0.0f,  1.0f, 		-1.0f, 0.0f, 0.0f,
+	 0.0f,  0.0f,  2.0f, 		-1.0f, 0.0f, 0.0f,
 	 0.0f,  -0.33f, -1.0f,		-1.0f, 0.0f, 0.0f,
 	-0.33f,  0.0f,  -1.0f,		-1.0f, 0.0f, 0.0f,
 
-	 0.0f,  0.0f, 1.0f,			1.0f, 0.0f, 0.0f,
+	 0.0f,  0.0f, 2.0f,			1.0f, 0.0f, 0.0f,
 	 0.0f, -0.33f, -1.0f,		1.0f, 0.0f, 0.0f,
 	 0.33f, 0.0f, -1.0f,		1.0f, 0.0f, 0.0f,
 
@@ -89,16 +89,21 @@ static const GLfloat vertices2[] = {
 	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 };
 
-static const glm::vec3 LIGHT_POSITION(0.0f, 7.0f, 0.0f);
-static const glm::vec3 LIGHT_COLOR(1.0f, 1.0f, 1.0f);
+// CONSTANTS
+//-----------------------------------
+static const glm::vec3 LIGHT_POSITION(2.0f, 8.0f, 10.0f);
+static const glm::vec3 LIGHT_COLOR(1.0f, 0.4, 0.5f);
 static const glm::vec3 PLANE_COLOR(0.04f, 0.3f, 0.5f);
 static const glm::vec3 GROUND_COLOR(0.34f, 0.31f, 0.34f);
 
-int cameraId = 1;
+// GLOBALS
+//------------------------------------
+int cameraId = 2;
 int aspectRatioChanged = 1;
 int currentWidth;
 int currentHeight;
 int specularPower = 32;
+
 int main()
 {
 	// Initialize GLFW
@@ -209,6 +214,7 @@ int main()
 	unsigned int modelLoc2 = glGetUniformLocation(program2ID, "model");
 	unsigned int viewLoc2 = glGetUniformLocation(program2ID, "view");
 	unsigned int projLoc2 = glGetUniformLocation(program2ID, "projection");
+	unsigned int oneColor2 = glGetUniformLocation(program2ID, "oneColor");
 
 	// Set background color
 	//-------------------------------------------------
@@ -234,7 +240,7 @@ int main()
 
 	// Calculate projection matrix and send it to shader
 	//-------------------------------------------------
-	glm::mat4 projection = createProjectionMatrix(1.0f, 100.0f, glm::radians(45.0f), (float)mode->height/(float)mode->width);
+	glm::mat4 projection = createProjectionMatrix(1.0f, 100.0f, glm::radians(45.0f), (float)mode->height / (float)mode->width);
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 
 
@@ -249,12 +255,6 @@ int main()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		float currentTime = glfwGetTime();
-
-		float radius = 10.0f;
-		float orbitX = sin(currentTime) * radius;
-		float orbitZ = cos(currentTime) * radius;
-		float camY = 0.0f;//(sin(currentTime / 4)) * 3;
-
 		glUseProgram(programID);
 
 		// Calculate new projection matrix has the aspect ratio changed
@@ -271,34 +271,38 @@ int main()
 		glUniform1i(specularPowerLoc, specularPower);
 
 
-		// Set camera (calculate `view` matrix)
+		// Calculate current plane position
 		//-------------------------------------------------
-		glm::vec3 cameraPos = getCameraPosition(cameraId);
-		cameraPos.y += camY;
-		glUniform3fv(viewPosLoc, 1, glm::value_ptr(cameraPos));
+		float radius = 10.0f;
+		float orbitX = sin(currentTime) * radius;
+		float orbitZ = cos(currentTime) * radius;
 
-		glm::vec3 cameraTarget;
-		if (cameraId == 3)
-			cameraTarget = glm::vec3(orbitX, 3.0f, orbitZ);
-		else
-			cameraTarget = glm::vec3(0.0f, 0.5f, 0.5f);
+		glm::vec3 planePos(orbitX, 5.0f, orbitZ);
+
+
+		// Set camera and calculate `view` matrix
+		//-------------------------------------------------	
+		auto res = getCamera(cameraId, planePos, currentTime);
+		
+		glm::vec3 cameraPos = res[0];
+		glm::vec3 cameraTarget = res[1];		
 		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 		glm::mat4 view = createViewMatrix(cameraPos, cameraTarget, up);
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
 
+		glUniform3fv(viewPosLoc, 1, glm::value_ptr(cameraPos)); // camera position
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]); // view matrix
 
 
 		// Draw plane
 		//-------------------------------------------------
 		glBindVertexArray(VAOs[0]);
 
-		//glm::mat4 modelPlane = glm::translate(glm::mat4(),/*glm::lookAt(glm::vec3(yawAngle, -3.0f, orbitZ), glm::vec3(0.0f, 0.0f, 0.0f), up)*/glm::vec3(orbitX, 3.0f, orbitZ));
-		glm::mat4 rotation = glm::rotate(glm::mat4(), currentTime+45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 rotation = glm::rotate(glm::mat4(), currentTime + 45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 translation = glm::translate(glm::mat4(), glm::vec3(orbitX, 3.0f, orbitZ));
 		glm::mat4 modelPlane = translation * rotation;
 
 		glUniform3fv(objectColorLoc, 1, glm::value_ptr(PLANE_COLOR));
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelPlane[0][0]); // Send model matrix to shader
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelPlane[0][0]);
 		glDrawArrays(GL_TRIANGLES, 0, 54);
 
 
@@ -307,10 +311,10 @@ int main()
 		glBindVertexArray(VAOs[1]);
 
 		glm::mat4 modelCube;
-		glUniform3fv(objectColorLoc, 1, glm::value_ptr(GROUND_COLOR));	
+		glUniform3fv(objectColorLoc, 1, glm::value_ptr(GROUND_COLOR));
 
 		modelCube = glm::translate(glm::scale(glm::mat4(), glm::vec3(50.0f, 0.5f, 50.0f)), glm::vec3(0.0f, -0.5f, 0.0f));
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]); // Send model matrix to shader
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
@@ -319,11 +323,13 @@ int main()
 		glUseProgram(program2ID);
 		glBindVertexArray(VAOs[2]);
 
-		modelCube =  glm::translate(glm::mat4(), LIGHT_POSITION);
+		modelCube = glm::translate(glm::mat4(), LIGHT_POSITION);
 
 		glUniformMatrix4fv(projLoc2, 1, GL_FALSE, &projection[0][0]);
 		glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, &view[0][0]);
 		glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, &modelCube[0][0]);
+		glUniform3fv(oneColor2, 1, glm::value_ptr(LIGHT_COLOR));
+
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
@@ -353,11 +359,15 @@ void keyPressCallback(GLFWwindow* window, int key, int scancode, int action, int
 		break;
 	case GLFW_KEY_2:
 		cameraId = 2;
-		std::cout << "Camera 2" << std::endl;
+		std::cout << "Camera 2 (moving, above)" << std::endl;
 		break;
 	case GLFW_KEY_3:
 		cameraId = 3;
-		std::cout << "Camera 3 (tracking)" << std::endl;
+		std::cout << "Camera 3 (moving, in front)" << std::endl;
+		break;
+	case GLFW_KEY_4:
+		cameraId = 4;
+		std::cout << "Camera 4 (tracking)" << std::endl;
 		break;
 	case GLFW_KEY_EQUAL:
 		if (specularPower != INT_MAX)
@@ -374,39 +384,18 @@ void keyPressCallback(GLFWwindow* window, int key, int scancode, int action, int
 	}
 }
 
-glm::vec3 getCameraPosition(int cameraId)
-{
-	switch (cameraId)
-	{
-	case 1:
-		return glm::vec3(15.0f, 10.0f, 20.0f);
-	case 2:
-		return glm::vec3(0.0f, 2.0f, 20.0f);
-	case 3:
-		return glm::vec3(3.0f, 4.5f, -0.5f);
-	}
-}
-
-
 glm::mat4 createViewMatrix(glm::vec3 cameraPos, glm::vec3 cameraTarget, glm::vec3 up)
 {
-	//glm::vec3 leftHandedCameraPos = glm::vec3(cameraPos.x, cameraPos.y, cameraPos.z);
 	glm::vec3 zAxis = glm::normalize(cameraPos - cameraTarget);
 	glm::vec3 xAxis = glm::normalize(glm::cross(up, zAxis));
 	glm::vec3 yAxis = glm::cross(zAxis, xAxis);
 
-	//glm::mat4 view_inverse = glm::mat4(
-	//	xAxis.x, yAxis.x, zAxis.x, cameraPos.x,
-	//	xAxis.y, yAxis.y, zAxis.y, cameraPos.y,
-	//	xAxis.z, yAxis.z, zAxis.z, cameraPos.z,
-	//		  0,       0,		0,			 1
-	//);
 	glm::mat3 t_1 = glm::mat3(
 		xAxis.x, yAxis.x, zAxis.x, // first column
 		xAxis.y, yAxis.y, zAxis.y, // second column
-		xAxis.z, yAxis.z, zAxis.z //third column
+		xAxis.z, yAxis.z, zAxis.z  // third column
 	);
-	glm::vec3 v = -t_1*cameraPos;
+	glm::vec3 v = -t_1 * cameraPos;
 
 	glm::mat4 view = glm::mat4(t_1);
 	view[3].x = v.x;
@@ -426,4 +415,35 @@ glm::mat4 createProjectionMatrix(float near, float far, float fov_rad, float asp
 	projection[2][3] = -1;
 	projection[3][2] = -((2 * far*near) / (far - near));
 	return projection;
+}
+
+glm::mat2x3 getCamera(int cameraId, glm::vec3 planePos, float currentTime)
+{
+	glm::vec3 cameraPos, cameraTarget;
+	glm::mat3 rotationM;
+	switch (cameraId)
+	{
+	case 1:
+		cameraPos = glm::vec3(15.0f, 10.0f, 20.0f);
+		cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+		break;
+	case 2:
+		rotationM = glm::mat3(glm::rotate(glm::mat4(), currentTime + 45.0f, glm::vec3(0.0f, 1.0f, 0.0f)));
+		cameraPos = planePos + rotationM * glm::vec3(0.0f, 0.5f, -6.0f);
+		cameraTarget =  planePos + rotationM * glm::vec3(0.0f, 0.0f, 1.0f);
+		break;
+	case 3:
+		rotationM = glm::mat3(glm::rotate(glm::mat4(), currentTime + 45.0f, glm::vec3(0.0f, 1.0f, 0.0f)));
+		cameraPos = planePos + rotationM * glm::vec3(0.0f, 0.5f, 2.0f);
+		cameraTarget = planePos + rotationM * glm::vec3(0.0f, 0.0f, 3.0f);
+		break;
+	case 4:
+		cameraPos = glm::vec3(3.0f, 4.5f, -0.5f);
+		cameraTarget = planePos;
+		break;
+	default:
+		break;
+	}
+	glm::mat2x3 result = glm::mat2x3(cameraPos, cameraTarget);
+	return result;
 }
