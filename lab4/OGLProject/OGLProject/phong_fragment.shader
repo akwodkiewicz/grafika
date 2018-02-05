@@ -11,64 +11,70 @@ uniform int specularPower;
 uniform vec3 pointLightPos;
 uniform vec3 pointLightColor;
 
-uniform vec3 reflectorLightPos;
-uniform vec3 reflectorLightColor;
+uniform vec3 spotLightPos;
+uniform vec3 spotLightColor;
+uniform vec3 spotLightAim;
+uniform float spotLightCosCutoff;
+uniform float spotLightExp;
 
 out vec4 FragColor;
 
 void main()
 {
+	float ambientStrength = 0.1;
+	float diffuseStrength = 0.6;
+	float specularStrength = 0.2;
+
+	vec3 norm = normalize(Normal);
+	vec3 viewDir = normalize(viewPos - FragPos);
+	vec3 specularColor = vec3(1.0);
+
+
 	/// ---------------- Ambient lighting (WHITE)
-	float ambientStrength = 0.2;
 	vec3 ambientLightColor = vec3(1.0);
 	vec3 ambient = ambientStrength * ambientLightColor;
 	/// ----------------------------------------
-	
-	
 
 
-	/// ---------------- Diffused ligthing
-	float diffuseStrength = 0.6;
-	vec3 norm = normalize(Normal);
 	
-	// -------- Point light
+	/// ---------------- Point light
+	// -------- Diffuse
 	vec3 pointLightDir = normalize(pointLightPos - FragPos);
 	float pointAngleFactor = max(dot(norm, pointLightDir), 0.0);
 	vec3 pointDiff = pointAngleFactor * pointLightColor;
-	
-	// -------- Reflector light
-	//
-	//
-	vec3 reflectorDiff = vec3(0.0);
 
-	vec3 diffuse = diffuseStrength * (pointDiff + reflectorDiff);
-	/// ----------------------------------------
-
-
-
-
-	/// ---------------- Specular lighting (WHITE)
-	float specularStrength = 0.2;
-	vec3 specularColor = vec3(1.0);
-	vec3 viewDir = normalize(viewPos - FragPos);
-
-	// -------- Point light
-	vec3 pointReflectDir = reflect(-pointLightDir, norm);
-	pointAngleFactor = pow(max(dot(viewDir, pointReflectDir), 0.0), specularPower);
+	// -------- Specular
+	vec3 pointSpotDir = reflect(-pointLightDir, norm);
+	pointAngleFactor = pow(max(dot(viewDir, pointSpotDir), 0.0), specularPower);
 	vec3 pointSpec = pointAngleFactor * specularColor;
 
-	// -------- Reflector light
-	//
-	//
-	vec3 reflectorSpec = vec3(0.0);
+	vec3 pointResult = pointDiff * diffuseStrength + pointSpec * specularStrength;
+	/// ----------------------------------------
 	
-	vec3 specular = specularStrength * (pointSpec + reflectorSpec);
+
+
+	/// ---------------- Spotlight
+	// -------- Diffuse
+	vec3 spotLightDir = normalize(spotLightPos - FragPos);
+	float spotAngleFactor = max(dot(norm, spotLightDir), 0.0);
+	vec3 spotDiff = spotAngleFactor * spotLightColor;
+
+	float cutoff = dot(normalize(spotLightAim), -spotLightDir);
+	float effectFactor = pow(cutoff, spotLightExp);
+	spotDiff *= effectFactor;
+
+	// -------- Specular
+	vec3 spotSpec = vec3(0.0f);
+	
+
+	if (cutoff < spotLightCosCutoff) {
+		spotDiff = vec3(0.0f);
+		spotSpec = vec3(0.0f);
+	}
+	vec3 spotResult = diffuseStrength * spotDiff + specularStrength * spotSpec;
 	/// ----------------------------------------
 
 
-
-
-
-	vec3 result = (ambient + diffuse + specular) * objectColor;
+	vec3 result = (/*ambient + pointResult + */spotResult * 10.0f) * objectColor;
 	FragColor = vec4(result, 1.0);
 }

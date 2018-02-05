@@ -93,6 +93,7 @@ static const GLfloat vertices2[] = {
 //-----------------------------------
 static const glm::vec3 POINT_LIGHT_POSITION(2.0f, 8.0f, 10.0f);
 static const glm::vec3 POINT_LIGHT_COLOR(1.0f, 0.4, 0.5f);
+static const glm::vec3 SPOT_LIGHT_COLOR(1.1f, 2.3f, 1.0f);
 static const glm::vec3 PLANE_COLOR(0.04f, 0.3f, 0.5f);
 static const glm::vec3 GROUND_COLOR(0.34f, 0.31f, 0.34f);
 static const float FOV = 90.0f;
@@ -197,7 +198,7 @@ int main()
 	GLuint programID = LoadShaders("phong_vertex.shader", "phong_fragment.shader");
 	glUseProgram(programID);
 
-	GLuint program2ID = LoadShaders("vertex.shader", "fragment_onecolor.shader");
+	GLuint program2ID = LoadShaders("phong_vertex.shader", "fragment_onecolor.shader");
 
 
 	// Get shader variable handles
@@ -213,8 +214,13 @@ int main()
 	unsigned int pointLightColorLoc = glGetUniformLocation(programID, "pointLightColor");
 	unsigned int pointLightPosLoc = glGetUniformLocation(programID, "pointLightPos");
 
-	// Reflector light
-	// ?
+	// Spotlight
+	unsigned int spotLightPosLoc = glGetUniformLocation(programID, "spotLightPos");
+	unsigned int spotLightColorLoc = glGetUniformLocation(programID, "spotLightColor");
+	unsigned int spotLightAimLoc = glGetUniformLocation(programID, "spotLightAim");
+	unsigned int spotLightCosCutoffLoc = glGetUniformLocation(programID, "spotLightCosCutoff");
+	unsigned int spotLightExpLoc = glGetUniformLocation(programID, "spotLightExp");
+
 
 	// Light cube model
 	unsigned int modelLoc2 = glGetUniformLocation(program2ID, "model");
@@ -231,6 +237,15 @@ int main()
 	//-------------------------------------------------
 	glUniform3fv(pointLightColorLoc, 1, glm::value_ptr(POINT_LIGHT_COLOR));
 	glUniform3fv(pointLightPosLoc, 1, glm::value_ptr(POINT_LIGHT_POSITION));
+
+
+	// Set spotlight data
+	//-------------------------------------------------
+	glUniform3fv(spotLightPosLoc, 1, glm::value_ptr(glm::vec3(-25.0f, 4.0f, -25.0f)));
+	glUniform3fv(spotLightAimLoc, 1, glm::value_ptr(glm::vec3(2.0f, -1.0f, 2.0f)));
+	glUniform1f(spotLightCosCutoffLoc, 0.9f);
+	glUniform1f(spotLightExpLoc, 30.0f);
+	glUniform3fv(spotLightColorLoc, 1, glm::value_ptr(SPOT_LIGHT_COLOR));
 
 
 
