@@ -3,32 +3,71 @@
 in vec3 Normal;
 in vec3 FragPos;
 
-uniform vec3 lightPos;
-uniform vec3 objectColor;
-uniform vec3 lightColor;
 uniform vec3 viewPos;
+uniform vec3 objectColor;
 uniform int specularPower;
+
+
+uniform vec3 pointLightPos;
+uniform vec3 pointLightColor;
+
+uniform vec3 reflectorLightPos;
+uniform vec3 reflectorLightColor;
 
 out vec4 FragColor;
 
 void main()
 {
-	// ambient
-	float ambientStrength = 0.3;
-	vec3 ambient = ambientStrength * lightColor;
+	/// ---------------- Ambient lighting (WHITE)
+	float ambientStrength = 0.2;
+	vec3 ambientLightColor = vec3(1.0);
+	vec3 ambient = ambientStrength * ambientLightColor;
+	/// ----------------------------------------
+	
+	
 
-	// diffuse 
+
+	/// ---------------- Diffused ligthing
+	float diffuseStrength = 0.6;
 	vec3 norm = normalize(Normal);
-	vec3 lightDir = normalize(lightPos - FragPos);
-	float diff = max(dot(norm, lightDir), 0.0);
-	vec3 diffuse = diff * lightColor;
+	
+	// -------- Point light
+	vec3 pointLightDir = normalize(pointLightPos - FragPos);
+	float pointAngleFactor = max(dot(norm, pointLightDir), 0.0);
+	vec3 pointDiff = pointAngleFactor * pointLightColor;
+	
+	// -------- Reflector light
+	//
+	//
+	vec3 reflectorDiff = vec3(0.0);
 
-	// specular
-	float specularStrength = 0.8;
+	vec3 diffuse = diffuseStrength * (pointDiff + reflectorDiff);
+	/// ----------------------------------------
+
+
+
+
+	/// ---------------- Specular lighting (WHITE)
+	float specularStrength = 0.2;
+	vec3 specularColor = vec3(1.0);
 	vec3 viewDir = normalize(viewPos - FragPos);
-	vec3 reflectDir = reflect(-lightDir, norm);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), specularPower);
-	vec3 specular = specularStrength * spec * lightColor;
+
+	// -------- Point light
+	vec3 pointReflectDir = reflect(-pointLightDir, norm);
+	pointAngleFactor = pow(max(dot(viewDir, pointReflectDir), 0.0), specularPower);
+	vec3 pointSpec = pointAngleFactor * specularColor;
+
+	// -------- Reflector light
+	//
+	//
+	vec3 reflectorSpec = vec3(0.0);
+	
+	vec3 specular = specularStrength * (pointSpec + reflectorSpec);
+	/// ----------------------------------------
+
+
+
+
 
 	vec3 result = (ambient + diffuse + specular) * objectColor;
 	FragColor = vec4(result, 1.0);

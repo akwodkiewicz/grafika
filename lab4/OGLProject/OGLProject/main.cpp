@@ -91,10 +91,11 @@ static const GLfloat vertices2[] = {
 
 // CONSTANTS
 //-----------------------------------
-static const glm::vec3 LIGHT_POSITION(2.0f, 8.0f, 10.0f);
-static const glm::vec3 LIGHT_COLOR(1.0f, 0.4, 0.5f);
+static const glm::vec3 POINT_LIGHT_POSITION(2.0f, 8.0f, 10.0f);
+static const glm::vec3 POINT_LIGHT_COLOR(1.0f, 0.4, 0.5f);
 static const glm::vec3 PLANE_COLOR(0.04f, 0.3f, 0.5f);
 static const glm::vec3 GROUND_COLOR(0.34f, 0.31f, 0.34f);
+static const float FOV = 90.0f;
 
 // GLOBALS
 //------------------------------------
@@ -205,12 +206,17 @@ int main()
 	unsigned int viewLoc = glGetUniformLocation(programID, "view");
 	unsigned int projLoc = glGetUniformLocation(programID, "projection");
 	unsigned int objectColorLoc = glGetUniformLocation(programID, "objectColor");
-	unsigned int lightColorLoc = glGetUniformLocation(programID, "lightColor");
-	unsigned int lightPosLoc = glGetUniformLocation(programID, "lightPos");
 	unsigned int viewPosLoc = glGetUniformLocation(programID, "viewPos");
 	unsigned int specularPowerLoc = glGetUniformLocation(programID, "specularPower");
 
+	// Point light
+	unsigned int pointLightColorLoc = glGetUniformLocation(programID, "pointLightColor");
+	unsigned int pointLightPosLoc = glGetUniformLocation(programID, "pointLightPos");
 
+	// Reflector light
+	// ?
+
+	// Light cube model
 	unsigned int modelLoc2 = glGetUniformLocation(program2ID, "model");
 	unsigned int viewLoc2 = glGetUniformLocation(program2ID, "view");
 	unsigned int projLoc2 = glGetUniformLocation(program2ID, "projection");
@@ -223,8 +229,8 @@ int main()
 
 	// Set light color and position
 	//-------------------------------------------------
-	glUniform3fv(lightColorLoc, 1, glm::value_ptr(LIGHT_COLOR));
-	glUniform3fv(lightPosLoc, 1, glm::value_ptr(LIGHT_POSITION));
+	glUniform3fv(pointLightColorLoc, 1, glm::value_ptr(POINT_LIGHT_COLOR));
+	glUniform3fv(pointLightPosLoc, 1, glm::value_ptr(POINT_LIGHT_POSITION));
 
 
 
@@ -240,7 +246,7 @@ int main()
 
 	// Calculate projection matrix and send it to shader
 	//-------------------------------------------------
-	glm::mat4 projection = createProjectionMatrix(1.0f, 100.0f, glm::radians(45.0f), (float)mode->height / (float)mode->width);
+	glm::mat4 projection = createProjectionMatrix(1.0f, 100.0f, glm::radians(FOV), (float)mode->height / (float)mode->width);
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 
 
@@ -261,7 +267,7 @@ int main()
 		//-------------------------------------------------
 		if (aspectRatioChanged)
 		{
-			projection = createProjectionMatrix(1.0f, 100.0f, glm::radians(95.0f), (float)currentHeight / (float)currentWidth);
+			projection = createProjectionMatrix(1.0f, 100.0f, glm::radians(FOV), (float)currentHeight / (float)currentWidth);
 			glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 			aspectRatioChanged = 0;
 		}
@@ -323,12 +329,12 @@ int main()
 		glUseProgram(program2ID);
 		glBindVertexArray(VAOs[2]);
 
-		modelCube = glm::translate(glm::mat4(), LIGHT_POSITION);
+		modelCube = glm::translate(glm::mat4(), POINT_LIGHT_POSITION);
 
 		glUniformMatrix4fv(projLoc2, 1, GL_FALSE, &projection[0][0]);
 		glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, &view[0][0]);
 		glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, &modelCube[0][0]);
-		glUniform3fv(oneColor2, 1, glm::value_ptr(LIGHT_COLOR));
+		glUniform3fv(oneColor2, 1, glm::value_ptr(POINT_LIGHT_COLOR));
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -438,7 +444,7 @@ glm::mat2x3 getCamera(int cameraId, glm::vec3 planePos, float currentTime)
 		cameraTarget = planePos + rotationM * glm::vec3(0.0f, 0.0f, 3.0f);
 		break;
 	case 4:
-		cameraPos = glm::vec3(3.0f, 4.5f, -0.5f);
+		cameraPos = glm::vec3(15.0f, 10.0f, 20.0f);
 		cameraTarget = planePos;
 		break;
 	default:
