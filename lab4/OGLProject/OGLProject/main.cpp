@@ -194,7 +194,7 @@ int main()
 
 	// Complie and use shaders
 	//-------------------------------------------------
-	GLuint programID = LoadShaders("vertex.shader", "fragment.shader");
+	GLuint programID = LoadShaders("phong_vertex.shader", "phong_fragment.shader");
 	glUseProgram(programID);
 
 	GLuint program2ID = LoadShaders("vertex.shader", "fragment_onecolor.shader");

@@ -120,10 +120,12 @@
     <ClCompile Include="shdloader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragment.shader" />
+    <None Include="gouraud_fragment.shader" />
+    <None Include="phong_fragment.shader" />
     <None Include="fragment_onecolor.shader" />
+    <None Include="gouraud_vertex.shader" />
     <None Include="packages.config" />
-    <None Include="vertex.shader" />
+    <None Include="phong_vertex.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shdloader.hpp" />
