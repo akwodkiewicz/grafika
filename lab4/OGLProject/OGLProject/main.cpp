@@ -206,6 +206,7 @@ int main()
 	unsigned int modelLoc = glGetUniformLocation(programID, "model");
 	unsigned int viewLoc = glGetUniformLocation(programID, "view");
 	unsigned int projLoc = glGetUniformLocation(programID, "projection");
+	unsigned int normalMatrixLoc = glGetUniformLocation(programID, "normalMatrix");
 	unsigned int objectColorLoc = glGetUniformLocation(programID, "objectColor");
 	unsigned int viewPosLoc = glGetUniformLocation(programID, "viewPos");
 	unsigned int specularPowerLoc = glGetUniformLocation(programID, "specularPower");
@@ -241,8 +242,8 @@ int main()
 
 	// Set spotlight data
 	//-------------------------------------------------
-	glUniform3fv(spotLightPosLoc, 1, glm::value_ptr(glm::vec3(-25.0f, 4.0f, -25.0f)));
-	glUniform3fv(spotLightAimLoc, 1, glm::value_ptr(glm::vec3(2.0f, -1.0f, 2.0f)));
+	glUniform3fv(spotLightPosLoc, 1, glm::value_ptr(glm::vec3(25.0f, 4.0f, 25.0f)));
+	glUniform3fv(spotLightAimLoc, 1, glm::value_ptr(glm::vec3(-2.0f, -1.0f, -2.0f)));
 	glUniform1f(spotLightCosCutoffLoc, 0.9f);
 	glUniform1f(spotLightExpLoc, 30.0f);
 	glUniform3fv(spotLightColorLoc, 1, glm::value_ptr(SPOT_LIGHT_COLOR));
@@ -318,12 +319,15 @@ int main()
 		//-------------------------------------------------
 		glBindVertexArray(VAOs[0]);
 
+		glm::mat4 skew = glm::rotate(glm::mat4(), glm::radians(-20.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		glm::mat4 rotation = glm::rotate(glm::mat4(), currentTime + 45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 translation = glm::translate(glm::mat4(), glm::vec3(orbitX, 3.0f, orbitZ));
-		glm::mat4 modelPlane = translation * rotation;
+		glm::mat4 modelPlane = translation * rotation * skew;
+		glm::mat4 normalMatrix = glm::inverseTranspose(modelPlane);
 
 		glUniform3fv(objectColorLoc, 1, glm::value_ptr(PLANE_COLOR));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelPlane[0][0]);
+		glUniformMatrix4fv(normalMatrixLoc, 1, GL_FALSE, &normalMatrix[0][0]);
 		glDrawArrays(GL_TRIANGLES, 0, 54);
 
 
@@ -335,7 +339,10 @@ int main()
 		glUniform3fv(objectColorLoc, 1, glm::value_ptr(GROUND_COLOR));
 
 		modelCube = glm::translate(glm::scale(glm::mat4(), glm::vec3(50.0f, 0.5f, 50.0f)), glm::vec3(0.0f, -0.5f, 0.0f));
+		normalMatrix = glm::inverseTranspose(modelCube);
+
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]);
+		glUniformMatrix4fv(normalMatrixLoc, 1, GL_FALSE, &normalMatrix[0][0]);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
@@ -345,10 +352,12 @@ int main()
 		glBindVertexArray(VAOs[2]);
 
 		modelCube = glm::translate(glm::mat4(), POINT_LIGHT_POSITION);
+		normalMatrix = glm::inverseTranspose(modelCube);
 
 		glUniformMatrix4fv(projLoc2, 1, GL_FALSE, &projection[0][0]);
 		glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, &view[0][0]);
 		glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, &modelCube[0][0]);
+		glUniformMatrix4fv(normalMatrixLoc, 1, GL_FALSE, &normalMatrix[0][0]);
 		glUniform3fv(oneColor2, 1, glm::value_ptr(POINT_LIGHT_COLOR));
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);

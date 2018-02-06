@@ -21,9 +21,9 @@ out vec4 FragColor;
 
 void main()
 {
-	float ambientStrength = 0.1;
-	float diffuseStrength = 0.6;
-	float specularStrength = 0.2;
+	float ambientStrength = 0.2;
+	float diffuseStrength = 0.8;
+	float specularStrength = 0.4;
 
 	vec3 norm = normalize(Normal);
 	vec3 viewDir = normalize(viewPos - FragPos);
@@ -75,6 +75,6 @@ void main()
 	/// ----------------------------------------
 
 
-	vec3 result = (/*ambient + pointResult + */spotResult * 10.0f) * objectColor;
+	vec3 result = (ambient + pointResult + spotResult) * objectColor;
 	FragColor = vec4(result, 1.0);
 }
