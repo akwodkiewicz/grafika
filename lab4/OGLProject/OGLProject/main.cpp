@@ -91,12 +91,12 @@ static const GLfloat vertices2[] = {
 
 // CONSTANTS
 //-----------------------------------
-static const glm::vec3 POINT_LIGHT_POSITION(2.0f, 8.0f, 10.0f);
-static const glm::vec3 POINT_LIGHT_COLOR(1.0f, 0.4, 0.5f);
-static const glm::vec3 SPOT_LIGHT_COLOR(1.1f, 2.3f, 1.0f);
+static const glm::vec3 POINT_LIGHT_POSITION(-15.0f, 8.0f, 10.0f);
+static const glm::vec3 POINT_LIGHT_COLOR(1.0f, 0.7f, 0.5f);
+static const glm::vec3 SPOT_LIGHT_COLOR(0.5f, 0.7f, 1.0f);
 static const glm::vec3 PLANE_COLOR(0.04f, 0.3f, 0.5f);
-static const glm::vec3 GROUND_COLOR(0.34f, 0.31f, 0.34f);
-static const float FOV = 90.0f;
+static const glm::vec3 GROUND_COLOR(1.0f, 1.0f, 1.0f);
+static const float FOV = 100.0f;
 
 // GLOBALS
 //------------------------------------
@@ -104,8 +104,9 @@ int cameraId = 2;
 int aspectRatioChanged = 1;
 int currentWidth;
 int currentHeight;
-int specularPower = 32;
-
+int specularPower = 128;
+float spotLightAimY = -1.0f;
+float spotLightCutoff = 0.9f;
 int main()
 {
 	// Initialize GLFW
@@ -242,9 +243,6 @@ int main()
 
 	// Set spotlight data
 	//-------------------------------------------------
-	glUniform3fv(spotLightPosLoc, 1, glm::value_ptr(glm::vec3(25.0f, 4.0f, 25.0f)));
-	glUniform3fv(spotLightAimLoc, 1, glm::value_ptr(glm::vec3(-2.0f, -1.0f, -2.0f)));
-	glUniform1f(spotLightCosCutoffLoc, 0.9f);
 	glUniform1f(spotLightExpLoc, 30.0f);
 	glUniform3fv(spotLightColorLoc, 1, glm::value_ptr(SPOT_LIGHT_COLOR));
 
@@ -302,6 +300,14 @@ int main()
 		glm::vec3 planePos(orbitX, 5.0f, orbitZ);
 
 
+		// Calculte spotlight position
+		//-------------------------------------------------
+		glm::vec3 spotLightPos = glm::vec3(planePos.x, planePos.y - 2.5f, planePos.z);
+		glm::vec3 spotLightAim = glm::vec3(0.0f, glm::max(spotLightAimY, -1.0f), 2.0f + spotLightAimY);
+		glUniform3fv(spotLightPosLoc, 1, glm::value_ptr(spotLightPos));
+		glUniform1f(spotLightCosCutoffLoc, spotLightCutoff);
+
+
 		// Set camera and calculate `view` matrix
 		//-------------------------------------------------	
 		auto res = getCamera(cameraId, planePos, currentTime);
@@ -320,10 +326,14 @@ int main()
 		glBindVertexArray(VAOs[0]);
 
 		glm::mat4 skew = glm::rotate(glm::mat4(), glm::radians(-20.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		glm::mat4 rotation = glm::rotate(glm::mat4(), currentTime + 45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 rotation = glm::rotate(glm::mat4(), currentTime + glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 translation = glm::translate(glm::mat4(), glm::vec3(orbitX, 3.0f, orbitZ));
 		glm::mat4 modelPlane = translation * rotation * skew;
 		glm::mat4 normalMatrix = glm::inverseTranspose(modelPlane);
+
+		spotLightAim = rotation * glm::vec4(spotLightAim, 1.0f);
+		glUniform3fv(spotLightAimLoc, 1, glm::value_ptr(spotLightAim));
+
 
 		glUniform3fv(objectColorLoc, 1, glm::value_ptr(PLANE_COLOR));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelPlane[0][0]);
@@ -408,6 +418,22 @@ void keyPressCallback(GLFWwindow* window, int key, int scancode, int action, int
 		if (specularPower != 2)
 			specularPower >>= 1;
 		std::cout << "Phong specular power = " << specularPower << std::endl;
+		break;
+	case GLFW_KEY_DOWN:
+		spotLightAimY -= 0.1f;
+		std::cout << "Spotlight Aim Y value = " << spotLightAimY<< std::endl;
+		break;
+	case GLFW_KEY_UP:
+		spotLightAimY += 0.1f;
+		std::cout << "Spotlight Aim Y value = " << spotLightAimY << std::endl;
+		break;
+	case GLFW_KEY_LEFT:
+		spotLightCutoff -= 0.02f;
+		std::cout << "Spotlight Cutoff Cos value = " << spotLightCutoff << std::endl;
+		break;
+	case GLFW_KEY_RIGHT:
+		spotLightCutoff += 0.02f;
+		std::cout << "Spotlight Cutoff Cos value = " << spotLightCutoff << std::endl;
 		break;
 	default:
 		break;
