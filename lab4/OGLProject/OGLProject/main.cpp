@@ -1632,8 +1632,8 @@ static const GLfloat vertices3[] = {
 
 // CONSTANTS
 //-----------------------------------
-static const glm::vec3 POINT_LIGHT_POSITION(-5.0f, 10.0f, 2.0f);
-static const glm::vec3 POINT_LIGHT_COLOR(0.8f, 0.8f, 0.8f);
+static const glm::vec3 POINT_LIGHT_POSITION(-15.0f, 8.0f, 2.0f);
+static const glm::vec3 POINT_LIGHT_COLOR(0.8f, 0.8f, 1.0f);
 static const glm::vec3 SPOT_LIGHT_COLOR(1.0f, 1.4f, 2.0f);
 
 static const glm::vec3 PLANE_AMBIENT(0.2295f, 0.08825f, 0.0275f);
@@ -1644,13 +1644,27 @@ static const float PLANE_SHININESS = 51.2f;
 static const glm::vec3 GROUND_AMBIENT(0.25f, 0.20725f, 0.20725f);
 static const glm::vec3 GROUND_DIFFUSE(1.0f, 0.829f, 0.829f);
 static const glm::vec3 GROUND_SPECULAR(0.296648f, 0.296648f, 0.296648f);
-static const float GROUND_SHININESS = 11.264f;
+static const float GROUND_SHININESS = 1.264f;
 
 static const glm::vec3 SPHERE_AMBIENT(0.25f, 0.25f, 0.25f);
 static const glm::vec3 SPHERE_DIFFUSE(0.4f, 0.4f, 0.4f);
 static const glm::vec3 SPHERE_SPECULAR(0.774597f, 0.774597f, 0.774597f);
-static const float SPHERE_SHININESS = 76.8f;
+static const float SPHERE_SHININESS = 50.8f;
 
+static const glm::vec3 RED_RUBBER_AMBIENT(0.1f, 0.0f, 0.0f);
+static const glm::vec3 RED_RUBBER_DIFFUSE(0.5f, 0.4f, 0.4f);
+static const glm::vec3 RED_RUBBER_SPECULAR(0.7f, 0.04f, 0.04f);
+static const float RED_RUBBER_SHININESS = 10.0f;
+
+static const glm::vec3 BRONZE_AMBIENT(0.25f, 0.148f, 0.06475f);
+static const glm::vec3 BRONZE_DIFFUSE(0.4f, 0.2368f, 0.1036f);
+static const glm::vec3 BRONZE_SPECULAR(0.774597f, 0.458561f, 0.200621f);
+static const float BRONZE_SHININESS = 76.8f;
+
+static const glm::vec3 JADE_AMBIENT(0.135f, 0.2225f, 0.1575f);
+static const glm::vec3 JADE_DIFFUSE(0.54f, 0.89f, 0.63f);
+static const glm::vec3 JADE_SPECULAR(0.316228f, 0.316228f, 0.316228f);
+static const float JADE_SHININESS = 12.8f;
 
 static const float FOV = 100.0f;
 
@@ -1660,11 +1674,11 @@ int cameraId = 2;
 int aspectRatioChanged = 1;
 int currentWidth;
 int currentHeight;
-float spotLightAimY = -1.0f;
+float spotLightAimY = -0.2f;
 float spotLightCutoff = 0.9f;
-glm::vec3 userPos = glm::vec3(-10.0f, 3.0f, 10.0f);
-
-
+int programID;
+int shaderChanged = 1;
+int xRay = 0;
 int main()
 {
 	// Initialize GLFW
@@ -1717,9 +1731,9 @@ int main()
 
 	// Prepare all buffers
 	//-------------------------------------------------
-	GLuint VAOs[4], VBOs[3], EBO;
-	glGenVertexArrays(3, VAOs); // Vertex array object
-	glGenBuffers(2, VBOs);	// Vertex buffer object
+	GLuint VAOs[4], VBOs[4], EBO;
+	glGenVertexArrays(4, VAOs); // Vertex array object
+	glGenBuffers(4, VBOs);	// Vertex buffer object
 
 
 	// Plane model
@@ -1747,15 +1761,17 @@ int main()
 
 	// Light model
 	glBindVertexArray(VAOs[2]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]); // Bind VBO to VAO
-	// Data is already copied
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[2]); // Bind VBO to VAO
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW); // Copy data
+
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); // Set the interpretation of Vertex Buffer data
 	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float))); // Set the interpretation of Vertex Buffer data
+	glEnableVertexAttribArray(1);
 
 	// Sphere model
 	glBindVertexArray(VAOs[3]); // Set active
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[2]); // Bind VBO to VAO
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[3]); // Bind VBO to VAO
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices3), vertices3, GL_STATIC_DRAW); // Copy data
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); // Set the interpretation of Vertex Buffer data
@@ -1766,60 +1782,27 @@ int main()
 
 	// Complie and use shaders
 	//-------------------------------------------------
-	GLuint programID = LoadShaders("phong_vertex.shader", "phong_fragment.shader");
-	glUseProgram(programID);
+	GLuint phongShader = LoadShaders("phong_vertex.shader", "phong_fragment.shader");
+	GLuint gouraudShader = LoadShaders("gouraud_vertex.shader", "gouraud_fragment.shader");
+	GLuint oneColorShaderID = LoadShaders("phong_vertex.shader", "fragment_onecolor.shader");
+	programID = gouraudShader;
 
-	GLuint program2ID = LoadShaders("phong_vertex.shader", "fragment_onecolor.shader");
-
-
-	// Get shader variable handles
-	//-------------------------------------------------
-	unsigned int modelLoc = glGetUniformLocation(programID, "model");
-	unsigned int viewLoc = glGetUniformLocation(programID, "view");
-	unsigned int projLoc = glGetUniformLocation(programID, "projection");
-	unsigned int normalMatrixLoc = glGetUniformLocation(programID, "normalMatrix");
-	
-	unsigned int viewPosLoc = glGetUniformLocation(programID, "viewPos");
-
-	unsigned int shininessLoc = glGetUniformLocation(programID, "shininess");
-	unsigned int materialAmbientLoc = glGetUniformLocation(programID, "materialAmbient");
-	unsigned int materialDiffuseLoc = glGetUniformLocation(programID, "materialDiffuse");
-	unsigned int materialSpecularLoc = glGetUniformLocation(programID, "materialSpecular");
-
-	// Point light
-	unsigned int pointLightColorLoc = glGetUniformLocation(programID, "pointLightColor");
-	unsigned int pointLightPosLoc = glGetUniformLocation(programID, "pointLightPos");
-
-	// Spotlight
-	unsigned int spotLightPosLoc = glGetUniformLocation(programID, "spotLightPos");
-	unsigned int spotLightColorLoc = glGetUniformLocation(programID, "spotLightColor");
-	unsigned int spotLightAimLoc = glGetUniformLocation(programID, "spotLightAim");
-	unsigned int spotLightCosCutoffLoc = glGetUniformLocation(programID, "spotLightCosCutoff");
-	unsigned int spotLightExpLoc = glGetUniformLocation(programID, "spotLightExp");
+	unsigned int modelLoc, viewLoc, projLoc, normalMatrixLoc, viewPosLoc, shininessLoc, materialAmbientLoc,
+		materialDiffuseLoc, materialSpecularLoc, pointLightColorLoc, pointLightPosLoc, spotLightPosLoc, spotLightColorLoc,
+		spotLightAimLoc,
+		spotLightCosCutoffLoc,
+		spotLightExpLoc;
 
 
 	// Light cube model
-	unsigned int modelLoc2 = glGetUniformLocation(program2ID, "model");
-	unsigned int viewLoc2 = glGetUniformLocation(program2ID, "view");
-	unsigned int projLoc2 = glGetUniformLocation(program2ID, "projection");
-	unsigned int oneColor2 = glGetUniformLocation(program2ID, "oneColor");
+	unsigned int modelLoc2 = glGetUniformLocation(oneColorShaderID, "model");
+	unsigned int viewLoc2 = glGetUniformLocation(oneColorShaderID, "view");
+	unsigned int projLoc2 = glGetUniformLocation(oneColorShaderID, "projection");
+	unsigned int oneColor2 = glGetUniformLocation(oneColorShaderID, "oneColor");
 
 	// Set background color
 	//-------------------------------------------------
 	glClearColor(0.8f, 0.9f, 1.0f, 0.0f);
-
-
-	// Set light color and position
-	//-------------------------------------------------
-	glUniform3fv(pointLightColorLoc, 1, glm::value_ptr(POINT_LIGHT_COLOR));
-	glUniform3fv(pointLightPosLoc, 1, glm::value_ptr(POINT_LIGHT_POSITION));
-
-
-	// Set spotlight data
-	//-------------------------------------------------
-	glUniform1f(spotLightExpLoc, 30.0f);
-	glUniform3fv(spotLightColorLoc, 1, glm::value_ptr(SPOT_LIGHT_COLOR));
-
 
 
 	// Set wireframe mode
@@ -1832,10 +1815,9 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 
-	// Calculate projection matrix and send it to shader
+	// Calculate projection matrix and send it to all shaders
 	//-------------------------------------------------
 	glm::mat4 projection = createProjectionMatrix(1.0f, 100.0f, glm::radians(FOV), (float)mode->height / (float)mode->width);
-	glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 
 
 	// Register callbacks for keypresses
@@ -1847,9 +1829,56 @@ int main()
 	//-------------------------------------------------
 	while (!glfwWindowShouldClose(window))
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		float currentTime = glfwGetTime();
-		glUseProgram(programID);
+
+		if (shaderChanged)
+		{
+			shaderChanged = 0;
+			if (programID == phongShader)
+				programID = gouraudShader;
+			else
+				programID = phongShader;
+
+			glUseProgram(programID);
+
+			// Get shader variable handles
+			//-------------------------------------------------
+			modelLoc = glGetUniformLocation(programID, "model");
+			viewLoc = glGetUniformLocation(programID, "view");
+			projLoc = glGetUniformLocation(programID, "projection");
+			normalMatrixLoc = glGetUniformLocation(programID, "normalMatrix");
+			viewPosLoc = glGetUniformLocation(programID, "viewPos");
+
+			shininessLoc = glGetUniformLocation(programID, "shininess");
+			materialAmbientLoc = glGetUniformLocation(programID, "materialAmbient");
+			materialDiffuseLoc = glGetUniformLocation(programID, "materialDiffuse");
+			materialSpecularLoc = glGetUniformLocation(programID, "materialSpecular");
+
+			// Point light
+			pointLightColorLoc = glGetUniformLocation(programID, "pointLightColor");
+			pointLightPosLoc = glGetUniformLocation(programID, "pointLightPos");
+
+			// Spotlight
+			spotLightPosLoc = glGetUniformLocation(programID, "spotLightPos");
+			spotLightColorLoc = glGetUniformLocation(programID, "spotLightColor");
+			spotLightAimLoc = glGetUniformLocation(programID, "spotLightAim");
+			spotLightCosCutoffLoc = glGetUniformLocation(programID, "spotLightCosCutoff");
+			spotLightExpLoc = glGetUniformLocation(programID, "spotLightExp");
+
+			// Set light color and position
+			//-------------------------------------------------
+			glUniform3fv(pointLightColorLoc, 1, glm::value_ptr(POINT_LIGHT_COLOR));
+			glUniform3fv(pointLightPosLoc, 1, glm::value_ptr(POINT_LIGHT_POSITION));
+
+
+			// Set spotlight data
+			//-------------------------------------------------
+			glUniform1f(spotLightExpLoc, 30.0f);
+			glUniform3fv(spotLightColorLoc, 1, glm::value_ptr(SPOT_LIGHT_COLOR));
+
+		}
+		glEnable(GL_DEPTH_TEST);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Calculate new projection matrix has the aspect ratio changed
 		//-------------------------------------------------
@@ -1859,7 +1888,6 @@ int main()
 			glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 			aspectRatioChanged = 0;
 		}
-
 
 		// Calculate current plane position
 		//-------------------------------------------------
@@ -1881,9 +1909,9 @@ int main()
 		// Set camera and calculate `view` matrix
 		//-------------------------------------------------	
 		auto res = getCamera(cameraId, planePos, currentTime);
-		
+
 		glm::vec3 cameraPos = res[0];
-		glm::vec3 cameraTarget = res[1];		
+		glm::vec3 cameraTarget = res[1];
 		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 		glm::mat4 view = createViewMatrix(cameraPos, cameraTarget, up);
 
@@ -1896,7 +1924,7 @@ int main()
 		glBindVertexArray(VAOs[0]);
 
 		glm::mat4 roll = glm::rotate(glm::mat4(), glm::radians(-20.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		glm::mat4 yaw =  glm::rotate(glm::mat4(), glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f)); 
+		glm::mat4 yaw = glm::rotate(glm::mat4(), glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 rotation = glm::rotate(glm::mat4(), currentTime + glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 translation = glm::translate(glm::mat4(), glm::vec3(orbitX, 4.0f, orbitZ));
 		glm::mat4 modelPlane = translation * rotation * yaw * roll;
@@ -1904,7 +1932,7 @@ int main()
 
 		spotLightAim = rotation * yaw * roll * glm::vec4(spotLightAim, 1.0f);
 		glUniform3fv(spotLightAimLoc, 1, glm::value_ptr(spotLightAim));
-		
+
 		glUniform3fv(materialAmbientLoc, 1, glm::value_ptr(PLANE_AMBIENT));
 		glUniform3fv(materialDiffuseLoc, 1, glm::value_ptr(PLANE_DIFFUSE));
 		glUniform3fv(materialSpecularLoc, 1, glm::value_ptr(PLANE_SPECULAR));
@@ -1925,29 +1953,16 @@ int main()
 		glUniform3fv(materialDiffuseLoc, 1, glm::value_ptr(GROUND_DIFFUSE));
 		glUniform3fv(materialSpecularLoc, 1, glm::value_ptr(GROUND_SPECULAR));
 		glUniform1f(shininessLoc, GROUND_SHININESS);
-		modelCube = glm::translate(glm::scale(glm::mat4(), glm::vec3(50.0f, 0.5f, 50.0f)), glm::vec3(0.0f, -0.5f, 0.0f));
-		normalMatrix = glm::inverseTranspose(modelCube);
 
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]);
-		glUniformMatrix4fv(normalMatrixLoc, 1, GL_FALSE, &normalMatrix[0][0]);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-		// Draw light cube
-		//--------------------------------------------------
-		glUseProgram(program2ID);
-		glBindVertexArray(VAOs[2]);
-
-		modelCube = glm::translate(glm::mat4(), POINT_LIGHT_POSITION);
-		//normalMatrix = glm::inverseTranspose(modelCube);
-
-		glUniformMatrix4fv(projLoc2, 1, GL_FALSE, &projection[0][0]);
-		glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, &view[0][0]);
-		glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, &modelCube[0][0]);
-		glUniformMatrix4fv(normalMatrixLoc, 1, GL_FALSE, &normalMatrix[0][0]);
-		glUniform3fv(oneColor2, 1, glm::value_ptr(POINT_LIGHT_COLOR));
-
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		for (int z = -20; z < 20; z++)
+			for (int x = -20; x < 20; x++)
+			{
+				modelCube = glm::translate(glm::mat4(), glm::vec3(x, -0.5f, z));
+				normalMatrix = glm::inverseTranspose(modelCube);
+				glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]);
+				glUniformMatrix4fv(normalMatrixLoc, 1, GL_FALSE, &normalMatrix[0][0]);
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+			}
 
 
 		// Draw sphere
@@ -1955,7 +1970,7 @@ int main()
 		glUseProgram(programID);
 		glBindVertexArray(VAOs[3]);
 
-		glm::mat4 modelMat = glm::scale(glm::translate(glm::mat4(), glm::vec3(13.0f, -2.0f, -6.0f)), glm::vec3(6.0f));
+		glm::mat4 modelMat = glm::scale(glm::translate(glm::mat4(), glm::vec3(11.0f, -3.0f, -6.0f)), glm::vec3(6.0f));
 		normalMatrix = glm::inverseTranspose(modelMat);
 
 		glUniform3fv(materialAmbientLoc, 1, glm::value_ptr(SPHERE_AMBIENT));
@@ -1967,6 +1982,70 @@ int main()
 		glUniformMatrix4fv(normalMatrixLoc, 1, GL_FALSE, &normalMatrix[0][0]);
 
 		glDrawArrays(GL_TRIANGLES, 0, 4605);
+
+		// Draw 2nd sphere
+		//---------------------------------------------------
+		modelMat = glm::scale(glm::translate(glm::mat4(), glm::vec3(-12.0f, 5.0f, -15.0f)), glm::vec3(4.0f));
+		normalMatrix = glm::inverseTranspose(modelMat);
+
+		glUniform3fv(materialAmbientLoc, 1, glm::value_ptr(RED_RUBBER_AMBIENT));
+		glUniform3fv(materialDiffuseLoc, 1, glm::value_ptr(RED_RUBBER_DIFFUSE));
+		glUniform3fv(materialSpecularLoc, 1, glm::value_ptr(RED_RUBBER_SPECULAR));
+		glUniform1f(shininessLoc, RED_RUBBER_SHININESS);
+
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelMat[0][0]);
+		glUniformMatrix4fv(normalMatrixLoc, 1, GL_FALSE, &normalMatrix[0][0]);
+
+		glDrawArrays(GL_TRIANGLES, 0, 4605);
+
+
+		// Draw 3rd sphere
+		//---------------------------------------------------
+		modelMat = glm::scale(glm::translate(glm::mat4(), glm::vec3(-14.0f, 3.0f, 0.0f)), glm::vec3(1.5f));
+		normalMatrix = glm::inverseTranspose(modelMat);
+
+		glUniform3fv(materialAmbientLoc, 1, glm::value_ptr(BRONZE_AMBIENT));
+		glUniform3fv(materialDiffuseLoc, 1, glm::value_ptr(BRONZE_DIFFUSE));
+		glUniform3fv(materialSpecularLoc, 1, glm::value_ptr(BRONZE_SPECULAR));
+		glUniform1f(shininessLoc, BRONZE_SHININESS);
+
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelMat[0][0]);
+		glUniformMatrix4fv(normalMatrixLoc, 1, GL_FALSE, &normalMatrix[0][0]);
+
+		glDrawArrays(GL_TRIANGLES, 0, 4605);
+
+		// Draw 4th sphere
+		//---------------------------------------------------
+		modelMat = glm::scale(glm::translate(glm::mat4(), glm::vec3(15.0f, 0.0f, 15.0f)), glm::vec3(8.0f));
+		normalMatrix = glm::inverseTranspose(modelMat);
+
+		glUniform3fv(materialAmbientLoc, 1, glm::value_ptr(JADE_AMBIENT));
+		glUniform3fv(materialDiffuseLoc, 1, glm::value_ptr(JADE_DIFFUSE));
+		glUniform3fv(materialSpecularLoc, 1, glm::value_ptr(JADE_SPECULAR));
+		glUniform1f(shininessLoc, JADE_SHININESS);
+
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelMat[0][0]);
+		glUniformMatrix4fv(normalMatrixLoc, 1, GL_FALSE, &normalMatrix[0][0]);
+
+		glDrawArrays(GL_TRIANGLES, 0, 4605);
+
+
+		// Draw light cube
+		//--------------------------------------------------
+		glBindVertexArray(VAOs[2]);
+
+		modelCube = glm::translate(glm::mat4(), POINT_LIGHT_POSITION);
+		normalMatrix = glm::inverseTranspose(modelCube);
+
+		glUniform3fv(materialAmbientLoc, 1, glm::value_ptr(glm::vec3(2.0f, 2.0f, 2.0f)));
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelCube[0][0]);
+		glUniformMatrix4fv(normalMatrixLoc, 1, GL_FALSE, &normalMatrix[0][0]);
+
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -2003,14 +2082,14 @@ void keyPressCallback(GLFWwindow* window, int key, int scancode, int action, int
 	case GLFW_KEY_4:
 		cameraId = 4;
 		std::cout << "Camera 4 (tracking)" << std::endl;
-		break;	
+		break;
 	case GLFW_KEY_5:
 		cameraId = 5;
 		std::cout << "Camera 5 (user)" << std::endl;
 		break;
 	case GLFW_KEY_DOWN:
 		spotLightAimY -= 0.1f;
-		std::cout << "Spotlight Aim Y value = " << spotLightAimY<< std::endl;
+		std::cout << "Spotlight Aim Y value = " << spotLightAimY << std::endl;
 		break;
 	case GLFW_KEY_UP:
 		spotLightAimY += 0.1f;
@@ -2023,6 +2102,18 @@ void keyPressCallback(GLFWwindow* window, int key, int scancode, int action, int
 	case GLFW_KEY_RIGHT:
 		spotLightCutoff += 0.02f;
 		std::cout << "Spotlight Cutoff Cos value = " << spotLightCutoff << std::endl;
+		break;
+	case GLFW_KEY_X:
+		if (xRay)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		else
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		xRay = !xRay;
+		break;
+	case GLFW_KEY_Z:
+		shaderChanged = 1;
+		aspectRatioChanged = 1;
+		std::cout << "Shader changed" << std::endl;
 		break;
 	default:
 		break;
@@ -2075,7 +2166,7 @@ glm::mat2x3 getCamera(int cameraId, glm::vec3 planePos, float currentTime)
 	case 2:
 		rotationM = glm::mat3(glm::rotate(glm::mat4(), currentTime + 45.0f, glm::vec3(0.0f, 1.0f, 0.0f)));
 		cameraPos = planePos + rotationM * glm::vec3(0.0f, 0.5f, -6.0f);
-		cameraTarget =  planePos + rotationM * glm::vec3(0.0f, 0.0f, 1.0f);
+		cameraTarget = planePos + rotationM * glm::vec3(0.0f, 0.0f, 1.0f);
 		break;
 	case 3:
 		rotationM = glm::mat3(glm::rotate(glm::mat4(), currentTime + 45.0f, glm::vec3(0.0f, 1.0f, 0.0f)));
@@ -2083,11 +2174,13 @@ glm::mat2x3 getCamera(int cameraId, glm::vec3 planePos, float currentTime)
 		cameraTarget = planePos + rotationM * glm::vec3(0.0f, 0.0f, 3.0f);
 		break;
 	case 4:
-		cameraPos = glm::vec3(15.0f, 10.0f, 20.0f);
+		cameraPos = glm::vec3(-15.0f, 10.0f, 20.0f);
 		cameraTarget = planePos;
 		break;
 	case 5:
-		cameraPos = userPos;
+		cameraPos = glm::vec3(0.0f, 10.0f, 20.0f);;
+		cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+
 	default:
 		break;
 	}
